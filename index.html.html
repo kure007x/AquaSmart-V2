@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaSmart ML - Fish App</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #eef2f7; }
+        .app-card { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="app-card flex flex-col">
+        <header class="bg-gradient-to-r from-blue-600 to-blue-400 text-white p-8 text-center rounded-b-[40px] shadow-lg">
+            <h1 class="text-3xl font-bold">AquaSmart ML</h1>
+            <p class="text-blue-100 mt-2">สแกนปลาเศรษฐกิจ & สวยงาม (10 ชนิด)</p>
+        </header>
+
+        <main class="p-6 flex-grow">
+            <div id="upload-zone" class="border-4 border-dashed border-blue-100 rounded-3xl p-10 text-center bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer">
+                <input type="file" id="imageInput" accept="image/*" class="hidden">
+                <label for="imageInput" class="cursor-pointer block">
+                    <div class="text-7xl mb-4">🐠</div>
+                    <p class="text-blue-600 font-bold text-lg">แตะที่นี่เพื่อถ่ายรูปหรือเลือกรูปปลา</p>
+                </label>
+            </div>
+
+            <div id="loading" class="hidden mt-10 text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"></div>
+                <p class="mt-4 text-blue-500 font-medium">AI กำลังวิเคราะห์สายพันธุ์...</p>
+            </div>
+
+            <div id="result-container" class="mt-8 hidden animate-fade-in">
+                <div class="bg-white border-2 border-blue-50 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <span id="conf-badge" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">0%</span>
+                    </div>
+                    
+                    <h2 class="text-gray-400 text-xs font-bold uppercase tracking-widest">ตรวจพบสายพันธุ์:</h2>
+                    <h3 id="res-name" class="text-3xl font-black text-blue-900 mt-1">ชื่อปลา</h3>
+                    
+                    <div class="mt-6 space-y-4">
+                        <div>
+                            <span id="res-cat" class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold italic">หมวดหมู่</span>
+                        </div>
+                        <p id="res-desc" class="text-gray-600 leading-relaxed text-sm">รายละเอียดเบื้องต้นของปลาชนิดนี้...</p>
+                        
+                        <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100">
+                            <p class="text-xs font-bold text-orange-600 mb-1">💡 คำแนะนำการดูแล:</p>
+                            <p id="res-tips" class="text-sm text-orange-800">ข้อมูลคำแนะนำ</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="location.reload()" class="w-full mt-6 py-4 bg-gray-100 text-gray-500 font-bold rounded-2xl hover:bg-gray-200 transition-colors">ล้างข้อมูล/สแกนใหม่</button>
+            </div>
+        </main>
+
+        <footer class="p-8 text-center">
+            <p class="text-gray-300 text-xs font-medium">© 2026 AquaSmart ML Project by Kure</p>
+        </footer>
+    </div>
+
+    <script>
+        let model;
+        // ลำดับต้องตรงกับโฟลเดอร์ตอนเทรน
+        const fishList = ['ปลาช่อน', 'ปลาดุก', 'ปลากระดี่', 'ปลากุเลา', 'ปลานวลจันทร์', 'ปลาทอง', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลาเสือข้างลาย', 'ปลากราย'];
+
+        async function setupAI() {
+            try {
+                model = await tf.loadLayersModel('./model.json');
+                console.log("AI Ready!");
+            } catch (err) {
+                alert("เกิดข้อผิดพลาด: ไม่พบไฟล์โมเดลในระบบ");
+            }
+        }
+
+        document.getElementById('imageInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // UI Feedback
+            document.getElementById('upload-zone').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.onload = async () => {
+                // AI Logic
+                const tensor = tf.browser.fromPixels(img)
+                    .resizeNearestNeighbor([224, 224])
+                    .toFloat()
+                    .div(tf.scalar(255))
+                    .expandDims();
+                
+                const prediction = await model.predict(tensor).data();
+                const topIdx = prediction.indexOf(Math.max(...prediction));
+                const prob = (prediction[topIdx] * 100).toFixed(1);
+                const finalName = fishList[topIdx];
+
+                // Fetch Info from JSON
+                const res = await fetch('./fish_data.json');
+                const db = await res.json();
+                const info = db[finalName] || { description: "ไม่พบข้อมูลในระบบ", category: "-", tips: "-" };
+
+                // Update UI
+                document.getElementById('res-name').innerText = finalName;
+                document.getElementById('conf-badge').innerText = prob + "%";
+                document.getElementById('res-desc').innerText = info.description;
+                document.getElementById('res-cat').innerText = info.category;
+                document.getElementById('res-tips').innerText = info.tips;
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('result-container').classList.remove('hidden');
+            };
+        };
+
+        setupAI();
+    </script>
+</body>
+</html>
