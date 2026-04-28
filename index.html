@@ -76,10 +76,8 @@
                 const response = await fetch('./model.json');
                 let modelData = await response.text();
                 
-                // 2. ท่าไม้ตาย: เปลี่ยนคำว่า batch_shape เป็น batchInputShape
-                // และเปลี่ยน InputLayer เป็น Input เผื่อเหนียวไว้ด้วยเลย
+                // 2. ท่าไม้ตาย: เปลี่ยนแค่ batch_shape เป็น batchInputShape อย่างเดียวพอ!
                 modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
-                modelData = modelData.replace(/"class_name":\s*"InputLayer"/g, '"class_name": "Input"');
                 
                 const modelJson = JSON.parse(modelData);
 
