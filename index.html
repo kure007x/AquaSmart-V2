@@ -70,16 +70,18 @@
         let model;
         const fishList = ['ปลาดุก', 'ปลากราย', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลานวลจันทร์', 'ปลาช่อน', 'ปลากุเลา', 'ปลาเสือข้างลาย'];
 
-        // ท่าไม้ตาย: โหลดโมเดลพร้อมแก้บั๊ก InputLayer กลางอากาศ
         async function init() {
             try {
-                // 1. ดึงไฟล์ model.json มาเป็น text ก่อน
+                // 1. ดึงไฟล์ model.json มาเป็น text
                 const response = await fetch('./model.json');
-                const modelData = await response.text();
+                let modelData = await response.text();
                 
-                // 2. แก้คำว่า InputLayer เป็น Input (แก้บั๊กโครงสร้าง Keras 3)
-                const fixedModelData = modelData.replace(/"class_name":\s*"InputLayer"/g, '"class_name": "Input"');
-                const modelJson = JSON.parse(fixedModelData);
+                // 2. ท่าไม้ตาย: เปลี่ยนคำว่า batch_shape เป็น batchInputShape
+                // และเปลี่ยน InputLayer เป็น Input เผื่อเหนียวไว้ด้วยเลย
+                modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
+                modelData = modelData.replace(/"class_name":\s*"InputLayer"/g, '"class_name": "Input"');
+                
+                const modelJson = JSON.parse(modelData);
 
                 // 3. โหลดเข้า TensorFlow.js
                 model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
@@ -121,7 +123,7 @@
                     document.getElementById('tips').innerText = db[name].tips;
                 } catch(e) {
                     document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "โหลดข้อมูลปลาไม่สำเร็จ";
+                    document.getElementById('desc').innerText = "โหลดข้อมูลปลาไม่สำเร็จ (ไม่พบไฟล์ fish_data.json)";
                 }
 
                 document.getElementById('loading').classList.add('hidden');
