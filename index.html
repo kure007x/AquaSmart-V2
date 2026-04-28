@@ -72,12 +72,12 @@
 
         async function init() {
             try {
-                // โหลดโมเดลที่วางอยู่ข้างๆ กันใน GitHub โดยตรง (หลุดพ้นการบล็อก!)
-                model = await tf.loadLayersModel('./model.json');
+                // ลองใช้ลิงก์เต็มไปเลย ชัวร์สุด
+                model = await tf.loadLayersModel('https://kure007x.github.io/AquaSmart-V2/model.json');
                 console.log("AI Ready!");
-            } catch(e) { 
-                alert("โหลดโมเดลไม่สำเร็จ! กรุณาเช็กว่าไฟล์ model.json และ .bin ทั้งหมดยังอยู่ใน GitHub หน้าแรก"); 
-                console.error(e);
+            } catch (err) { 
+                // ให้มันแสดงเหตุผลที่พังออกมาตรงๆ
+                alert("AI ฟ้องว่า: " + err.message); 
             }
         }
 
