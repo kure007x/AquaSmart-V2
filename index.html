@@ -72,20 +72,48 @@
 
         async function init() {
             try {
+                // 1. โหลดไฟล์ JSON มาอ่านก่อน
                 const response = await fetch('./model.json');
                 let modelData = await response.text();
                 
-                // 1. แก้คำว่า batch_shape เป็น batchInputShape (แก้ปัญหา Keras 3)
+                // 2. แก้บั๊กคำว่า batch_shape -> batchInputShape
                 modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
                 
-                // 2. บังคับเปลี่ยนคำว่า "Input" (ถ้ามี) ให้กลับมาเป็น "InputLayer" ที่ถูกต้อง
-                modelData = modelData.replace(/"class_name":\s*"Input"/g, '"class_name": "InputLayer"');
-                
-                const modelJson = JSON.parse(modelData);
+                let modelJson = JSON.parse(modelData);
 
-                // 3. โหลดโมเดล
+                // 3. ท่าไม้ตายสูงสุด: แปลงโครงสร้าง Keras 3 (Object) ให้กลับไปเป็น Keras 2 (Array)
+                if (modelJson.modelTopology && modelJson.modelTopology.model_config && modelJson.modelTopology.model_config.config && modelJson.modelTopology.model_config.config.layers) {
+                    modelJson.modelTopology.model_config.config.layers.forEach(layer => {
+                        if (layer.inbound_nodes && layer.inbound_nodes.length > 0) {
+                            // ถ้าพบว่าเป็น Object (ไม่ใช่ Array แบบเก่า)
+                            if (typeof layer.inbound_nodes[0] === 'object' && !Array.isArray(layer.inbound_nodes[0])) {
+                                let newInboundNodes = [];
+                                layer.inbound_nodes.forEach(node => {
+                                    let newArgs = [];
+                                    if (node.args) {
+                                        node.args.forEach(arg => {
+                                            if (Array.isArray(arg)) {
+                                                arg.forEach(subArg => {
+                                                    if (subArg.config && subArg.config.keras_history) {
+                                                        newArgs.push([...subArg.config.keras_history, {}]);
+                                                    }
+                                                });
+                                            } else if (arg.config && arg.config.keras_history) {
+                                                newArgs.push([...arg.config.keras_history, {}]);
+                                            }
+                                        });
+                                    }
+                                    newInboundNodes.push(newArgs);
+                                });
+                                layer.inbound_nodes = newInboundNodes; // ทับโครงสร้างเดิมด้วยโครงสร้างที่แก้แล้ว
+                            }
+                        }
+                    });
+                }
+
+                // 4. โหลดเข้า TensorFlow.js
                 model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
-                console.log("AI Fixed & Ready!");
+                console.log("AI Fully Fixed & Ready!");
             } catch (err) {
                 console.error(err);
                 alert("AI Error: " + err.message);
@@ -123,7 +151,7 @@
                     document.getElementById('tips').innerText = db[name].tips;
                 } catch(e) {
                     document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "โหลดข้อมูลปลาไม่สำเร็จ (ไม่พบไฟล์ fish_data.json)";
+                    document.getElementById('desc').innerText = "โหลดข้อมูลปลาไม่สำเร็จ";
                 }
 
                 document.getElementById('loading').classList.add('hidden');
