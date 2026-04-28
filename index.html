@@ -130,24 +130,39 @@
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = async () => {
-                const tensor = tf.browser.fromPixels(img)
-                    .resizeNearestNeighbor([224, 224])
-                    .toFloat()
-                    // เปลี่ยนสูตรแปลงสีรูปให้เป็น -1 ถึง 1 (สูตรมาตรฐาน Keras)
-                    .div(tf.scalar(127.5))
-                    .sub(tf.scalar(1))
-                    .expandDims();
+                // 1. กระบวนการเตรียมรูป (ใช้ tf.tidy เพื่อกันเครื่องค้าง)
+                const tensor = tf.tidy(() => {
+                    let t = tf.browser.fromPixels(img);
+                    t = tf.image.resizeBilinear(t, [224, 224]); // ใช้ Bilinear ภาพเนียนกว่า
+                    
+                    // 🔥 ท่าไม้ตาย: ถ้าตอนเทรนใช้ OpenCV (cv2) ให้ลบเครื่องหมาย // บรรทัดล่างออกเพื่อสลับสี!
+                    // t = t.reverse(-1); 
+
+                    // สเกลภาพ 0-1 (ถ้าเทรนมาแบบ -1 ถึง 1 ให้แก้เป็น .div(127.5).sub(1) )
+                    return t.toFloat().div(255.0).expandDims(0);
+                });
                 
-                const prediction = await model.predict(tensor).data();
+                // 2. ให้ AI ทำนาย
+                const rawPrediction = await model.predict(tensor).data();
+                const prediction = Array.from(rawPrediction);
                 const idx = prediction.indexOf(Math.max(...prediction));
+                const maxProb = (prediction[idx] * 100).toFixed(1);
                 
+                console.log("คะแนนเต็มๆ 10 สายพันธุ์:", prediction);
+
+                // 3. ระบบตรวจเช็กสุขภาพ AI
+                if (maxProb < 20) {
+                    alert("⚠️ แจ้งเตือน: AI เดาสุ่ม! (ความมั่นใจแค่ " + maxProb + "%) แปลว่าค่า Weights เสียหายตอนแปลงไฟล์จาก Keras 3 มาเป็น Web");
+                }
+                
+                // 4. แสดงผล
                 try {
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
                     const name = fishList[idx];
 
                     document.getElementById('fishName').innerText = name;
-                    document.getElementById('prob').innerText = (prediction[idx]*100).toFixed(0) + "%";
+                    document.getElementById('prob').innerText = maxProb + "%";
                     document.getElementById('desc').innerText = db[name].description;
                     document.getElementById('cat').innerText = db[name].category;
                     document.getElementById('tips').innerText = db[name].tips;
