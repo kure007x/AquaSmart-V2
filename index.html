@@ -133,7 +133,9 @@
                 const tensor = tf.browser.fromPixels(img)
                     .resizeNearestNeighbor([224, 224])
                     .toFloat()
-                    .div(255)
+                    // เปลี่ยนสูตรแปลงสีรูปให้เป็น -1 ถึง 1 (สูตรมาตรฐาน Keras)
+                    .div(tf.scalar(127.5))
+                    .sub(tf.scalar(1))
                     .expandDims();
                 
                 const prediction = await model.predict(tensor).data();
