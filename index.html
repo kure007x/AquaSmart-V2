@@ -72,16 +72,18 @@
 
         async function init() {
             try {
-                // 1. ดึงไฟล์ model.json มาเป็น text
                 const response = await fetch('./model.json');
                 let modelData = await response.text();
                 
-                // 2. ท่าไม้ตาย: เปลี่ยนแค่ batch_shape เป็น batchInputShape อย่างเดียวพอ!
+                // 1. แก้คำว่า batch_shape เป็น batchInputShape (แก้ปัญหา Keras 3)
                 modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
+                
+                // 2. บังคับเปลี่ยนคำว่า "Input" (ถ้ามี) ให้กลับมาเป็น "InputLayer" ที่ถูกต้อง
+                modelData = modelData.replace(/"class_name":\s*"Input"/g, '"class_name": "InputLayer"');
                 
                 const modelJson = JSON.parse(modelData);
 
-                // 3. โหลดเข้า TensorFlow.js
+                // 3. โหลดโมเดล
                 model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
                 console.log("AI Fixed & Ready!");
             } catch (err) {
