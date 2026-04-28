@@ -9,59 +9,76 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center p-4">
+<body class="bg-slate-50 min-h-screen p-4 flex flex-col items-center">
     <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden mt-4">
-        <div class="bg-blue-600 p-8 text-white text-center shadow-lg">
-            <h1 class="text-3xl font-black italic">AquaSmart ML</h1>
-            <p class="opacity-80 text-xs mt-1">ระบบวิเคราะห์สายพันธุ์ปลา 10 ชนิด</p>
+        <div class="bg-gradient-to-br from-cyan-600 to-blue-700 p-8 text-white text-center">
+            <h1 class="text-3xl font-black italic tracking-tighter">AQUASMART-V2</h1>
+            <p class="text-xs opacity-70 mt-2 font-light uppercase">AI Fish Scanner by Kure</p>
         </div>
-        
+
         <div class="p-6">
-            <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-3xl p-10 text-center bg-blue-50 cursor-pointer hover:bg-blue-100 transition-all">
+            <div id="upload-box" class="border-4 border-dashed border-cyan-100 rounded-[2rem] p-10 text-center bg-cyan-50 hover:bg-cyan-100 active:scale-95 transition-all cursor-pointer">
                 <input type="file" id="imageInput" accept="image/*" class="hidden">
-                <label for="imageInput" class="cursor-pointer">
-                    <span class="text-6xl">📸</span>
-                    <p class="mt-4 text-blue-600 font-bold">เลือกรูปปลาเพื่อเริ่มสแกน</p>
+                <label for="imageInput" class="cursor-pointer block">
+                    <span class="text-6xl block mb-4">📸</span>
+                    <p class="text-cyan-800 font-bold">กดเพื่อเลือกรูปปลา</p>
                 </label>
             </div>
 
-            <div id="loading" class="hidden text-center my-8 animate-pulse">
-                <div class="h-1 w-full bg-blue-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-blue-600 w-1/2 animate-[progress_2s_infinite]"></div>
-                </div>
-                <p class="mt-4 text-blue-500 font-medium italic text-sm">AI กำลังวิเคราะห์ผล...</p>
+            <div id="loading" class="hidden text-center py-10">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-cyan-200 border-t-cyan-600 mx-auto"></div>
+                <p class="mt-4 text-cyan-600 font-medium">AI กำลังวิเคราะห์สายพันธุ์...</p>
             </div>
 
-            <div id="result" class="hidden mt-6">
-                <div class="bg-gradient-to-br from-blue-50 to-white rounded-3xl p-6 border border-blue-100 shadow-sm">
-                    <div class="flex justify-between items-start">
-                        <h2 id="fishName" class="text-3xl font-bold text-blue-900">ชื่อปลา</h2>
-                        <span id="prob" class="bg-blue-600 text-white px-3 py-1 rounded-xl text-xs font-bold shadow-md">0%</span>
+            <div id="result" class="hidden">
+                <div class="bg-white border-2 border-cyan-50 rounded-[2rem] p-6 shadow-sm mb-4">
+                    <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-4">
+                        <h2 id="fishName" class="text-3xl font-bold text-slate-800">ชื่อปลา</h2>
+                        <span id="prob" class="bg-cyan-600 text-white px-3 py-1 rounded-xl text-sm font-black shadow-md">0%</span>
                     </div>
-                    <p id="cat" class="text-blue-500 text-sm font-bold mt-1 italic">ประเภท</p>
-                    <div class="mt-6 space-y-4">
-                        <p id="desc" class="text-gray-600 text-sm leading-relaxed">รายละเอียด...</p>
-                        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100">
-                            <p class="text-xs font-bold text-amber-700">💡 คำแนะนำ:</p>
-                            <p id="tips" class="text-amber-900 text-xs mt-1">ข้อควรระวัง</p>
+                    <p id="desc" class="text-slate-600 text-sm leading-relaxed mb-4">ข้อมูลปลา...</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                            <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest">หมวดหมู่ (Category)</span>
+                            <p id="cat" class="text-blue-900 font-bold text-sm mt-1">ประเภทปลา</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                            <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest">คำแนะนำ (Advice)</span>
+                            <p id="tips" class="text-amber-900 font-bold text-sm mt-1">คำแนะนำ</p>
                         </div>
                     </div>
                 </div>
-                <button onclick="location.reload()" class="w-full mt-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold hover:bg-gray-200 active:scale-95 transition-all">เริ่มสแกนใหม่</button>
+                <button onclick="location.reload()" class="w-full py-4 bg-slate-100 text-slate-500 font-black rounded-2xl uppercase tracking-tighter hover:bg-slate-200 active:scale-95 transition-all">เริ่มสแกนใหม่</button>
             </div>
         </div>
     </div>
-    <p class="mt-8 text-gray-400 text-[10px] font-medium tracking-widest uppercase">Project by Thanit (Kure) • 2026</p>
-
+    
     <script>
         let model;
         const fishList = ['ปลาดุก', 'ปลากราย', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลานวลจันทร์', 'ปลาช่อน', 'ปลากุเลา', 'ปลาเสือข้างลาย'];
+        
+        const fishDB = {
+            "ปลาช่อน": { "description": "ปลาเศรษฐกิจเนื้อแน่น ทนทาน เลี้ยงได้ทั้งในบ่อดินและกระชัง", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ระวังปลาขนาดต่างกันกินกันเอง" },
+            "ปลาดุก": { "description": "เลี้ยงง่าย โตไว ทนทานต่อสภาพน้ำที่มีออกซิเจนต่ำ", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ควรเปลี่ยนถ่ายน้ำเมื่อเริ่มมีกลิ่น" },
+            "ปลากระดี่": { "description": "ปลาพื้นบ้านยอดนิยม นิยมนำมาแปรรูปเป็นปลาแห้ง", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ชอบอาศัยอยู่ในบ่อที่มีพรรณไม้น้ำ" },
+            "ปลากุเลา": { "description": "ปลาน้ำกร่อยราคาสูง นิยมทำปลาเค็มตากแห้ง", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ต้องดูแลระดับความเค็มของน้ำให้ดี" },
+            "ปลานวลจันทร์": { "description": "ปลาเศรษฐกิจเนื้อหวาน นิยมเลี้ยงในบ่อดินขนาดใหญ่", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ระวังเรื่องก้างที่มีจำนวนมาก" },
+            "ปลาทอง": { "description": "ปลาสวยงามยอดนิยม ต้องการน้ำสะอาดและระบบกรองที่ดี", "category": "Ornamental (ปลาสวยงาม)", "tips": "เปลี่ยนน้ำ 20% ทุกสัปดาห์" },
+            "ปลาปักเป้าเขียวจุด": { "description": "ปลาสวยงามลายจุด นิยมเลี้ยงในน้ำกร่อย", "category": "Ornamental (ปลาสวยงาม)", "tips": "ดุร้าย ไม่ควรเลี้ยงรวมกับปลาอื่น" },
+            "ปลาหมอจากัวร์": { "description": "ปลาตระกูลปลาหมอสี มีลายคล้ายเสือดาว มีนิสัยเป็นนักล่า", "category": "Ornamental (ปลาสวยงาม)", "tips": "ต้องการตู้ขนาดใหญ่และมีที่ซ่อน" },
+            "ปลาเสือข้างลาย": { "description": "ปลาสวยงามตัวเล็ก ว่ายน้ำเป็นฝูง มีแถบสีดำ", "category": "Ornamental (ปลาสวยงาม)", "tips": "ควรเลี้ยงรวมกันเป็นฝูง 5-10 ตัว" },
+            "ปลากราย": { "description": "ปลาแบนข้างสวยงาม มีจุดสีดำเป็นเอกลักษณ์", "category": "Ornamental / Economic", "tips": "ชอบกินอาหารสดและต้องการพื้นที่กว้าง" }
+        };
 
         async function init() {
             try {
+                // โหลดโมเดลที่วางอยู่ข้างๆ กันใน GitHub โดยตรง (หลุดพ้นการบล็อก!)
                 model = await tf.loadLayersModel('./model.json');
                 console.log("AI Ready!");
-            } catch (err) { alert("ไม่สามารถโหลดโมเดลได้! ตรวจสอบชื่อไฟล์ใน GitHub"); }
+            } catch(e) { 
+                alert("โหลดโมเดลไม่สำเร็จ! กรุณาเช็กว่าไฟล์ model.json และ .bin ทั้งหมดยังอยู่ใน GitHub หน้าแรก"); 
+                console.error(e);
+            }
         }
 
         document.getElementById('imageInput').onchange = async (e) => {
@@ -71,22 +88,21 @@
             document.getElementById('upload-box').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
 
-            const img = document.createElement('img');
+            const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = async () => {
-                const tensor = tf.browser.fromPixels(img).resizeNearestNeighbor([224, 224]).toFloat().div(tf.scalar(255)).expandDims();
+                const tensor = tf.browser.fromPixels(img).resizeNearestNeighbor([224, 224]).toFloat().div(255).expandDims();
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 
-                const res = await fetch('./fish_data.json');
-                const db = await res.json();
                 const name = fishList[idx];
+                const info = fishDB[name] || { description: 'ไม่พบข้อมูล', category: '-', tips: '-' };
 
                 document.getElementById('fishName').innerText = name;
                 document.getElementById('prob').innerText = (pred[idx]*100).toFixed(1) + "%";
-                document.getElementById('desc').innerText = db[name].description;
-                document.getElementById('cat').innerText = db[name].category;
-                document.getElementById('tips').innerText = db[name].tips;
+                document.getElementById('desc').innerText = info.description;
+                document.getElementById('cat').innerText = info.category;
+                document.getElementById('tips').innerText = info.tips;
 
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('result').classList.remove('hidden');
