@@ -17,7 +17,7 @@
     <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden mt-4">
         <div class="bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white text-center">
             <h1 class="text-3xl font-black italic tracking-tighter">AQUASMART ML</h1>
-            <p class="opacity-80 text-xs mt-1 uppercase">AI Fish Analyzer V2 by Kure</p>
+            <p class="opacity-80 text-xs mt-1 uppercase">AI Fish Analyzer V2</p>
         </div>
         
         <div class="p-6">
@@ -68,14 +68,22 @@
 
     <script>
         let model;
-        // เช็กลำดับปลาให้ตรงกับตอนเทรนใน Kaggle ด้วยนะ!
         const fishList = ['ปลาดุก', 'ปลากราย', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลานวลจันทร์', 'ปลาช่อน', 'ปลากุเลา', 'ปลาเสือข้างลาย'];
 
         async function init() {
             try {
-                // ไฟล์สมบูรณ์แล้ว โหลดตรงๆ ได้เลย
-                model = await tf.loadLayersModel('./model.json');
-                console.log("AI Ready!");
+                // 1. ดึงไฟล์มาเป็น Text
+                const response = await fetch('./model.json');
+                let modelData = await response.text();
+                
+                // 2. ดักแก้คำศัพท์ที่ TensorFlow.js ไม่รู้จัก
+                modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
+                
+                const modelJson = JSON.parse(modelData);
+
+                // 3. โหลดโมเดล
+                model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
+                console.log("AI Ready and Fully Loaded!");
             } catch (err) {
                 console.error(err);
                 alert("AI Error: " + err.message);
@@ -92,19 +100,17 @@
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = async () => {
-                // เข้าสู่กระบวนการทำนายผล
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(img);
                     t = tf.image.resizeBilinear(t, [224, 224]);
-                    // ค่าสี 0-1 ตรงกับตอนเทรนใน Kaggle 
-                    return t.toFloat().div(255.0).expandDims(0);
+                    return t.toFloat().div(255.0).expandDims(0); // สเกลสี 0-1 ตรงกับ Kaggle
                 });
                 
                 const prediction = await model.predict(tensor).data();
                 const idx = prediction.indexOf(Math.max(...prediction));
                 const maxProb = (prediction[idx] * 100).toFixed(1);
                 
-                console.log("คะแนน:", prediction); // แอบดูคะแนนใน F12 ได้
+                console.log("คะแนนความมั่นใจ:", prediction);
                 
                 try {
                     const res = await fetch('./fish_data.json');
