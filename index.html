@@ -72,16 +72,45 @@
 
         async function init() {
             try {
-                // 1. ดึงไฟล์มาเป็น Text
+                // 1. โหลดไฟล์ JSON มาอ่านก่อน
                 const response = await fetch('./model.json');
                 let modelData = await response.text();
                 
-                // 2. ดักแก้คำศัพท์ที่ TensorFlow.js ไม่รู้จัก
+                // 2. ดักแก้คำว่า batch_shape -> batchInputShape
                 modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
                 
-                const modelJson = JSON.parse(modelData);
+                let modelJson = JSON.parse(modelData);
 
-                // 3. โหลดโมเดล
+                // 3. ท่าไม้ตายสูงสุด: แปลงโครงสร้าง nodeData จาก Object ให้เป็น Array
+                if (modelJson.modelTopology && modelJson.modelTopology.model_config && modelJson.modelTopology.model_config.config && modelJson.modelTopology.model_config.config.layers) {
+                    modelJson.modelTopology.model_config.config.layers.forEach(layer => {
+                        if (layer.inbound_nodes && layer.inbound_nodes.length > 0) {
+                            if (layer.inbound_nodes[0].args) {
+                                let newInboundNodes = [];
+                                layer.inbound_nodes.forEach(node => {
+                                    let newArgs = [];
+                                    if (node.args) {
+                                        node.args.forEach(arg => {
+                                            if (Array.isArray(arg)) {
+                                                arg.forEach(subArg => {
+                                                    if (subArg.config && subArg.config.keras_history) {
+                                                        newArgs.push([...subArg.config.keras_history, {}]);
+                                                    }
+                                                });
+                                            } else if (arg.config && arg.config.keras_history) {
+                                                newArgs.push([...arg.config.keras_history, {}]);
+                                            }
+                                        });
+                                    }
+                                    newInboundNodes.push(newArgs);
+                                });
+                                layer.inbound_nodes = newInboundNodes;
+                            }
+                        }
+                    });
+                }
+
+                // 4. โหลดโมเดลด้วยโครงสร้างที่ซ่อมแล้ว
                 model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
                 console.log("AI Ready and Fully Loaded!");
             } catch (err) {
