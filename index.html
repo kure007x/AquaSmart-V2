@@ -11,7 +11,6 @@
         body { font-family: 'Kanit', sans-serif; }
         @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
         .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
-        /* หน้าจอโหลด */
         #splash-screen { position: fixed; inset: 0; background: white; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
     </style>
 </head>
@@ -33,6 +32,11 @@
         <div id="login-form" class="space-y-4">
             <input type="email" id="login-email" placeholder="Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
             <input type="password" id="login-pass" placeholder="Password" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            
+            <div class="text-right pr-2">
+                <button id="btnForgotPass" class="text-[10px] text-blue-500 font-bold hover:underline uppercase tracking-wide">Forgot Password?</button>
+            </div>
+
             <button id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all">Log in</button>
             
             <div class="relative flex py-4 items-center">
@@ -64,41 +68,35 @@
             <button onclick="toggleLang()" class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg font-bold text-blue-600 border border-blue-100 hover:scale-105 transition-all">
                 <span id="lang-label">TH | EN 🌐</span>
             </button>
-            <button id="btnLogout" class="bg-red-50 text-red-500 p-2 px-4 rounded-full shadow-lg font-bold border border-red-100 italic hover:bg-red-100 transition-all">Logout</button>
+            <button id="btnLogout" class="bg-red-50 text-red-500 p-2 px-4 rounded-full shadow-lg font-bold border border-red-100 italic">Logout</button>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden mt-4">
             <div class="bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white text-center">
-                <h1 id="ui-title" class="text-3xl font-black italic tracking-tighter">AQUASMART ML</h1>
-                <p id="ui-subtitle" class="opacity-80 text-xs mt-1">Fish Analyzer V2</p>
+                <h1 id="ui-title" class="text-3xl font-black italic tracking-tighter uppercase">AquaSmart ML</h1>
+                <p id="ui-subtitle" class="opacity-80 text-xs mt-1 uppercase">Fish Analyzer V2</p>
             </div>
-            
             <div class="p-6">
-                <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-[2rem] p-10 text-center bg-blue-50 cursor-pointer hover:bg-blue-100 transition-all">
+                <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-[2rem] p-10 text-center bg-blue-50 cursor-pointer">
                     <input type="file" id="imageInput" accept="image/*" class="hidden">
                     <label for="imageInput" class="cursor-pointer block">
                         <span class="text-6xl block mb-4">📸</span>
                         <p id="ui-select" class="text-blue-600 font-bold italic">เลือกรูปปลาเพื่อสแกน</p>
                     </label>
                 </div>
-                
                 <div id="loading" class="hidden text-center my-10">
                     <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div></div>
                     <p id="ui-scanning" class="mt-4 text-blue-500 font-medium italic text-sm">Scanning...</p>
                 </div>
-                
                 <div id="result" class="hidden mt-4">
                     <div class="bg-white border-2 border-blue-50 rounded-[2rem] p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-4 border-b pb-4">
                             <h2 id="fishName" class="text-3xl font-bold text-slate-800">-</h2>
                             <span id="prob" class="bg-green-500 text-white px-3 py-1 rounded-xl text-xs font-black">0%</span>
                         </div>
-                        <div class="space-y-4">
-                            <span id="ui-desc-tag" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Description</span>
-                            <p id="desc" class="text-slate-600 text-sm leading-relaxed">-</p>
-                        </div>
+                        <p id="desc" class="text-slate-600 text-sm leading-relaxed">-</p>
                     </div>
-                    <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase hover:bg-slate-200 transition-all">Scan Again</button>
+                    <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase">Scan Again</button>
                 </div>
             </div>
         </div>
@@ -106,7 +104,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
@@ -122,72 +120,70 @@
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
 
-        // เช็คสถานะ + จัดการหน้าจอโหลด
         onAuthStateChanged(auth, (user) => {
             const splash = document.getElementById('splash-screen');
-            const authPage = document.getElementById('auth-page');
-            const scanPage = document.getElementById('scanner-page');
-
             if (user) {
-                authPage.classList.add('hidden');
-                scanPage.classList.remove('hidden');
-                if(window.initModel) window.initModel(); // โหลด AI 
+                document.getElementById('auth-page').classList.add('hidden');
+                document.getElementById('scanner-page').classList.remove('hidden');
+                if(window.initModel) window.initModel();
             } else {
-                authPage.classList.remove('hidden');
-                scanPage.classList.add('hidden');
+                document.getElementById('auth-page').classList.remove('hidden');
+                document.getElementById('scanner-page').classList.add('hidden');
             }
-            
-            // 💡 แก้บัคโล่ล่องหนตรงนี้! เปลี่ยนจาก add class hidden เป็น display none โดยตรง
             setTimeout(() => { 
                 splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none'; 
-                }, 500);
+                setTimeout(() => splash.style.display = 'none', 500);
             }, 800);
         });
 
-        // Event ปุ่มต่างๆ ของ Firebase
+        // 🛑 ระบบแจ้งเตือนรหัสผ่านไม่ถูกต้องแบบไทย
         document.getElementById('btnLogin').onclick = () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("เข้าสู่ระบบไม่สำเร็จ: " + e.message));
+            signInWithEmailAndPassword(auth, email, pass).catch(e => {
+                console.log(e.code);
+                if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
+                    alert("❌ รหัสผ่านไม่ถูกต้อง หรือไม่พบข้อมูลผู้ใช้นี้");
+                } else if (e.code === 'auth/invalid-email') {
+                    alert("❌ รูปแบบอีเมลไม่ถูกต้อง");
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + e.message);
+                }
+            });
+        };
+
+        // 📧 ระบบส่งอีเมลลืมรหัสผ่าน
+        document.getElementById('btnForgotPass').onclick = () => {
+            const email = document.getElementById('login-email').value;
+            if (!email) { alert("กรุณากรอก Email ในช่องด้านบนก่อนครับ"); return; }
+            sendPasswordResetEmail(auth, email)
+                .then(() => alert("🚀 ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว! ลองเช็คใน Inbox หรือ Junk Mail นะครับ"))
+                .catch(e => alert("Error: " + e.message));
         };
 
         document.getElementById('btnCreateAccount').onclick = () => {
             const email = document.getElementById('signup-email').value;
             const pass = document.getElementById('signup-pass').value;
-            if(pass.length < 6) { alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"); return; }
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then(() => alert("สร้างบัญชีสำเร็จ!"))
-                .catch(e => alert("สมัครสมาชิกไม่สำเร็จ: " + e.message));
+            createUserWithEmailAndPassword(auth, email, pass).then(() => alert("สมัครสำเร็จ!")).catch(e => alert(e.message));
         };
 
-        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert("Google Login Error: " + e.message));
-        
+        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
         document.getElementById('btnLogout').onclick = () => signOut(auth).then(() => location.reload());
     </script>
 
     <script>
-        // ฟังก์ชันสลับฟอร์ม Login / Signup
         window.toggleAuth = (isSignup) => {
             document.getElementById('login-form').classList.toggle('hidden', isSignup);
             document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
             document.getElementById('auth-title').innerText = isSignup ? "Create New Account" : "Login to Continue";
         };
 
-        // ระบบวิเคราะห์ปลา
         let model;
         let currentLang = localStorage.getItem('selectedLang') || 'th';
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
-        
+
         window.initModel = async () => {
-            if(!model) {
-                try {
-                    model = await tf.loadGraphModel('./model.json');
-                } catch (e) {
-                    console.error("Model load error:", e);
-                }
-            }
+            if(!model) model = await tf.loadGraphModel('./model.json');
             updateUI();
         };
 
@@ -214,7 +210,6 @@
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            
             document.getElementById('upload-box').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
 
@@ -226,24 +221,16 @@
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0);
                 });
-                
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 const prob = (pred[idx] * 100).toFixed(1);
 
-                try {
-                    const res = await fetch('./fish_data.json');
-                    const db = await res.json();
-                    const data = db[fishList[idx]];
+                const res = await fetch('./fish_data.json');
+                const db = await res.json();
+                const data = db[fishList[idx]];
 
-                    document.getElementById('fishName').innerText = currentLang === 'th' ? fishList[idx] : data.en_name;
-                    document.getElementById('desc').innerText = currentLang === 'th' ? data.description : data.description_en;
-                } catch (err) {
-                    console.error("Error loading JSON:", err);
-                    document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "ไม่พบรายละเอียดในฐานข้อมูล";
-                }
-
+                document.getElementById('fishName').innerText = currentLang === 'th' ? fishList[idx] : data.en_name;
+                document.getElementById('desc').innerText = currentLang === 'th' ? data.description : data.description_en;
                 document.getElementById('prob').innerText = prob + "%";
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('result').classList.remove('hidden');
