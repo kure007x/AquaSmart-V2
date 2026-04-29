@@ -1,12 +1,92 @@
 {
-  "ปลาช่อน": { "description": "ปลาเศรษฐกิจเนื้อแน่น ทนทาน เลี้ยงได้ทั้งในบ่อดินและกระชัง", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ระวังปลาขนาดต่างกันกินกันเอง" },
-  "ปลาดุก": { "description": "เลี้ยงง่าย โตไว ทนทานต่อสภาพน้ำที่มีออกซิเจนต่ำ", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ควรเปลี่ยนถ่ายน้ำเมื่อเริ่มมีกลิ่น" },
-  "ปลากระดี่": { "description": "ปลาพื้นบ้านยอดนิยม นิยมนำมาแปรรูปเป็นปลาแห้ง", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ชอบอาศัยอยู่ในบ่อที่มีพรรณไม้น้ำ" },
-  "ปลากุเลา": { "description": "ปลาน้ำกร่อยราคาสูง นิยมทำปลาเค็มตากแห้ง", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ต้องดูแลระดับความเค็มของน้ำให้ดี" },
-  "ปลานวลจันทร์": { "description": "ปลาเศรษฐกิจเนื้อหวาน นิยมเลี้ยงในบ่อดินขนาดใหญ่", "category": "Economic (ปลาเศรษฐกิจ)", "tips": "ระวังเรื่องก้างที่มีจำนวนมาก" },
-  "ปลาทอง": { "description": "ปลาสวยงามยอดนิยม ต้องการน้ำสะอาดและระบบกรองที่ดี", "category": "Ornamental (ปลาสวยงาม)", "tips": "เปลี่ยนน้ำ 20% ทุกสัปดาห์" },
-  "ปลาปักเป้าเขียวจุด": { "description": "ปลาสวยงามลายจุด นิยมเลี้ยงในน้ำกร่อย", "category": "Ornamental (ปลาสวยงาม)", "tips": "ดุร้าย ไม่ควรเลี้ยงรวมกับปลาอื่น" },
-  "ปลาหมอจากัวร์": { "description": "ปลาตระกูลปลาหมอสี มีลายคล้ายเสือดาว มีนิสัยเป็นนักล่า", "category": "Ornamental (ปลาสวยงาม)", "tips": "ต้องการตู้ขนาดใหญ่และมีที่ซ่อน" },
-  "ปลาเสือข้างลาย": { "description": "ปลาสวยงามตัวเล็ก ว่ายน้ำเป็นฝูง มีแถบสีดำ", "category": "Ornamental (ปลาสวยงาม)", "tips": "ควรเลี้ยงรวมกันเป็นฝูง 5-10 ตัว" },
-  "ปลากราย": { "description": "ปลาแบนข้างสวยงาม มีจุดสีดำเป็นเอกลักษณ์", "category": "Ornamental / Economic", "tips": "ชอบกินอาหารสดและต้องการพื้นที่กว้าง" }
+  "ปลานวลจันทร์": {
+    "en_name": "Bangus (Milkfish)",
+    "description": "ปลาน้ำจืดที่นิยมเลี้ยงในเชิงเศรษฐกิจ เนื้อขาวละเอียด รสชาติดี",
+    "description_en": "A popular commercial freshwater fish known for its fine white meat and good taste.",
+    "category": "ปลาเศรษฐกิจ (Economic Fish)",
+    "category_en": "Freshwater Fish",
+    "tips": "ควรดูแลคุณภาพน้ำให้สะอาดและมีออกซิเจนเพียงพอ",
+    "tips_en": "Maintain clean water quality and ensure adequate oxygen levels."
+  },
+  "ปลาเสือข้างลาย": {
+    "en_name": "Black Spotted Barb",
+    "description": "ปลาขนาดเล็กที่มีแถบสีดำโดดเด่นข้างลำตัว นิยมเลี้ยงเป็นปลาสวยงาม",
+    "description_en": "A small fish with prominent black stripes on its sides, popular in aquariums.",
+    "category": "ปลาสวยงาม (Ornamental Fish)",
+    "category_en": "Ornamental Fish",
+    "tips": "เลี้ยงรวมกับปลาขนาดเล็กชนิดอื่นได้ดีในตู้ไม้น้ำ",
+    "tips_en": "Goes well with other small fish in planted aquariums."
+  },
+  "ปลาดุก": {
+    "en_name": "Catfish",
+    "description": "ปลาน้ำจืดที่อดทนสูง เลี้ยงง่าย โตไว มีหนวดเป็นเอกลักษณ์",
+    "description_en": "A highly resilient freshwater fish, easy to raise and grows rapidly.",
+    "category": "ปลาเศรษฐกิจ (Economic Fish)",
+    "category_en": "Economic Fish",
+    "tips": "ระวังเรื่องปริมาณอาหาร อย่าให้เหลือค้างในบ่อมากเกินไป",
+    "tips_en": "Monitor feed quantity to avoid excessive leftovers in the pond."
+  },
+  "ปลากุเลา": {
+    "en_name": "Fourfinger Threadfin",
+    "description": "ปลาที่มีราคาสูง นิยมนำมาทำปลาเค็มตากแห้งที่มีชื่อเสียง",
+    "description_en": "A high-value fish, famous for being processed into premium salted dried fish.",
+    "category": "ปลาเศรษฐกิจ (Economic Fish)",
+    "category_en": "Premium Sea Fish",
+    "tips": "หากเลี้ยงในกระชังต้องคุมความเค็มของน้ำให้เหมาะสม",
+    "tips_en": "In cage farming, maintain appropriate water salinity levels."
+  },
+  "ปลาทอง": {
+    "en_name": "Gold Fish",
+    "description": "ปลาสวยงามยอดนิยม มีหลายสายพันธุ์ สีสันสดใสสวยงาม",
+    "description_en": "The most popular ornamental fish with many breeds and vibrant colors.",
+    "category": "ปลาสวยงาม (Ornamental Fish)",
+    "category_en": "Ornamental Fish",
+    "tips": "ต้องการระบบกรองน้ำที่ทรงพลังและควรเปลี่ยนน้ำสม่ำเสมอ",
+    "tips_en": "Requires a powerful filtration system and regular water changes."
+  },
+  "ปลากระดี่": {
+    "en_name": "Gourami",
+    "description": "ปลาน้ำจืดพื้นบ้านของไทย มีความอดทนและเลี้ยงง่าย",
+    "description_en": "A native Thai freshwater fish, known for being hardy and easy to keep.",
+    "category": "ปลาพื้นเมือง (Native Fish)",
+    "category_en": "Freshwater Fish",
+    "tips": "ชอบน้ำนิ่งและมีพืชน้ำให้หลบซ่อน",
+    "tips_en": "Prefers calm water with aquatic plants for hiding."
+  },
+  "ปลาปักเป้าเขียวจุด": {
+    "en_name": "Green Spotted Puffer",
+    "description": "ปลาที่มีจุดสีดำบนพื้นผิวสีเขียว มีนิสัยค่อนข้างดุร้าย",
+    "description_en": "A pufferfish with black spots on a green body, can be quite aggressive.",
+    "category": "ปลาสวยงาม (Ornamental Fish)",
+    "category_en": "Ornamental Fish",
+    "tips": "ไม่ควรเลี้ยงรวมกับปลาชนิดอื่นที่มีขนาดเล็กกว่า",
+    "tips_en": "Should not be kept with other smaller fish species."
+  },
+  "ปลาหมอจากัวร์": {
+    "en_name": "Jaguar Gapote",
+    "description": "ปลาล่าเหยื่อขนาดใหญ่ มีลวดลายคล้ายเสือจากัวร์",
+    "description_en": "A large predatory fish with patterns similar to a jaguar's fur.",
+    "category": "ปลาสวยงาม/ปลานักล่า",
+    "category_en": "Predatory Fish",
+    "tips": "ต้องใช้ตู้ที่มีขนาดใหญ่และระบบกรองที่รับภาระหนักได้",
+    "tips_en": "Requires a large tank and a heavy-duty filtration system."
+  },
+  "ปลากราย": {
+    "en_name": "Knifefish",
+    "description": "ปลาน้ำจืดรูปร่างแบนยาว มีจุดสีดำแถวโคนหาง นิยมนำเนื้อมาทำลูกชิ้น",
+    "description_en": "A long, flat freshwater fish with black spots near the tail, prized for fish balls.",
+    "category": "ปลาเศรษฐกิจ/สวยงาม",
+    "category_en": "Freshwater Fish",
+    "tips": "เป็นปลาที่หากินกลางคืน ควรให้อาหารในช่วงเย็น",
+    "tips_en": "A nocturnal feeder; it is best to provide food in the evening."
+  },
+  "ปลาช่อน": {
+    "en_name": "Snakehead",
+    "description": "ปลานักล่าที่มีเนื้อรสชาติดี เป็นที่ต้องการของตลาดสูง",
+    "description_en": "A predatory fish with delicious meat, highly demanded in the market.",
+    "category": "ปลาเศรษฐกิจ (Economic Fish)",
+    "category_en": "Economic Fish",
+    "tips": "ควรมีฝาปิดถังหรือบ่อให้มิดชิดเพราะปลาสามารถกระโดดได้สูง",
+    "tips_en": "Ensure the tank or pond has a secure cover as they can jump very high."
+  }
 }
