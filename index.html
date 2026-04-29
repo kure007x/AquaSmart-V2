@@ -33,7 +33,7 @@
                 <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative">
                     <div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div>
                 </div>
-                <p class="mt-4 text-blue-500 font-medium italic text-sm">กำลังคิดแป๊บ...</p>
+                <p class="mt-4 text-blue-500 font-medium italic text-sm">กำลังสแกนสายพันธุ์...</p>
             </div>
 
             <div id="result" class="hidden mt-4">
@@ -68,52 +68,14 @@
 
     <script>
         let model;
+        // เช็กลำดับปลาให้ตรงกับตอนเทรนใน Kaggle ด้วยนะ!
         const fishList = ['ปลาดุก', 'ปลากราย', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลานวลจันทร์', 'ปลาช่อน', 'ปลากุเลา', 'ปลาเสือข้างลาย'];
 
         async function init() {
             try {
-                // 1. โหลดไฟล์ JSON มาอ่านก่อน
-                const response = await fetch('./model.json');
-                let modelData = await response.text();
-                
-                // 2. แก้บั๊กคำว่า batch_shape -> batchInputShape
-                modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
-                
-                let modelJson = JSON.parse(modelData);
-
-                // 3. ท่าไม้ตายสูงสุด: แปลงโครงสร้าง Keras 3 (Object) ให้กลับไปเป็น Keras 2 (Array)
-                if (modelJson.modelTopology && modelJson.modelTopology.model_config && modelJson.modelTopology.model_config.config && modelJson.modelTopology.model_config.config.layers) {
-                    modelJson.modelTopology.model_config.config.layers.forEach(layer => {
-                        if (layer.inbound_nodes && layer.inbound_nodes.length > 0) {
-                            // ถ้าพบว่าเป็น Object (ไม่ใช่ Array แบบเก่า)
-                            if (typeof layer.inbound_nodes[0] === 'object' && !Array.isArray(layer.inbound_nodes[0])) {
-                                let newInboundNodes = [];
-                                layer.inbound_nodes.forEach(node => {
-                                    let newArgs = [];
-                                    if (node.args) {
-                                        node.args.forEach(arg => {
-                                            if (Array.isArray(arg)) {
-                                                arg.forEach(subArg => {
-                                                    if (subArg.config && subArg.config.keras_history) {
-                                                        newArgs.push([...subArg.config.keras_history, {}]);
-                                                    }
-                                                });
-                                            } else if (arg.config && arg.config.keras_history) {
-                                                newArgs.push([...arg.config.keras_history, {}]);
-                                            }
-                                        });
-                                    }
-                                    newInboundNodes.push(newArgs);
-                                });
-                                layer.inbound_nodes = newInboundNodes; // ทับโครงสร้างเดิมด้วยโครงสร้างที่แก้แล้ว
-                            }
-                        }
-                    });
-                }
-
-                // 4. โหลดเข้า TensorFlow.js
-                model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
-                console.log("AI Fully Fixed & Ready!");
+                // ไฟล์สมบูรณ์แล้ว โหลดตรงๆ ได้เลย
+                model = await tf.loadLayersModel('./model.json');
+                console.log("AI Ready!");
             } catch (err) {
                 console.error(err);
                 alert("AI Error: " + err.message);
@@ -130,32 +92,20 @@
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = async () => {
-                // 1. กระบวนการเตรียมรูป (ใช้ tf.tidy เพื่อกันเครื่องค้าง)
+                // เข้าสู่กระบวนการทำนายผล
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(img);
-                    t = tf.image.resizeBilinear(t, [224, 224]); // ใช้ Bilinear ภาพเนียนกว่า
-                    
-                    // 🔥 ท่าไม้ตาย: ถ้าตอนเทรนใช้ OpenCV (cv2) ให้ลบเครื่องหมาย // บรรทัดล่างออกเพื่อสลับสี!
-                    // t = t.reverse(-1); 
-
-                    // สเกลภาพ 0-1 (ถ้าเทรนมาแบบ -1 ถึง 1 ให้แก้เป็น .div(127.5).sub(1) )
+                    t = tf.image.resizeBilinear(t, [224, 224]);
+                    // ค่าสี 0-1 ตรงกับตอนเทรนใน Kaggle 
                     return t.toFloat().div(255.0).expandDims(0);
                 });
                 
-                // 2. ให้ AI ทำนาย
-                const rawPrediction = await model.predict(tensor).data();
-                const prediction = Array.from(rawPrediction);
+                const prediction = await model.predict(tensor).data();
                 const idx = prediction.indexOf(Math.max(...prediction));
                 const maxProb = (prediction[idx] * 100).toFixed(1);
                 
-                console.log("คะแนนเต็มๆ 10 สายพันธุ์:", prediction);
-
-                // 3. ระบบตรวจเช็กสุขภาพ AI
-                if (maxProb < 20) {
-                    alert("⚠️ แจ้งเตือน: AI เดาสุ่ม! (ความมั่นใจแค่ " + maxProb + "%) แปลว่าค่า Weights เสียหายตอนแปลงไฟล์จาก Keras 3 มาเป็น Web");
-                }
+                console.log("คะแนน:", prediction); // แอบดูคะแนนใน F12 ได้
                 
-                // 4. แสดงผล
                 try {
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
@@ -163,12 +113,17 @@
 
                     document.getElementById('fishName').innerText = name;
                     document.getElementById('prob').innerText = maxProb + "%";
-                    document.getElementById('desc').innerText = db[name].description;
-                    document.getElementById('cat').innerText = db[name].category;
-                    document.getElementById('tips').innerText = db[name].tips;
+                    
+                    if(db[name]) {
+                        document.getElementById('desc').innerText = db[name].description || "-";
+                        document.getElementById('cat').innerText = db[name].category || "-";
+                        document.getElementById('tips').innerText = db[name].tips || "-";
+                    } else {
+                        document.getElementById('desc').innerText = "รออัปเดตข้อมูล";
+                    }
                 } catch(e) {
                     document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "โหลดข้อมูลปลาไม่สำเร็จ";
+                    document.getElementById('desc').innerText = "(ไม่พบไฟล์ fish_data.json)";
                 }
 
                 document.getElementById('loading').classList.add('hidden');
