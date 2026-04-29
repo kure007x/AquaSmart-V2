@@ -23,20 +23,44 @@
         </div>
     </div>
 
-    <div id="auth-page" class="hidden w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl p-10 mt-10 transition-all text-center">
-        <div class="mb-10">
+    <div id="auth-page" class="hidden w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl p-10 mt-10 transition-all">
+        <div class="text-center mb-8">
             <h1 class="text-3xl font-black italic tracking-tighter text-blue-600 uppercase">AquaSmart</h1>
-            <p class="text-gray-400 text-xs uppercase tracking-widest mt-2">Sign in to Continue</p>
+            <p id="auth-title" class="text-gray-400 text-xs uppercase tracking-widest mt-2">Login to Continue</p>
         </div>
 
-        <button id="btnGoogle" class="w-full flex items-center justify-center gap-4 bg-white border-2 border-gray-100 text-gray-700 font-bold py-4 rounded-2xl hover:bg-gray-50 hover:border-blue-200 transition-all shadow-sm">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="24"> 
-            <span>Continue with Google</span>
-        </button>
-        
-        <p class="mt-6 text-[10px] text-gray-400">
-            By continuing, you agree to our Terms of Service<br>and Privacy Policy.
-        </p>
+        <div id="login-form" class="space-y-4">
+            <input type="email" id="login-email" placeholder="Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <input type="password" id="login-pass" placeholder="Password" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            
+            <div class="text-right pr-2">
+                <button id="btnForgotPass" class="text-[10px] text-blue-500 font-bold hover:underline uppercase tracking-wide">Forgot Password?</button>
+            </div>
+
+            <button id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all">Log in</button>
+            
+            <div class="relative flex py-4 items-center">
+                <div class="flex-grow border-t border-gray-100"></div>
+                <span class="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
+                <div class="flex-grow border-t border-gray-100"></div>
+            </div>
+
+            <button id="btnGoogle" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-600 font-bold py-4 rounded-2xl hover:bg-gray-50 shadow-sm">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login
+            </button>
+            <p class="text-center mt-6 text-sm text-gray-500">
+                Don't have an account? <button onclick="toggleAuth(true)" class="text-blue-600 font-bold hover:underline">Sign up</button>
+            </p>
+        </div>
+
+        <div id="signup-form" class="hidden space-y-4">
+            <input type="email" id="signup-email" placeholder="New Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <input type="password" id="signup-pass" placeholder="New Password (6+ chars)" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <button id="btnCreateAccount" class="w-full bg-green-500 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-green-600 transition-all">Create Account</button>
+            <p class="text-center mt-6 text-sm text-gray-500">
+                Already have an account? <button onclick="toggleAuth(false)" class="text-blue-600 font-bold hover:underline">Log in</button>
+            </p>
+        </div>
     </div>
 
     <div id="scanner-page" class="hidden w-full max-w-md transition-all">
@@ -72,6 +96,7 @@
                             <h2 id="fishName" class="text-3xl font-bold text-slate-800">-</h2>
                             <span id="prob" class="bg-green-500 text-white px-3 py-1 rounded-xl text-xs font-black">0%</span>
                         </div>
+                        
                         <div class="space-y-4">
                             <div>
                                 <span id="ui-desc-tag" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">รายละเอียด</span>
@@ -88,6 +113,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase hover:bg-slate-200 transition-all">Scan Again</button>
                 </div>
@@ -97,7 +123,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
@@ -129,19 +155,46 @@
             }, 800);
         });
 
-        // ล็อกอินด้วย Google เท่านั้น
-        document.getElementById('btnGoogle').onclick = () => {
-            signInWithPopup(auth, provider).catch(e => {
-                if (e.code !== 'auth/popup-closed-by-user') {
-                    alert("Google Login Error: " + e.message);
+        document.getElementById('btnLogin').onclick = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(e => {
+                if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
+                    alert("❌ รหัสผ่านไม่ถูกต้อง หรือไม่พบข้อมูลผู้ใช้นี้");
+                } else if (e.code === 'auth/invalid-email') {
+                    alert("❌ รูปแบบอีเมลไม่ถูกต้อง");
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + e.message);
                 }
             });
         };
-        
+
+        document.getElementById('btnForgotPass').onclick = () => {
+            const email = document.getElementById('login-email').value;
+            if (!email) { alert("กรุณากรอก Email ในช่องด้านบนก่อนครับ"); return; }
+            sendPasswordResetEmail(auth, email)
+                .then(() => alert("🚀 ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว!\n\n⚠️ อาจไปอยู่ในกล่อง Junk/Spam กรุณาตรวจสอบด้วยนะครับ"))
+                .catch(e => alert("Error: " + e.message));
+        };
+
+        document.getElementById('btnCreateAccount').onclick = () => {
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-pass').value;
+            if(pass.length < 6) { alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"); return; }
+            createUserWithEmailAndPassword(auth, email, pass).then(() => alert("สมัครสำเร็จ!")).catch(e => alert(e.message));
+        };
+
+        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
         document.getElementById('btnLogout').onclick = () => signOut(auth).then(() => location.reload());
     </script>
 
     <script>
+        window.toggleAuth = (isSignup) => {
+            document.getElementById('login-form').classList.toggle('hidden', isSignup);
+            document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
+            document.getElementById('auth-title').innerText = isSignup ? "Create New Account" : "Login to Continue";
+        };
+
         let model;
         let currentLang = localStorage.getItem('selectedLang') || 'th';
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
