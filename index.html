@@ -11,35 +11,44 @@
         body { font-family: 'Kanit', sans-serif; }
         @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
         .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
+        /* หน้าจอโหลดเพื่อแก้ปัญหาหน้าจอแวบ */
+        #splash-screen { position: fixed; inset: 0; background: white; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center p-4">
 
-    <div id="login-page" class="w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl p-10 mt-10 transition-all">
+    <div id="splash-screen">
+        <div class="text-center">
+            <h1 class="text-2xl font-black italic text-blue-600 animate-pulse">AQUASMART ML</h1>
+            <p class="text-xs text-gray-400 mt-2">Checking Access...</p>
+        </div>
+    </div>
+
+    <div id="auth-page" class="hidden w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl p-10 mt-10 transition-all">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-black italic tracking-tighter text-blue-600 uppercase">AquaSmart</h1>
-            <p class="text-gray-400 text-xs uppercase tracking-widest mt-2">Login to Continue</p>
+            <p id="auth-title" class="text-gray-400 text-xs uppercase tracking-widest mt-2">Login to Continue</p>
         </div>
 
-        <div class="space-y-4">
-            <input type="email" id="email" placeholder="Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
-            <input type="password" id="password" placeholder="Password" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
-            
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <button id="btnLogin" class="bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all">Log in</button>
-                <button id="btnSignup" class="bg-slate-100 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-200 transition-all">Sign up</button>
-            </div>
-
-            <div class="relative flex py-5 items-center">
-                <div class="flex-grow border-t border-gray-200"></div>
-                <span class="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
-                <div class="flex-grow border-t border-gray-200"></div>
-            </div>
-
-            <button id="btnGoogle" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-600 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-all shadow-sm">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                Sign in with Google
+        <div id="login-form" class="space-y-4">
+            <input type="email" id="login-email" placeholder="Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <input type="password" id="login-pass" placeholder="Password" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <button id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all">Log in</button>
+            <button id="btnGoogle" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-600 font-bold py-4 rounded-2xl hover:bg-gray-50 shadow-sm mt-2">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login
             </button>
+            <p class="text-center mt-6 text-sm text-gray-500">
+                Don't have an account? <button onclick="toggleAuth(true)" class="text-blue-600 font-bold">Sign up</button>
+            </p>
+        </div>
+
+        <div id="signup-form" class="hidden space-y-4">
+            <input type="email" id="signup-email" placeholder="New Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <input type="password" id="signup-pass" placeholder="New Password (6+ chars)" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+            <button id="btnCreateAccount" class="w-full bg-green-500 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-green-600 transition-all">Create Account</button>
+            <p class="text-center mt-6 text-sm text-gray-500">
+                Already have an account? <button onclick="toggleAuth(false)" class="text-blue-600 font-bold">Log in</button>
+            </p>
         </div>
     </div>
 
@@ -65,24 +74,17 @@
                         <p id="ui-select" class="text-blue-600 font-bold italic">เลือกรูปปลาเพื่อสแกน</p>
                     </label>
                 </div>
-
                 <div id="loading" class="hidden text-center my-10">
-                    <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative">
-                        <div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div>
-                    </div>
-                    <p id="ui-scanning" class="mt-4 text-blue-500 font-medium italic text-sm">กำลังสแกนสายพันธุ์...</p>
+                    <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div></div>
+                    <p id="ui-scanning" class="mt-4 text-blue-500 font-medium italic text-sm">Scanning...</p>
                 </div>
-
                 <div id="result" class="hidden mt-4">
                     <div class="bg-white border-2 border-blue-50 rounded-[2rem] p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-4 border-b pb-4">
                             <h2 id="fishName" class="text-3xl font-bold text-slate-800">-</h2>
                             <span id="prob" class="bg-green-500 text-white px-3 py-1 rounded-xl text-xs font-black">0%</span>
                         </div>
-                        <div class="space-y-4">
-                            <span id="ui-desc-tag" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Description</span>
-                            <p id="desc" class="text-slate-600 text-sm">-</p>
-                        </div>
+                        <p id="desc" class="text-slate-600 text-sm leading-relaxed">-</p>
                     </div>
                     <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase">Scan Again</button>
                 </div>
@@ -108,41 +110,63 @@
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
 
-        // ตรวจเช็คสถานะการล็อกอิน
+        // 🟢 ตรวจสอบสถานะการล็อกอิน (หัวใจสำคัญแก้บัคหน้าแวบ)
         onAuthStateChanged(auth, (user) => {
+            const splash = document.getElementById('splash-screen');
+            const authPage = document.getElementById('auth-page');
+            const scanPage = document.getElementById('scanner-page');
+
             if (user) {
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('scanner-page').classList.remove('hidden');
+                authPage.classList.add('hidden');
+                scanPage.classList.remove('hidden');
                 initModel(); 
             } else {
-                document.getElementById('login-page').classList.remove('hidden');
-                document.getElementById('scanner-page').classList.add('hidden');
+                authPage.classList.remove('hidden');
+                scanPage.classList.add('hidden');
             }
+            // ปิดหน้า SplashScreen เมื่อเช็คสถานะเสร็จ
+            setTimeout(() => { 
+                splash.style.opacity = '0';
+                setTimeout(() => splash.classList.add('hidden'), 500);
+            }, 1000);
         });
 
-        // ฟังก์ชันล็อกอิน/สมัครสมาชิก
+        // ฟังก์ชันสลับหน้า Login / Signup
+        window.toggleAuth = (isSignup) => {
+            document.getElementById('login-form').classList.toggle('hidden', isSignup);
+            document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
+            document.getElementById('auth-title').innerText = isSignup ? "Create New Account" : "Login to Continue";
+        };
+
+        // ปุ่ม Log in
         document.getElementById('btnLogin').onclick = () => {
-            signInWithEmailAndPassword(auth, email.value, password.value).catch(e => alert(e.message));
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("เข้าสู่ระบบไม่สำเร็จ: " + e.message));
         };
-        document.getElementById('btnSignup').onclick = () => {
-            createUserWithEmailAndPassword(auth, email.value, password.value).then(() => alert("สำเร็จ!")).catch(e => alert(e.message));
+
+        // ปุ่ม Sign up (สร้างบัญชี)
+        document.getElementById('btnCreateAccount').onclick = () => {
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-pass').value;
+            if(pass.length < 6) { alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"); return; }
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(() => alert("สร้างบัญชีสำเร็จ! ระบบจะล็อกอินให้ทันที"))
+                .catch(e => alert("สมัครสมาชิกไม่สำเร็จ: " + e.message));
         };
-        document.getElementById('btnGoogle').onclick = () => {
-            signInWithPopup(auth, provider).catch(e => alert(e.message));
-        };
-        document.getElementById('btnLogout').onclick = () => signOut(auth);
+
+        // ปุ่ม Google
+        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
+        // ปุ่ม Logout
+        document.getElementById('btnLogout').onclick = () => signOut(auth).then(() => location.reload());
     </script>
 
     <script>
+        // โค้ดส่วน AI และ 2 ภาษายังคงเดิมเหมือนที่เคยให้ไป
         let model;
         let currentLang = localStorage.getItem('selectedLang') || 'th';
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
         
-        const uiText = {
-            th: { title: "AQUASMART ML", subtitle: "ระบบวิเคราะห์ปลา V2", select: "เลือกรูปปลาเพื่อสแกน", scanning: "กำลังสแกน...", desc: "รายละเอียด", retry: "เริ่มใหม่" },
-            en: { title: "AQUASMART ML", subtitle: "Fish Analyzer V2", select: "Select photo to scan", scanning: "Scanning...", desc: "Description", retry: "Scan Again" }
-        };
-
         async function initModel() {
             if(!model) model = await tf.loadGraphModel('./model.json');
             updateUI();
@@ -155,13 +179,16 @@
         };
 
         function updateUI() {
+            const uiText = {
+                th: { title: "AQUASMART ML", subtitle: "ระบบวิเคราะห์ปลา V2", select: "เลือกรูปปลาเพื่อสแกน", scanning: "กำลังสแกน...", retry: "เริ่มใหม่" },
+                en: { title: "AQUASMART ML", subtitle: "Fish Analyzer V2", select: "Select photo to scan", scanning: "Scanning...", retry: "Scan Again" }
+            };
             const t = uiText[currentLang];
             document.getElementById('lang-label').innerText = currentLang === 'th' ? 'TH | EN 🌐' : 'EN | TH 🌐';
             document.getElementById('ui-title').innerText = t.title;
             document.getElementById('ui-subtitle').innerText = t.subtitle;
             document.getElementById('ui-select').innerText = t.select;
             document.getElementById('ui-scanning').innerText = t.scanning;
-            document.getElementById('ui-desc-tag').innerText = t.desc;
             document.getElementById('ui-retry').innerText = t.retry;
         }
 
