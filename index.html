@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AquaSmart ML - Kure</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Kanit', sans-serif; }
-        @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
-        .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
-    </style>
+    <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center p-4">
     <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden mt-4">
@@ -24,16 +20,16 @@
             <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-[2rem] p-10 text-center bg-blue-50 cursor-pointer hover:bg-blue-100 transition-all">
                 <input type="file" id="imageInput" accept="image/*" class="hidden">
                 <label for="imageInput" class="cursor-pointer block">
-                    <span class="text-6xl block mb-4">🐠</span>
+                    <span class="text-6xl block mb-4">📸</span>
                     <p class="text-blue-600 font-bold">เลือกรูปปลาเพื่อสแกน</p>
                 </label>
             </div>
 
-            <div id="loading" class="hidden text-center my-10">
+            <div id="loading" class="hidden text-center my-10 animate-pulse">
                 <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative">
-                    <div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div>
+                    <div class="h-full bg-blue-600 w-1/2 absolute" style="animation: progress 1.5s infinite linear;"></div>
                 </div>
-                <p class="mt-4 text-blue-500 font-medium italic text-sm">กำลังสแกนสายพันธุ์...</p>
+                <p class="mt-4 text-blue-500 font-medium italic text-sm">กำลังสแกนสายพันธุ์ปลา...</p>
             </div>
 
             <div id="result" class="hidden mt-4">
@@ -44,23 +40,20 @@
                     </div>
                     
                     <div class="space-y-4">
-                        <div>
-                            <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Description</span>
-                            <p id="desc" class="text-slate-600 text-sm leading-relaxed mt-1">รายละเอียด...</p>
-                        </div>
+                        <p id="desc" class="text-slate-600 text-sm leading-relaxed mt-1">รายละเอียด...</p>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-blue-50 p-3 rounded-2xl">
                                 <span class="text-[10px] font-black text-blue-400 uppercase">Category</span>
-                                <p id="cat" class="text-blue-900 font-bold text-xs mt-1">ประเภท</p>
+                                <p id="cat" class="text-blue-900 font-bold text-xs mt-1">-</p>
                             </div>
                             <div class="bg-amber-50 p-3 rounded-2xl">
                                 <span class="text-[10px] font-black text-amber-400 uppercase">Advice</span>
-                                <p id="tips" class="text-amber-900 font-bold text-xs mt-1">คำแนะนำ</p>
+                                <p id="tips" class="text-amber-900 font-bold text-xs mt-1">-</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button onclick="location.reload()" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase hover:bg-slate-200 transition-all">Scan Again</button>
+                <button onclick="location.reload()" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase hover:bg-slate-200">เริ่มสแกนใหม่</button>
             </div>
         </div>
     </div>
@@ -72,51 +65,10 @@
 
         async function init() {
             try {
-                const response = await fetch('./model.json');
-                let modelData = await response.text();
-                
-                // 🔥 ท่าไม้ตายที่ 1: แก้บั๊กคำว่า batch_shape -> batchInputShape
-                modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
-                
-                // 🔥 ท่าไม้ตายที่ 2 (ตัวการทำปลาดุก 10%): เปลี่ยนชื่อ Weight ของ Depthwise ให้ตรงกับที่เว็บต้องการ!
-                modelData = modelData.replace(/depthwise\/kernel"/g, 'depthwise/depthwise_kernel"');
-                
-                let modelJson = JSON.parse(modelData);
-
-                // 🔥 ท่าไม้ตายที่ 3: ซ่อมโครงสร้าง Object ให้เป็น Array
-                if (modelJson.modelTopology && modelJson.modelTopology.model_config && modelJson.modelTopology.model_config.config && modelJson.modelTopology.model_config.config.layers) {
-                    modelJson.modelTopology.model_config.config.layers.forEach(layer => {
-                        if (layer.inbound_nodes && layer.inbound_nodes.length > 0) {
-                            if (typeof layer.inbound_nodes[0] === 'object' && !Array.isArray(layer.inbound_nodes[0])) {
-                                let newInboundNodes = [];
-                                layer.inbound_nodes.forEach(node => {
-                                    let newArgs = [];
-                                    if (node.args) {
-                                        node.args.forEach(arg => {
-                                            if (Array.isArray(arg)) {
-                                                arg.forEach(subArg => {
-                                                    if (subArg.config && subArg.config.keras_history) {
-                                                        newArgs.push([...subArg.config.keras_history, {}]);
-                                                    }
-                                                });
-                                            } else if (arg.config && arg.config.keras_history) {
-                                                newArgs.push([...arg.config.keras_history, {}]);
-                                            }
-                                        });
-                                    }
-                                    newInboundNodes.push(newArgs);
-                                });
-                                layer.inbound_nodes = newInboundNodes;
-                            }
-                        }
-                    });
-                }
-
-                // 4. โหลดโมเดล
-                model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
-                console.log("AI Ready! สมองมาครบ 100% แล้ว!");
+                // 🔥 ตัวสำคัญ! ต้องเป็น loadGraphModel เท่านั้น
+                model = await tf.loadGraphModel('./model.json');
+                console.log("🔥 GraphModel โหลดสมบูรณ์!");
             } catch (err) {
-                console.error(err);
                 alert("AI Error: " + err.message);
             }
         }
@@ -137,17 +89,18 @@
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
                 
-                const prediction = await model.predict(tensor).data();
+                // ให้ GraphModel ทำนายผล
+                let outTensor = model.predict(tensor);
+                
+                // จัดการข้อมูล Tensor ให้อ่านง่าย
+                let predictionData;
+                if (outTensor.length) { predictionData = await outTensor[0].data(); } 
+                else { predictionData = await outTensor.data(); }
+                
+                const prediction = Array.from(predictionData);
                 const idx = prediction.indexOf(Math.max(...prediction));
                 const maxProb = (prediction[idx] * 100).toFixed(1);
                 
-                // เช็กคะแนนดิบๆ ใน Console (F12) ได้เลย
-                console.log("คะแนนความมั่นใจ:", prediction);
-                
-                if (maxProb < 20) {
-                    alert("แจ้งเตือน: ความมั่นใจต่ำมาก (" + maxProb + "%) ลองหารูปที่ชัดขึ้นครับ!");
-                }
-
                 try {
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
@@ -160,12 +113,9 @@
                         document.getElementById('desc').innerText = db[name].description || "-";
                         document.getElementById('cat').innerText = db[name].category || "-";
                         document.getElementById('tips').innerText = db[name].tips || "-";
-                    } else {
-                        document.getElementById('desc').innerText = "รออัปเดตข้อมูล";
                     }
                 } catch(e) {
                     document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "(ไม่พบไฟล์ fish_data.json)";
                 }
 
                 document.getElementById('loading').classList.add('hidden');
