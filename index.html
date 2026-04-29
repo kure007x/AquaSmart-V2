@@ -11,7 +11,7 @@
         body { font-family: 'Kanit', sans-serif; }
         @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
         .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
-        /* หน้าจอโหลดเพื่อแก้ปัญหาหน้าจอแวบ */
+        /* หน้าจอโหลด */
         #splash-screen { position: fixed; inset: 0; background: white; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
     </style>
 </head>
@@ -19,7 +19,7 @@
 
     <div id="splash-screen">
         <div class="text-center">
-            <h1 class="text-2xl font-black italic text-blue-600 animate-pulse">AQUASMART ML</h1>
+            <h1 class="text-3xl font-black italic text-blue-600 animate-pulse">AQUASMART ML</h1>
             <p class="text-xs text-gray-400 mt-2">Checking Access...</p>
         </div>
     </div>
@@ -34,11 +34,18 @@
             <input type="email" id="login-email" placeholder="Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
             <input type="password" id="login-pass" placeholder="Password" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
             <button id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all">Log in</button>
-            <button id="btnGoogle" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-600 font-bold py-4 rounded-2xl hover:bg-gray-50 shadow-sm mt-2">
+            
+            <div class="relative flex py-4 items-center">
+                <div class="flex-grow border-t border-gray-100"></div>
+                <span class="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
+                <div class="flex-grow border-t border-gray-100"></div>
+            </div>
+
+            <button id="btnGoogle" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-600 font-bold py-4 rounded-2xl hover:bg-gray-50 shadow-sm">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login
             </button>
             <p class="text-center mt-6 text-sm text-gray-500">
-                Don't have an account? <button onclick="toggleAuth(true)" class="text-blue-600 font-bold">Sign up</button>
+                Don't have an account? <button onclick="toggleAuth(true)" class="text-blue-600 font-bold hover:underline">Sign up</button>
             </p>
         </div>
 
@@ -47,17 +54,17 @@
             <input type="password" id="signup-pass" placeholder="New Password (6+ chars)" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
             <button id="btnCreateAccount" class="w-full bg-green-500 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-green-600 transition-all">Create Account</button>
             <p class="text-center mt-6 text-sm text-gray-500">
-                Already have an account? <button onclick="toggleAuth(false)" class="text-blue-600 font-bold">Log in</button>
+                Already have an account? <button onclick="toggleAuth(false)" class="text-blue-600 font-bold hover:underline">Log in</button>
             </p>
         </div>
     </div>
 
     <div id="scanner-page" class="hidden w-full max-w-md transition-all">
         <div class="fixed top-4 right-4 z-50 flex gap-2">
-            <button onclick="toggleLang()" class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg font-bold text-blue-600 border border-blue-100">
+            <button onclick="toggleLang()" class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg font-bold text-blue-600 border border-blue-100 hover:scale-105 transition-all">
                 <span id="lang-label">TH | EN 🌐</span>
             </button>
-            <button id="btnLogout" class="bg-red-50 text-red-500 p-2 px-4 rounded-full shadow-lg font-bold border border-red-100 italic">Logout</button>
+            <button id="btnLogout" class="bg-red-50 text-red-500 p-2 px-4 rounded-full shadow-lg font-bold border border-red-100 italic hover:bg-red-100 transition-all">Logout</button>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden mt-4">
@@ -67,26 +74,31 @@
             </div>
             
             <div class="p-6">
-                <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-[2rem] p-10 text-center bg-blue-50 cursor-pointer">
+                <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-[2rem] p-10 text-center bg-blue-50 cursor-pointer hover:bg-blue-100 transition-all">
                     <input type="file" id="imageInput" accept="image/*" class="hidden">
                     <label for="imageInput" class="cursor-pointer block">
                         <span class="text-6xl block mb-4">📸</span>
                         <p id="ui-select" class="text-blue-600 font-bold italic">เลือกรูปปลาเพื่อสแกน</p>
                     </label>
                 </div>
+                
                 <div id="loading" class="hidden text-center my-10">
                     <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div></div>
                     <p id="ui-scanning" class="mt-4 text-blue-500 font-medium italic text-sm">Scanning...</p>
                 </div>
+                
                 <div id="result" class="hidden mt-4">
                     <div class="bg-white border-2 border-blue-50 rounded-[2rem] p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-4 border-b pb-4">
                             <h2 id="fishName" class="text-3xl font-bold text-slate-800">-</h2>
                             <span id="prob" class="bg-green-500 text-white px-3 py-1 rounded-xl text-xs font-black">0%</span>
                         </div>
-                        <p id="desc" class="text-slate-600 text-sm leading-relaxed">-</p>
+                        <div class="space-y-4">
+                            <span id="ui-desc-tag" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Description</span>
+                            <p id="desc" class="text-slate-600 text-sm leading-relaxed">-</p>
+                        </div>
                     </div>
-                    <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase">Scan Again</button>
+                    <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase hover:bg-slate-200 transition-all">Scan Again</button>
                 </div>
             </div>
         </div>
@@ -110,7 +122,7 @@
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
 
-        // 🟢 ตรวจสอบสถานะการล็อกอิน (หัวใจสำคัญแก้บัคหน้าแวบ)
+        // เช็คสถานะ + จัดการหน้าจอโหลด
         onAuthStateChanged(auth, (user) => {
             const splash = document.getElementById('splash-screen');
             const authPage = document.getElementById('auth-page');
@@ -119,58 +131,65 @@
             if (user) {
                 authPage.classList.add('hidden');
                 scanPage.classList.remove('hidden');
-                initModel(); 
+                if(window.initModel) window.initModel(); // โหลด AI 
             } else {
                 authPage.classList.remove('hidden');
                 scanPage.classList.add('hidden');
             }
-            // ปิดหน้า SplashScreen เมื่อเช็คสถานะเสร็จ
+            
+            // 💡 แก้บัคโล่ล่องหนตรงนี้! เปลี่ยนจาก add class hidden เป็น display none โดยตรง
             setTimeout(() => { 
                 splash.style.opacity = '0';
-                setTimeout(() => splash.classList.add('hidden'), 500);
-            }, 1000);
+                setTimeout(() => {
+                    splash.style.display = 'none'; 
+                }, 500);
+            }, 800);
         });
 
-        // ฟังก์ชันสลับหน้า Login / Signup
-        window.toggleAuth = (isSignup) => {
-            document.getElementById('login-form').classList.toggle('hidden', isSignup);
-            document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
-            document.getElementById('auth-title').innerText = isSignup ? "Create New Account" : "Login to Continue";
-        };
-
-        // ปุ่ม Log in
+        // Event ปุ่มต่างๆ ของ Firebase
         document.getElementById('btnLogin').onclick = () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
             signInWithEmailAndPassword(auth, email, pass).catch(e => alert("เข้าสู่ระบบไม่สำเร็จ: " + e.message));
         };
 
-        // ปุ่ม Sign up (สร้างบัญชี)
         document.getElementById('btnCreateAccount').onclick = () => {
             const email = document.getElementById('signup-email').value;
             const pass = document.getElementById('signup-pass').value;
             if(pass.length < 6) { alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"); return; }
             createUserWithEmailAndPassword(auth, email, pass)
-                .then(() => alert("สร้างบัญชีสำเร็จ! ระบบจะล็อกอินให้ทันที"))
+                .then(() => alert("สร้างบัญชีสำเร็จ!"))
                 .catch(e => alert("สมัครสมาชิกไม่สำเร็จ: " + e.message));
         };
 
-        // ปุ่ม Google
-        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
-        // ปุ่ม Logout
+        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert("Google Login Error: " + e.message));
+        
         document.getElementById('btnLogout').onclick = () => signOut(auth).then(() => location.reload());
     </script>
 
     <script>
-        // โค้ดส่วน AI และ 2 ภาษายังคงเดิมเหมือนที่เคยให้ไป
+        // ฟังก์ชันสลับฟอร์ม Login / Signup
+        window.toggleAuth = (isSignup) => {
+            document.getElementById('login-form').classList.toggle('hidden', isSignup);
+            document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
+            document.getElementById('auth-title').innerText = isSignup ? "Create New Account" : "Login to Continue";
+        };
+
+        // ระบบวิเคราะห์ปลา
         let model;
         let currentLang = localStorage.getItem('selectedLang') || 'th';
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
         
-        async function initModel() {
-            if(!model) model = await tf.loadGraphModel('./model.json');
+        window.initModel = async () => {
+            if(!model) {
+                try {
+                    model = await tf.loadGraphModel('./model.json');
+                } catch (e) {
+                    console.error("Model load error:", e);
+                }
+            }
             updateUI();
-        }
+        };
 
         window.toggleLang = () => {
             currentLang = currentLang === 'th' ? 'en' : 'th';
@@ -195,6 +214,7 @@
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
+            
             document.getElementById('upload-box').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
 
@@ -206,16 +226,24 @@
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0);
                 });
+                
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 const prob = (pred[idx] * 100).toFixed(1);
 
-                const res = await fetch('./fish_data.json');
-                const db = await res.json();
-                const data = db[fishList[idx]];
+                try {
+                    const res = await fetch('./fish_data.json');
+                    const db = await res.json();
+                    const data = db[fishList[idx]];
 
-                document.getElementById('fishName').innerText = currentLang === 'th' ? fishList[idx] : data.en_name;
-                document.getElementById('desc').innerText = currentLang === 'th' ? data.description : data.description_en;
+                    document.getElementById('fishName').innerText = currentLang === 'th' ? fishList[idx] : data.en_name;
+                    document.getElementById('desc').innerText = currentLang === 'th' ? data.description : data.description_en;
+                } catch (err) {
+                    console.error("Error loading JSON:", err);
+                    document.getElementById('fishName').innerText = fishList[idx];
+                    document.getElementById('desc').innerText = "ไม่พบรายละเอียดในฐานข้อมูล";
+                }
+
                 document.getElementById('prob').innerText = prob + "%";
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('result').classList.remove('hidden');
