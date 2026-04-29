@@ -72,20 +72,22 @@
 
         async function init() {
             try {
-                // 1. โหลดไฟล์ JSON มาอ่านก่อน
                 const response = await fetch('./model.json');
                 let modelData = await response.text();
                 
-                // 2. ดักแก้คำว่า batch_shape -> batchInputShape
+                // 🔥 ท่าไม้ตายที่ 1: แก้บั๊กคำว่า batch_shape -> batchInputShape
                 modelData = modelData.replace(/"batch_shape":/g, '"batchInputShape":');
+                
+                // 🔥 ท่าไม้ตายที่ 2 (ตัวการทำปลาดุก 10%): เปลี่ยนชื่อ Weight ของ Depthwise ให้ตรงกับที่เว็บต้องการ!
+                modelData = modelData.replace(/depthwise\/kernel"/g, 'depthwise/depthwise_kernel"');
                 
                 let modelJson = JSON.parse(modelData);
 
-                // 3. ท่าไม้ตายสูงสุด: แปลงโครงสร้าง nodeData จาก Object ให้เป็น Array
+                // 🔥 ท่าไม้ตายที่ 3: ซ่อมโครงสร้าง Object ให้เป็น Array
                 if (modelJson.modelTopology && modelJson.modelTopology.model_config && modelJson.modelTopology.model_config.config && modelJson.modelTopology.model_config.config.layers) {
                     modelJson.modelTopology.model_config.config.layers.forEach(layer => {
                         if (layer.inbound_nodes && layer.inbound_nodes.length > 0) {
-                            if (layer.inbound_nodes[0].args) {
+                            if (typeof layer.inbound_nodes[0] === 'object' && !Array.isArray(layer.inbound_nodes[0])) {
                                 let newInboundNodes = [];
                                 layer.inbound_nodes.forEach(node => {
                                     let newArgs = [];
@@ -110,9 +112,9 @@
                     });
                 }
 
-                // 4. โหลดโมเดลด้วยโครงสร้างที่ซ่อมแล้ว
+                // 4. โหลดโมเดล
                 model = await tf.loadLayersModel(tf.io.fromMemory(modelJson), { strict: false });
-                console.log("AI Ready and Fully Loaded!");
+                console.log("AI Ready! สมองมาครบ 100% แล้ว!");
             } catch (err) {
                 console.error(err);
                 alert("AI Error: " + err.message);
@@ -132,15 +134,20 @@
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(img);
                     t = tf.image.resizeBilinear(t, [224, 224]);
-                    return t.toFloat().div(255.0).expandDims(0); // สเกลสี 0-1 ตรงกับ Kaggle
+                    return t.toFloat().div(255.0).expandDims(0); 
                 });
                 
                 const prediction = await model.predict(tensor).data();
                 const idx = prediction.indexOf(Math.max(...prediction));
                 const maxProb = (prediction[idx] * 100).toFixed(1);
                 
+                // เช็กคะแนนดิบๆ ใน Console (F12) ได้เลย
                 console.log("คะแนนความมั่นใจ:", prediction);
                 
+                if (maxProb < 20) {
+                    alert("แจ้งเตือน: ความมั่นใจต่ำมาก (" + maxProb + "%) ลองหารูปที่ชัดขึ้นครับ!");
+                }
+
                 try {
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
