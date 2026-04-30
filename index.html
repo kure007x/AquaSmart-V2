@@ -155,8 +155,8 @@
         // 1. โหลดโมเดลทันทีที่เปิดเว็บ
         window.onload = async () => {
             try {
-                // ⚠️ ใช้ loadLayersModel สำหรับโมเดลที่แปลงมาจาก Keras
-                model = await tf.loadLayersModel('./model.json'); 
+                // กลับมาใช้ loadGraphModel เพราะเราแก้รูปแบบโมเดลให้เสถียรแล้ว
+                model = await tf.loadGraphModel('./model.json');
                 
                 // โหลดเสร็จ ปิดหน้าจอโหลด (Splash Screen)
                 const splash = document.getElementById('splash-screen');
