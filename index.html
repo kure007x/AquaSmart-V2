@@ -18,7 +18,7 @@
 </head>
 <body class="bg-[#f0f5fa] min-h-screen flex justify-center pb-24">
 
-    <!-- ⏳ หน้าจอโหลด AI Model (รอแป๊บเดียว) -->
+    <!-- ⏳ หน้าจอโหลด AI Model -->
     <div id="splash-screen">
         <div class="text-center">
             <h1 class="text-3xl font-black text-[#111827] animate-pulse mb-2">AquaSmart ML</h1>
@@ -35,7 +35,7 @@
                 <h1 class="text-[26px] font-extrabold text-[#111827] leading-tight tracking-tight">AquaSmart ML</h1>
                 <p class="text-[14px] text-slate-400 font-medium mt-1">Fish search engine</p>
             </div>
-            <!-- User Avatar (โชว์ไว้หล่อๆ) -->
+            <!-- User Avatar -->
             <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3px] border-slate-200 text-slate-400 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
                   <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
@@ -48,7 +48,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-slate-800">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
-            <input type="text" placeholder="Fish search engine" class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400" disabled>
+            <input type="text" placeholder="ค้นหาชนิดปลา..." class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400" disabled>
             
             <!-- ปุ่มกล้อง (ซ่อน input file ไว้ข้างใน) -->
             <input type="file" id="imageInput" accept="image/*" class="hidden">
@@ -68,20 +68,20 @@
                     <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 overflow-hidden border border-slate-100">🐟</div>
                     <div class="flex-1">
                         <h3 class="font-bold text-slate-800 text-[15px]">ปลานิล (Tilapia)</h3>
-                        <p class="text-xs text-slate-400 font-medium">1200 searchs</p>
+                        <p class="text-xs text-slate-400 font-medium">1200 searches</p>
                     </div>
                 </div>
                 <div class="flex items-center p-2 pl-3 pr-4 bg-[#f8fafc] rounded-[1.5rem] cursor-pointer hover:bg-slate-100 transition-colors">
                     <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 overflow-hidden border border-slate-100">🐍</div>
                     <div class="flex-1">
                         <h3 class="font-bold text-slate-800 text-[15px]">ปลาช่อน (Snakehead)</h3>
-                        <p class="text-xs text-slate-400 font-medium">1000 searchs</p>
+                        <p class="text-xs text-slate-400 font-medium">1000 searches</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Loading State (ซ่อนไว้ตอนแรก) -->
+        <!-- 4. Loading State -->
         <div id="loading-section" class="hidden bg-white rounded-[2rem] p-10 shadow-sm text-center mt-2 transition-all duration-300">
             <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4">
                 <div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div>
@@ -90,7 +90,7 @@
             <p class="text-xs text-slate-400 mt-1">Please wait a moment</p>
         </div>
 
-        <!-- 5. Result State (ซ่อนไว้ตอนแรก) -->
+        <!-- 5. Result State -->
         <div id="result-section" class="hidden bg-white rounded-[2rem] p-6 shadow-sm mt-2 transition-all duration-300">
             <h2 class="text-xl font-bold text-[#111827] mb-4">Analysis Result</h2>
             <!-- รูปภาพที่อัปโหลด -->
@@ -149,20 +149,21 @@
     <!-- 🧠 AI LOGIC SCRIPT -->
     <script>
         let model;
-        // ลิสต์รายชื่อปลาต้องตรงกับ labels ที่เทรนมา
+        // ลิสต์รายชื่อปลาเรียงตาม labels.json ที่เทรนมาเป๊ะๆ
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
 
-        // 1. โหลดโมเดลทันทีที่เปิดเว็บ (แก้ Path เป็นไฟล์หน้าแรกแล้ว)
+        // 1. โหลดโมเดลทันทีที่เปิดเว็บ
         window.onload = async () => {
             try {
-                model = await tf.loadGraphModel('./model.json'); // <--- แก้ตรงนี้ให้แล้ว!
+                // ⚠️ ใช้ loadLayersModel สำหรับโมเดลที่แปลงมาจาก Keras
+                model = await tf.loadLayersModel('./model.json'); 
                 
                 // โหลดเสร็จ ปิดหน้าจอโหลด (Splash Screen)
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 500);
             } catch (err) {
-                alert("โหลดโมเดล AI ไม่สำเร็จ! ตรวจสอบว่าไฟล์ model.json และ .bin อัปโหลดครบไหม");
+                alert("โหลดโมเดล AI ไม่สำเร็จ! ตรวจสอบคอนโซล หรือเช็คไฟล์โมเดลอีกครั้ง");
                 console.error(err);
             }
         };
