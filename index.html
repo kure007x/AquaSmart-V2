@@ -1,272 +1,246 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaSmart ML - Kure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AquaSmart ML</title>
+    <!-- นำเข้า TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Kanit', sans-serif; }
+        body { font-family: 'Inter', 'Kanit', sans-serif; }
+        ::-webkit-scrollbar { display: none; } /* ซ่อน Scrollbar */
         @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
         .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
-        #splash-screen { position: fixed; inset: 0; background: white; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        #splash-screen { position: fixed; inset: 0; background: #f0f5fa; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center p-4">
+<body class="bg-[#f0f5fa] min-h-screen flex justify-center pb-24">
 
+    <!-- ⏳ หน้าจอโหลด AI Model (รอแป๊บเดียว) -->
     <div id="splash-screen">
         <div class="text-center">
-            <h1 class="text-3xl font-black italic text-blue-600 animate-pulse">AQUASMART ML</h1>
-            <p class="text-xs text-gray-400 mt-2">Checking Access...</p>
+            <h1 class="text-3xl font-black text-[#111827] animate-pulse mb-2">AquaSmart ML</h1>
+            <p class="text-sm text-slate-500 font-medium">กำลังโหลดระบบ AI...</p>
         </div>
     </div>
 
-    <div id="auth-page" class="hidden w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl p-10 mt-10 transition-all">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-black italic tracking-tighter text-blue-600 uppercase">AquaSmart</h1>
-            <p id="auth-title" class="text-gray-400 text-xs uppercase tracking-widest mt-2">Login to Continue</p>
+    <!-- 📱 Mobile Container -->
+    <div class="w-full max-w-md p-4 flex flex-col gap-4 relative">
+
+        <!-- 1. Header Card -->
+        <div class="bg-white rounded-[2rem] p-6 shadow-sm flex justify-between items-center mt-2">
+            <div>
+                <h1 class="text-[26px] font-extrabold text-[#111827] leading-tight tracking-tight">AquaSmart ML</h1>
+                <p class="text-[14px] text-slate-400 font-medium mt-1">Fish search engine</p>
+            </div>
+            <!-- User Avatar (โชว์ไว้หล่อๆ) -->
+            <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center border-[3px] border-slate-200 text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                  <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+                </svg>
+            </div>
         </div>
 
-        <div id="login-form" class="space-y-4">
-            <input type="email" id="login-email" placeholder="Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
-            <input type="password" id="login-pass" placeholder="Password" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
+        <!-- 2. Search Bar & Camera -->
+        <div class="bg-white rounded-full p-2 pl-5 shadow-sm flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-slate-800">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input type="text" placeholder="Fish search engine" class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400" disabled>
             
-            <div class="text-right pr-2">
-                <button id="btnForgotPass" class="text-[10px] text-blue-500 font-bold hover:underline uppercase tracking-wide">Forgot Password?</button>
-            </div>
-
-            <button id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all">Log in</button>
-            
-            <div class="relative flex py-4 items-center">
-                <div class="flex-grow border-t border-gray-100"></div>
-                <span class="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
-                <div class="flex-grow border-t border-gray-100"></div>
-            </div>
-
-            <button id="btnGoogle" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-600 font-bold py-4 rounded-2xl hover:bg-gray-50 shadow-sm">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login
+            <!-- ปุ่มกล้อง (ซ่อน input file ไว้ข้างใน) -->
+            <input type="file" id="imageInput" accept="image/*" class="hidden">
+            <button id="btnCamera" class="w-12 h-12 bg-[#2563eb] hover:bg-blue-700 transition-colors rounded-full flex items-center justify-center text-white shadow-md shadow-blue-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                </svg>
             </button>
-            <p class="text-center mt-6 text-sm text-gray-500">
-                Don't have an account? <button onclick="toggleAuth(true)" class="text-blue-600 font-bold hover:underline">Sign up</button>
-            </p>
         </div>
 
-        <div id="signup-form" class="hidden space-y-4">
-            <input type="email" id="signup-email" placeholder="New Email" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
-            <input type="password" id="signup-pass" placeholder="New Password (6+ chars)" class="w-full bg-gray-50 rounded-2xl px-5 py-4 outline-none border-2 border-gray-100 focus:border-blue-400">
-            <button id="btnCreateAccount" class="w-full bg-green-500 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-green-600 transition-all">Create Account</button>
-            <p class="text-center mt-6 text-sm text-gray-500">
-                Already have an account? <button onclick="toggleAuth(false)" class="text-blue-600 font-bold hover:underline">Log in</button>
-            </p>
-        </div>
-    </div>
-
-    <div id="scanner-page" class="hidden w-full max-w-md transition-all">
-        <div class="fixed top-4 right-4 z-50 flex gap-2">
-            <button onclick="toggleLang()" class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg font-bold text-blue-600 border border-blue-100 hover:scale-105 transition-all">
-                <span id="lang-label">TH | EN 🌐</span>
-            </button>
-            <button id="btnLogout" class="bg-red-50 text-red-500 p-2 px-4 rounded-full shadow-lg font-bold border border-red-100 italic hover:bg-red-100 transition-all">Logout</button>
-        </div>
-
-        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden mt-4">
-            <div class="bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white text-center">
-                <h1 id="ui-title" class="text-3xl font-black italic tracking-tighter uppercase">AQUASMART ML</h1>
-                <p id="ui-subtitle" class="opacity-80 text-xs mt-1 uppercase">Fish Analyzer V2</p>
-            </div>
-            <div class="p-6">
-                <div id="upload-box" class="border-4 border-dashed border-blue-100 rounded-[2rem] p-10 text-center bg-blue-50 cursor-pointer hover:bg-blue-100 transition-all">
-                    <input type="file" id="imageInput" accept="image/*" class="hidden">
-                    <label for="imageInput" class="cursor-pointer block">
-                        <span class="text-6xl block mb-4">📸</span>
-                        <p id="ui-select" class="text-blue-600 font-bold italic">เลือกรูปปลาเพื่อสแกน</p>
-                    </label>
-                </div>
-                
-                <div id="loading" class="hidden text-center my-10">
-                    <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute"></div></div>
-                    <p id="ui-scanning" class="mt-4 text-blue-500 font-medium italic text-sm">Scanning...</p>
-                </div>
-                
-                <div id="result" class="hidden mt-4">
-                    <div class="bg-white border-2 border-blue-50 rounded-[2rem] p-6 shadow-sm">
-                        <div class="flex justify-between items-center mb-4 border-b pb-4">
-                            <h2 id="fishName" class="text-3xl font-bold text-slate-800">-</h2>
-                            <span id="prob" class="bg-green-500 text-white px-3 py-1 rounded-xl text-xs font-black">0%</span>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <span id="ui-desc-tag" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">รายละเอียด</span>
-                                <p id="desc" class="text-slate-600 text-sm leading-relaxed mt-1">-</p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="bg-blue-50 p-3 rounded-2xl">
-                                    <span id="ui-cat-tag" class="text-[10px] font-black text-blue-400 uppercase">ประเภท</span>
-                                    <p id="cat" class="text-blue-900 font-bold text-xs mt-1">-</p>
-                                </div>
-                                <div class="bg-amber-50 p-3 rounded-2xl">
-                                    <span id="ui-tips-tag" class="text-[10px] font-black text-amber-400 uppercase">คำแนะนำ</span>
-                                    <p id="tips" class="text-amber-900 font-bold text-xs mt-1">-</p>
-                                </div>
-                            </div>
-                        </div>
-
+        <!-- 3. Default State (Top Searched Fish) -->
+        <div id="default-section" class="bg-white rounded-[2rem] p-6 shadow-sm transition-all duration-300">
+            <h2 class="text-xl font-bold text-[#111827] mb-5">Top Searched Fish</h2>
+            <div class="space-y-3">
+                <div class="flex items-center p-2 pl-3 pr-4 bg-[#f8fafc] rounded-[1.5rem] cursor-pointer hover:bg-slate-100 transition-colors">
+                    <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 overflow-hidden border border-slate-100">🐟</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-800 text-[15px]">ปลานิล (Tilapia)</h3>
+                        <p class="text-xs text-slate-400 font-medium">1200 searchs</p>
                     </div>
-                    <button onclick="location.reload()" id="ui-retry" class="w-full mt-6 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase hover:bg-slate-200 transition-all">Scan Again</button>
+                </div>
+                <div class="flex items-center p-2 pl-3 pr-4 bg-[#f8fafc] rounded-[1.5rem] cursor-pointer hover:bg-slate-100 transition-colors">
+                    <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 overflow-hidden border border-slate-100">🐍</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-800 text-[15px]">ปลาช่อน (Snakehead)</h3>
+                        <p class="text-xs text-slate-400 font-medium">1000 searchs</p>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- 4. Loading State (ซ่อนไว้ตอนแรก) -->
+        <div id="loading-section" class="hidden bg-white rounded-[2rem] p-10 shadow-sm text-center mt-2 transition-all duration-300">
+            <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4">
+                <div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div>
+            </div>
+            <p class="text-blue-600 font-bold">กำลังวิเคราะห์ภาพปลา...</p>
+            <p class="text-xs text-slate-400 mt-1">Please wait a moment</p>
+        </div>
+
+        <!-- 5. Result State (ซ่อนไว้ตอนแรก) -->
+        <div id="result-section" class="hidden bg-white rounded-[2rem] p-6 shadow-sm mt-2 transition-all duration-300">
+            <h2 class="text-xl font-bold text-[#111827] mb-4">Analysis Result</h2>
+            <!-- รูปภาพที่อัปโหลด -->
+            <div class="w-full h-48 rounded-2xl overflow-hidden mb-5 border-2 border-slate-100 shadow-sm">
+                <img id="previewImage" class="w-full h-full object-cover" src="" alt="Preview">
+            </div>
+            
+            <div class="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
+                <div>
+                    <h2 id="fishName" class="text-2xl font-black text-slate-800">-</h2>
+                    <p id="fishNameEn" class="text-sm font-medium text-slate-400">-</p>
+                </div>
+                <span id="prob" class="bg-[#2563eb] text-white px-3 py-1 rounded-xl text-sm font-bold shadow-sm shadow-blue-200">0%</span>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รายละเอียด</span>
+                    <p id="desc" class="text-slate-700 text-sm leading-relaxed mt-1 font-medium">-</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-[#f8fafc] border border-slate-100 p-3 rounded-2xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">ประเภท</span>
+                        <p id="cat" class="text-slate-800 font-bold text-xs mt-1">-</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-100 p-3 rounded-2xl">
+                        <span class="text-[10px] font-bold text-amber-500 uppercase">คำแนะนำ</span>
+                        <p id="tips" class="text-amber-900 font-bold text-xs mt-1">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ปุ่มเริ่มใหม่ -->
+            <button onclick="resetUI()" class="w-full mt-6 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-colors">
+                Scan Another Fish
+            </button>
+        </div>
+
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    <!-- แถบเมนูด้านล่าง -->
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-50">
+        <div class="bg-white rounded-full p-2 shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex justify-between items-center border border-slate-50">
+            <button onclick="resetUI()" class="bg-[#2563eb] text-white w-24 h-12 rounded-full flex items-center justify-center shadow-md shadow-blue-200/50">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+            </button>
+            <button class="w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            </button>
+            <button class="w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+            </button>
+        </div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
-            authDomain: "aquasmart-v2.firebaseapp.com",
-            projectId: "aquasmart-v2",
-            storageBucket: "aquasmart-v2.firebasestorage.app",
-            messagingSenderId: "482478104079",
-            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
-            measurementId: "G-43DYK4D6QR"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const provider = new GoogleAuthProvider();
-
-        onAuthStateChanged(auth, (user) => {
-            const splash = document.getElementById('splash-screen');
-            if (user) {
-                document.getElementById('auth-page').classList.add('hidden');
-                document.getElementById('scanner-page').classList.remove('hidden');
-                if(window.initModel) window.initModel();
-            } else {
-                document.getElementById('auth-page').classList.remove('hidden');
-                document.getElementById('scanner-page').classList.add('hidden');
-            }
-            setTimeout(() => { 
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 500);
-            }, 800);
-        });
-
-        document.getElementById('btnLogin').onclick = () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(e => {
-                if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
-                    alert("❌ รหัสผ่านไม่ถูกต้อง หรือไม่พบข้อมูลผู้ใช้นี้");
-                } else if (e.code === 'auth/invalid-email') {
-                    alert("❌ รูปแบบอีเมลไม่ถูกต้อง");
-                } else {
-                    alert("เกิดข้อผิดพลาด: " + e.message);
-                }
-            });
-        };
-
-        document.getElementById('btnForgotPass').onclick = () => {
-            const email = document.getElementById('login-email').value;
-            if (!email) { alert("กรุณากรอก Email ในช่องด้านบนก่อนครับ"); return; }
-            sendPasswordResetEmail(auth, email)
-                .then(() => alert("🚀 ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว!\n\n⚠️ อาจไปอยู่ในกล่อง Junk/Spam กรุณาตรวจสอบด้วยนะครับ"))
-                .catch(e => alert("Error: " + e.message));
-        };
-
-        document.getElementById('btnCreateAccount').onclick = () => {
-            const email = document.getElementById('signup-email').value;
-            const pass = document.getElementById('signup-pass').value;
-            if(pass.length < 6) { alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"); return; }
-            createUserWithEmailAndPassword(auth, email, pass).then(() => alert("สมัครสำเร็จ!")).catch(e => alert(e.message));
-        };
-
-        document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
-        document.getElementById('btnLogout').onclick = () => signOut(auth).then(() => location.reload());
-    </script>
-
+    <!-- 🧠 AI LOGIC SCRIPT -->
     <script>
-        window.toggleAuth = (isSignup) => {
-            document.getElementById('login-form').classList.toggle('hidden', isSignup);
-            document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
-            document.getElementById('auth-title').innerText = isSignup ? "Create New Account" : "Login to Continue";
-        };
-
         let model;
-        let currentLang = localStorage.getItem('selectedLang') || 'th';
+        // ลิสต์รายชื่อปลาต้องตรงกับ labels ที่เทรนมา (แก้ให้ตรงกับโมเดลนายนะ)
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
 
-        window.initModel = async () => {
-            if(!model) model = await tf.loadGraphModel('./model.json');
-            updateUI();
+        // 1. โหลดโมเดลทันทีที่เปิดเว็บ
+        window.onload = async () => {
+            try {
+                // ⚠️ ต้องมีโฟลเดอร์ tfjs_model_v2 และไฟล์ model.json อยู่บน GitHub นะ
+                model = await tf.loadGraphModel('./tfjs_model_v2/model.json');
+                
+                // โหลดเสร็จ ปิดหน้าจอโหลด (Splash Screen)
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 500);
+            } catch (err) {
+                alert("โหลดโมเดล AI ไม่สำเร็จ! ตรวจสอบ Path ไฟล์ model.json บน GitHub");
+                console.error(err);
+            }
         };
 
-        window.toggleLang = () => {
-            currentLang = currentLang === 'th' ? 'en' : 'th';
-            localStorage.setItem('selectedLang', currentLang);
-            updateUI();
+        // 2. กดปุ่มกล้องให้เปิดหน้าต่างเลือกไฟล์
+        document.getElementById('btnCamera').onclick = () => {
+            document.getElementById('imageInput').click();
         };
 
-        function updateUI() {
-            const uiText = {
-                th: { title: "AQUASMART ML", subtitle: "ระบบวิเคราะห์ปลา V2", select: "เลือกรูปปลาเพื่อสแกน", scanning: "กำลังสแกน...", desc: "รายละเอียด", cat: "ประเภท", tips: "คำแนะนำ", retry: "เริ่มใหม่" },
-                en: { title: "AQUASMART ML", subtitle: "Fish Analyzer V2", select: "Select photo to scan", scanning: "Scanning...", desc: "Description", cat: "Category", tips: "Advice", retry: "Scan Again" }
-            };
-            const t = uiText[currentLang];
-            document.getElementById('lang-label').innerText = currentLang === 'th' ? 'TH | EN 🌐' : 'EN | TH 🌐';
-            document.getElementById('ui-title').innerText = t.title;
-            document.getElementById('ui-subtitle').innerText = t.subtitle;
-            document.getElementById('ui-select').innerText = t.select;
-            document.getElementById('ui-scanning').innerText = t.scanning;
-            
-            document.getElementById('ui-desc-tag').innerText = t.desc;
-            document.getElementById('ui-cat-tag').innerText = t.cat;
-            document.getElementById('ui-tips-tag').innerText = t.tips;
-            document.getElementById('ui-retry').innerText = t.retry;
-        }
-
+        // 3. เมื่อเลือกรูปเสร็จ ให้รัน AI
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            document.getElementById('upload-box').classList.add('hidden');
-            document.getElementById('loading').classList.remove('hidden');
 
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = async () => {
+            // สลับหน้าจอ: ซ่อนรายการปลา -> โชว์กำลังโหลด
+            document.getElementById('default-section').classList.add('hidden');
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('loading-section').classList.remove('hidden');
+
+            // นำรูปที่เลือกมาแสดงรอก่อน
+            const imgEl = document.getElementById('previewImage');
+            imgEl.src = URL.createObjectURL(file);
+
+            imgEl.onload = async () => {
+                if(!model) {
+                    alert("AI ยังโหลดไม่เสร็จ รอสักครู่ครับ");
+                    return;
+                }
+
+                // แปลงรูปเป็น Tensor 224x224 ตามสูตร MobileNetV2
                 const tensor = tf.tidy(() => {
-                    let t = tf.browser.fromPixels(img);
+                    let t = tf.browser.fromPixels(imgEl);
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0);
                 });
+
+                // สั่งทำนาย!
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 const prob = (pred[idx] * 100).toFixed(1);
 
+                // ดึงข้อมูลจากไฟล์ JSON
                 try {
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
                     const data = db[fishList[idx]];
 
-                    document.getElementById('fishName').innerText = currentLang === 'th' ? fishList[idx] : data.en_name;
-                    document.getElementById('desc').innerText = currentLang === 'th' ? data.description : data.description_en;
-                    document.getElementById('cat').innerText = currentLang === 'th' ? data.category : data.category_en;
-                    document.getElementById('tips').innerText = currentLang === 'th' ? data.tips : data.tips_en;
+                    if(data) {
+                        document.getElementById('fishName').innerText = fishList[idx];
+                        document.getElementById('fishNameEn').innerText = data.en_name;
+                        document.getElementById('desc').innerText = data.description;
+                        document.getElementById('cat').innerText = data.category;
+                        document.getElementById('tips').innerText = data.tips;
+                    } else {
+                        document.getElementById('fishName').innerText = fishList[idx];
+                        document.getElementById('desc').innerText = "ไม่พบข้อมูลในฐานข้อมูล";
+                    }
                 } catch (err) {
                     console.error("Error loading JSON:", err);
                     document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "ไม่พบรายละเอียดในฐานข้อมูล";
-                    document.getElementById('cat').innerText = "-";
-                    document.getElementById('tips').innerText = "-";
+                    document.getElementById('desc').innerText = "ไม่สามารถเชื่อมต่อฐานข้อมูลได้";
                 }
 
                 document.getElementById('prob').innerText = prob + "%";
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('result').classList.remove('hidden');
+
+                // โชว์ผลลัพธ์
+                document.getElementById('loading-section').classList.add('hidden');
+                document.getElementById('result-section').classList.remove('hidden');
             };
+        };
+
+        // 4. ปุ่มเริ่มใหม่ (กลับหน้าแรก)
+        window.resetUI = () => {
+            document.getElementById('imageInput').value = ""; // ล้างไฟล์เก่า
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('loading-section').classList.add('hidden');
+            document.getElementById('default-section').classList.remove('hidden');
         };
     </script>
 </body>
