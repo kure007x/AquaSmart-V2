@@ -48,7 +48,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-slate-800">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
-            <input type="text" placeholder="ค้นหาชนิดปลา..." class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400" disabled>
+            <!-- 🎯 แก้แล้ว! เอา disabled ออก และเพิ่ม id="mainSearchInput" -->
+            <input type="text" id="mainSearchInput" placeholder="ค้นหาชื่อปลา... (เช่น ปลาทอง)" class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400">
             
             <!-- ปุ่มกล้อง (ซ่อน input file ไว้ข้างใน) -->
             <input type="file" id="imageInput" accept="image/*" class="hidden">
@@ -155,10 +156,7 @@
         // 1. โหลดโมเดลทันทีที่เปิดเว็บ
         window.onload = async () => {
             try {
-                // กลับมาใช้ loadGraphModel เพราะเราแก้รูปแบบโมเดลให้เสถียรแล้ว
                 model = await tf.loadGraphModel('./model.json');
-                
-                // โหลดเสร็จ ปิดหน้าจอโหลด (Splash Screen)
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 500);
@@ -168,22 +166,34 @@
             }
         };
 
-        // 2. กดปุ่มกล้องให้เปิดหน้าต่างเลือกไฟล์
+        // 🎯 2. ระบบค้นหา (พิมพ์ชื่อปลาแล้วกด Enter เพื่อไปหน้าผลลัพธ์)
+        const searchInput = document.getElementById('mainSearchInput');
+        if(searchInput) {
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query !== "") {
+                        // เปลี่ยนหน้าไปที่ result.html พร้อมส่งคำค้นหาไปด้วย
+                        window.location.href = `result.html?search=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        }
+
+        // 3. กดปุ่มกล้องให้เปิดหน้าต่างเลือกไฟล์
         document.getElementById('btnCamera').onclick = () => {
             document.getElementById('imageInput').click();
         };
 
-        // 3. เมื่อเลือกรูปเสร็จ ให้รัน AI
+        // 4. เมื่อเลือกรูปเสร็จ ให้รัน AI
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
 
-            // สลับหน้าจอ: ซ่อนรายการปลา -> โชว์กำลังโหลด
             document.getElementById('default-section').classList.add('hidden');
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('loading-section').classList.remove('hidden');
 
-            // นำรูปที่เลือกมาแสดงรอก่อน
             const imgEl = document.getElementById('previewImage');
             imgEl.src = URL.createObjectURL(file);
 
@@ -193,19 +203,16 @@
                     return;
                 }
 
-                // แปลงรูปเป็น Tensor 224x224 ตามสูตร MobileNetV2
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgEl);
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0);
                 });
 
-                // สั่งทำนาย!
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 const prob = (pred[idx] * 100).toFixed(1);
 
-                // ดึงข้อมูลจากไฟล์ JSON
                 try {
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
@@ -228,16 +235,14 @@
                 }
 
                 document.getElementById('prob').innerText = prob + "%";
-
-                // โชว์ผลลัพธ์
                 document.getElementById('loading-section').classList.add('hidden');
                 document.getElementById('result-section').classList.remove('hidden');
             };
         };
 
-        // 4. ปุ่มเริ่มใหม่ (กลับหน้าแรก)
+        // 5. ปุ่มเริ่มใหม่ (กลับหน้าแรก)
         window.resetUI = () => {
-            document.getElementById('imageInput').value = ""; // ล้างไฟล์เก่า
+            document.getElementById('imageInput').value = ""; 
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('loading-section').classList.add('hidden');
             document.getElementById('default-section').classList.remove('hidden');
