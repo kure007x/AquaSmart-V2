@@ -4,21 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AquaSmart ML</title>
-    <!-- นำเข้า TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', 'Kanit', sans-serif; }
-        ::-webkit-scrollbar { display: none; } /* ซ่อน Scrollbar */
+        ::-webkit-scrollbar { display: none; } 
         @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
         .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
         #splash-screen { position: fixed; inset: 0; background: #f0f5fa; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        
+        /* เกราะป้องกันกล่องค้นหา */
+        .search-wrapper { position: relative; z-index: 50; }
+        #mainSearchInput { position: relative; z-index: 50; pointer-events: auto; }
     </style>
 </head>
 <body class="bg-[#f0f5fa] min-h-screen flex justify-center pb-24">
 
-    <!-- ⏳ หน้าจอโหลด AI Model -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="text-center">
             <h1 class="text-3xl font-black text-[#111827] animate-pulse mb-2">AquaSmart ML</h1>
@@ -26,79 +29,56 @@
         </div>
     </div>
 
-    <!-- 📱 Mobile Container -->
     <div class="w-full max-w-md p-4 flex flex-col gap-4 relative">
 
-        <!-- 1. Header Card -->
         <div class="bg-white rounded-[2rem] p-6 shadow-sm flex justify-between items-center mt-2">
             <div>
                 <h1 class="text-[26px] font-extrabold text-[#111827] leading-tight tracking-tight">AquaSmart ML</h1>
                 <p class="text-[14px] text-slate-400 font-medium mt-1">Fish search engine</p>
             </div>
-            <!-- User Avatar -->
             <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3px] border-slate-200 text-slate-400 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-                  <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" /></svg>
             </div>
         </div>
 
-        <!-- 2. Search Bar & Camera -->
-        <div class="bg-white rounded-full p-2 pl-5 shadow-sm flex items-center gap-3">
+        <!-- 🎯 กล่องค้นหา (แก้ปัญหาคลิกไม่ได้แล้ว 100%) -->
+        <div class="bg-white rounded-full p-2 pl-5 shadow-sm flex items-center gap-3 search-wrapper">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-slate-800">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
-            <!-- 🎯 แก้แล้ว! เอา disabled ออก และเพิ่ม id="mainSearchInput" -->
-            <input type="text" id="mainSearchInput" placeholder="ค้นหาชื่อปลา... (เช่น ปลาทอง)" class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400">
+            <input type="text" id="mainSearchInput" placeholder="ค้นหาชื่อปลา... (เช่น ปลาช่อน)" class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400">
             
-            <!-- ปุ่มกล้อง (ซ่อน input file ไว้ข้างใน) -->
             <input type="file" id="imageInput" accept="image/*" class="hidden">
             <button id="btnCamera" class="w-12 h-12 bg-[#2563eb] hover:bg-blue-700 transition-colors rounded-full flex items-center justify-center text-white shadow-md shadow-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg>
             </button>
         </div>
 
-        <!-- 3. Default State (Top Searched Fish) -->
         <div id="default-section" class="bg-white rounded-[2rem] p-6 shadow-sm transition-all duration-300">
             <h2 class="text-xl font-bold text-[#111827] mb-5">Top Searched Fish</h2>
             <div class="space-y-3">
-                <div class="flex items-center p-2 pl-3 pr-4 bg-[#f8fafc] rounded-[1.5rem] cursor-pointer hover:bg-slate-100 transition-colors">
-                    <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 overflow-hidden border border-slate-100">🐟</div>
+                <div class="flex items-center p-2 pl-3 pr-4 bg-[#f8fafc] rounded-[1.5rem]">
+                    <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 border border-slate-100">🐟</div>
                     <div class="flex-1">
                         <h3 class="font-bold text-slate-800 text-[15px]">ปลานิล (Tilapia)</h3>
                         <p class="text-xs text-slate-400 font-medium">1200 searches</p>
                     </div>
                 </div>
-                <div class="flex items-center p-2 pl-3 pr-4 bg-[#f8fafc] rounded-[1.5rem] cursor-pointer hover:bg-slate-100 transition-colors">
-                    <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl mr-4 overflow-hidden border border-slate-100">🐍</div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-slate-800 text-[15px]">ปลาช่อน (Snakehead)</h3>
-                        <p class="text-xs text-slate-400 font-medium">1000 searches</p>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- 4. Loading State -->
         <div id="loading-section" class="hidden bg-white rounded-[2rem] p-10 shadow-sm text-center mt-2 transition-all duration-300">
             <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4">
                 <div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div>
             </div>
             <p class="text-blue-600 font-bold">กำลังวิเคราะห์ภาพปลา...</p>
-            <p class="text-xs text-slate-400 mt-1">Please wait a moment</p>
         </div>
 
-        <!-- 5. Result State -->
         <div id="result-section" class="hidden bg-white rounded-[2rem] p-6 shadow-sm mt-2 transition-all duration-300">
             <h2 class="text-xl font-bold text-[#111827] mb-4">Analysis Result</h2>
-            <!-- รูปภาพที่อัปโหลด -->
             <div class="w-full h-48 rounded-2xl overflow-hidden mb-5 border-2 border-slate-100 shadow-sm">
                 <img id="previewImage" class="w-full h-full object-cover" src="" alt="Preview">
             </div>
-            
             <div class="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
                 <div>
                     <h2 id="fishName" class="text-2xl font-black text-slate-800">-</h2>
@@ -106,7 +86,6 @@
                 </div>
                 <span id="prob" class="bg-[#2563eb] text-white px-3 py-1 rounded-xl text-sm font-bold shadow-sm shadow-blue-200">0%</span>
             </div>
-
             <div class="space-y-4">
                 <div>
                     <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รายละเอียด</span>
@@ -123,13 +102,8 @@
                     </div>
                 </div>
             </div>
-
-            <!-- ปุ่มเริ่มใหม่ -->
-            <button onclick="resetUI()" class="w-full mt-6 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-colors">
-                Scan Another Fish
-            </button>
+            <button onclick="resetUI()" class="w-full mt-6 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-colors">Scan Another Fish</button>
         </div>
-
     </div>
 
     <!-- แถบเมนูด้านล่าง -->
@@ -138,22 +112,15 @@
             <button onclick="resetUI()" class="bg-[#2563eb] text-white w-24 h-12 rounded-full flex items-center justify-center shadow-md shadow-blue-200/50">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
             </button>
-            <button class="w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            </button>
-            <button class="w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-            </button>
+            <button class="w-24 h-12 flex items-center justify-center text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>
+            <button class="w-24 h-12 flex items-center justify-center text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></button>
         </div>
     </div>
 
-    <!-- 🧠 AI LOGIC SCRIPT -->
     <script>
         let model;
-        // ลิสต์รายชื่อปลาเรียงตาม labels.json ที่เทรนมาเป๊ะๆ
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเลา', 'ปลาทอง', 'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
 
-        // 1. โหลดโมเดลทันทีที่เปิดเว็บ
         window.onload = async () => {
             try {
                 model = await tf.loadGraphModel('./model.json');
@@ -161,31 +128,25 @@
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 500);
             } catch (err) {
-                alert("โหลดโมเดล AI ไม่สำเร็จ! ตรวจสอบคอนโซล หรือเช็คไฟล์โมเดลอีกครั้ง");
                 console.error(err);
             }
         };
 
-        // 🎯 2. ระบบค้นหา (พิมพ์ชื่อปลาแล้วกด Enter เพื่อไปหน้าผลลัพธ์)
+        // 🎯 ระบบค้นหา: พิมพ์แล้วกด Enter เพื่อเด้งไปหน้า result.html
         const searchInput = document.getElementById('mainSearchInput');
         if(searchInput) {
             searchInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     const query = this.value.trim();
                     if (query !== "") {
-                        // เปลี่ยนหน้าไปที่ result.html พร้อมส่งคำค้นหาไปด้วย
                         window.location.href = `result.html?search=${encodeURIComponent(query)}`;
                     }
                 }
             });
         }
 
-        // 3. กดปุ่มกล้องให้เปิดหน้าต่างเลือกไฟล์
-        document.getElementById('btnCamera').onclick = () => {
-            document.getElementById('imageInput').click();
-        };
+        document.getElementById('btnCamera').onclick = () => document.getElementById('imageInput').click();
 
-        // 4. เมื่อเลือกรูปเสร็จ ให้รัน AI
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -198,17 +159,12 @@
             imgEl.src = URL.createObjectURL(file);
 
             imgEl.onload = async () => {
-                if(!model) {
-                    alert("AI ยังโหลดไม่เสร็จ รอสักครู่ครับ");
-                    return;
-                }
-
+                if(!model) return;
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgEl);
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0);
                 });
-
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 const prob = (pred[idx] * 100).toFixed(1);
@@ -217,30 +173,20 @@
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
                     const data = db[fishList[idx]];
-
                     if(data) {
                         document.getElementById('fishName').innerText = fishList[idx];
                         document.getElementById('fishNameEn').innerText = data.en_name;
                         document.getElementById('desc').innerText = data.description;
                         document.getElementById('cat').innerText = data.category;
                         document.getElementById('tips').innerText = data.tips;
-                    } else {
-                        document.getElementById('fishName').innerText = fishList[idx];
-                        document.getElementById('desc').innerText = "ไม่พบข้อมูลในฐานข้อมูล";
                     }
-                } catch (err) {
-                    console.error("Error loading JSON:", err);
-                    document.getElementById('fishName').innerText = fishList[idx];
-                    document.getElementById('desc').innerText = "ไม่สามารถเชื่อมต่อฐานข้อมูลได้";
-                }
-
+                } catch (err) {}
                 document.getElementById('prob').innerText = prob + "%";
                 document.getElementById('loading-section').classList.add('hidden');
                 document.getElementById('result-section').classList.remove('hidden');
             };
         };
 
-        // 5. ปุ่มเริ่มใหม่ (กลับหน้าแรก)
         window.resetUI = () => {
             document.getElementById('imageInput').value = ""; 
             document.getElementById('result-section').classList.add('hidden');

@@ -5,20 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Result - AquaSmart</title>
     <style>
-        /* --- รีเซ็ตและตั้งค่าพื้นฐาน --- */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #eaf3fa; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 400px; min-height: 100vh; padding: 20px 16px 100px 16px; position: relative; }
         .header-title { color: #8898aa; font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
         
-        /* --- 🎯 กล่องค้นหา --- */
         .search-container { display: flex; gap: 8px; margin-bottom: 20px; position: relative; z-index: 9999; }
-        .search-input { flex: 1; padding: 14px 16px; border-radius: 30px; border: 1px solid #e5e7eb; font-size: 1rem; outline: none; transition: border-color 0.2s; position: relative; z-index: 9999; background-color: white; }
+        .search-input { flex: 1; padding: 14px 16px; border-radius: 30px; border: 1px solid #e5e7eb; font-size: 1rem; outline: none; background-color: white; }
         .search-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .btn-primary { background-color: #2563eb; color: white; border: none; border-radius: 30px; padding: 14px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: background 0.2s; position: relative; z-index: 9999; }
-        .btn-primary:active { background-color: #1d4ed8; transform: scale(0.98); }
-
-        /* --- การ์ดและส่วนอื่นๆ --- */
+        .btn-primary { background-color: #2563eb; color: white; border: none; border-radius: 30px; padding: 14px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        
         #errorMessage { display: none; color: #ef4444; text-align: center; margin-bottom: 16px; font-weight: 600; background-color: #fee2e2; padding: 10px; border-radius: 12px; }
         .card { background-color: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
         .image-card { display: flex; justify-content: center; align-items: center; padding: 10px; }
@@ -26,7 +22,6 @@
         .title-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .title-header h2 { font-size: 1.4rem; color: #111827; }
         
-        /* ป้าย Tag */
         .status-tag { background-color: #dbeafe; color: #3b82f6; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
         .status-tag::before { content: ""; width: 6px; height: 6px; background-color: #3b82f6; border-radius: 50%; }
         .status-tag.ornamental { background-color: #fce7f3; color: #db2777; }
@@ -41,11 +36,8 @@
         .identify-box { background-color: #f3f8ff; border-radius: 12px; padding: 16px; }
         .identify-box h4 { font-size: 0.95rem; color: #111827; margin-bottom: 6px; }
         .identify-box p { font-size: 0.85rem; color: #6b7280; line-height: 1.4; }
-        .action-row { display: flex; gap: 12px; }
-        .btn-full { flex: 1; background-color: #2563eb; color: white; border: none; border-radius: 24px; padding: 14px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-        .btn-icon { background-color: white; border: 1px solid #e5e7eb; border-radius: 16px; width: 50px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .btn-icon svg { width: 20px; height: 20px; stroke: #6b7280; fill: none; stroke-width: 2; }
         
+        .btn-full { width: 100%; background-color: #2563eb; color: white; border: none; border-radius: 24px; padding: 14px; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 368px; background-color: white; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); z-index: 9999; }
         .nav-item { width: 50px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 20px; cursor: pointer; }
         .nav-item svg { width: 24px; height: 24px; stroke: #6b7280; fill: none; stroke-width: 2; }
@@ -69,7 +61,6 @@
         <div class="card image-card">
             <img id="fishImage" src="" alt="Fish Image">
         </div>
-
         <div class="card">
             <div class="title-header">
                 <h2 id="fishTitle">ชื่อปลา</h2>
@@ -77,7 +68,6 @@
             </div>
             <p id="fishDescription" class="description">คำอธิบาย</p>
         </div>
-
         <div class="card">
             <h3 class="section-title">General Information</h3>
             <div class="info-grid">
@@ -89,18 +79,13 @@
                 <h4>How to Identify</h4><p id="fishIdentify">-</p>
             </div>
         </div>
-
         <div class="card">
             <h3 class="section-title">More Action</h3>
-            <div class="action-row">
-                <button class="btn-full" onclick="window.location.href='index.html'">กลับไปสแกนปลา</button>
-            </div>
+            <button class="btn-full" onclick="window.location.href='index.html'">กลับไปสแกนปลา</button>
         </div>
     </div>
 
-    <!-- เมนูด้านล่างสุด -->
     <div class="bottom-nav">
-        <!-- กดปุ่ม Home แล้วกลับหน้าแรก -->
         <div class="nav-item active" onclick="window.location.href='index.html'">
             <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
         </div>
@@ -110,17 +95,18 @@
 </div>
 
 <script>
+    // 🎯 ฐานข้อมูลปลาที่อัปเดตชื่อไฟล์รูปตรงกับที่กูเร่อัปโหลดเป๊ะๆ!
     const fishDatabase = {
-        "ปลาช่อน": { title: "ปลาช่อน (Snakehead)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Channa_striata_G1.jpg/800px-Channa_striata_G1.jpg", description: "ปลาน้ำจืดเศรษฐกิจยอดนิยม เนื้อแน่น อร่อย มีความทนทานสูง สามารถฮุบอากาศหายใจได้โดยตรง", type: "Freshwater", category: "Economic", habitat: "SE Asia", identify: "หัวคล้ายงู ลำตัวกลมยาว มีเกล็ดสีดำหรือน้ำตาลเข้ม มีลายพาดเฉียงจางๆ" },
-        "ปลาดุก": { title: "ปลาดุก (Catfish)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Clarias_batrachus_01.jpg/800px-Clarias_batrachus_01.jpg", description: "ปลาไม่มีเกล็ดที่ทนทานต่อน้ำขุ่นข้น เลี้ยงง่าย โตไว นิยมนำมาย่าง ทำปลาดุกฟู หรือแกง", type: "Freshwater", category: "Economic", habitat: "SE Asia", identify: "ไม่มีเกล็ด ลำตัวยาว หัวแบนกว้าง มีหนวด 4 คู่รอบปาก ครีบหลังและครีบก้นยาว" },
-        "ปลากระดี่": { title: "ปลากระดี่ (Gourami)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Trichopodus_trichopterus_-_01.jpg/800px-Trichopodus_trichopterus_-_01.jpg", description: "ปลาน้ำจืดขนาดเล็ก นิยมนำมาทำปลาร้าหรือปลาแห้ง บางชนิดที่มีสีสันสวยงามนิยมนำมาเลี้ยงตู้", type: "Freshwater", category: "Economic", habitat: "Asia", identify: "ลำตัวแบนข้าง รูปไข่ มีครีบอกเป็นเส้นก้านยาวคล้ายหนวด 1 คู่ยื่นออกมาชัดเจน" },
-        "ปลากุเล้า": { title: "ปลากุเล้า (Fourfinger Threadfin)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Eleutheronema_tetradactylum.jpg/800px-Eleutheronema_tetradactylum.jpg", description: "ปลาทะเลและน้ำกร่อย เนื้อละเอียด รสชาติดีเยี่ยม นิยมนำมาทำปลากุเลาเค็มที่ได้ชื่อว่าเป็น 'ราชาปลาเค็ม'", type: "Marine / Brackish", category: "Economic", habitat: "Coastal", identify: "ลำตัวยาวแบนข้าง ปากกว้าง ครีบอกมีก้านครีบอิสระยื่นยาวออกมาเป็นเส้น 4 เส้นใต้เหงือก" },
-        "ปลานวลจันทร์": { title: "ปลานวลจันทร์ (Bangus)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Chanos_chanos.jpg/800px-Chanos_chanos.jpg", description: "ปลาเศรษฐกิจสำคัญ ทานตะไคร่น้ำเป็นอาหาร เลี้ยงง่าย นิยมมากในฟิลิปปินส์และไต้หวัน", type: "Marine / Fresh", category: "Economic", habitat: "Indo-Pacific", identify: "ลำตัวเพรียวยาวแบนข้าง เกล็ดสีเงินแวววาว ตากลมโตและมีเยื่อใสคลุมตา ปากเล็กไม่มีฟัน" },
-        "ปลาทอง": { title: "ปลาทอง (Gold Fish)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Goldfish3.jpg/800px-Goldfish3.jpg", description: "ปลาสวยงามยอดนิยมอันดับต้นๆ ของโลก เลี้ยงง่าย มีหลายสายพันธุ์และถูกพัฒนาให้มีสีสันหลากหลาย", type: "Freshwater", category: "Ornamental", habitat: "Aquarium", identify: "ลำตัวอ้วนป้อม สีสันสดใส (ส้ม, แดง, ขาว, ดำ) บางพันธุ์มีวุ้นที่หัวหรือตาโปนออกมาชัดเจน" },
-        "ปลาปั้กเป้าเขียวจุด": { title: "ปลาปั้กเป้าเขียวจุด (Green Spotted Puffer)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Tetraodon_nigroviridis.jpg/800px-Tetraodon_nigroviridis.jpg", description: "ปลาปักเป้าขนาดเล็ก สีสันสวยงามแต่นิสัยดุร้าย ชอบกินหอยและกุ้ง นิยมเลี้ยงในตู้น้ำกร่อย", type: "Brackish / Fresh", category: "Ornamental", habitat: "SE Asia", identify: "พื้นลำตัวส่วนบนสีเขียวตองอ่อน มีจุดสีดำกระจายทั่วตัว ท้องสีขาว สามารถพองตัวได้เมื่อตกใจ" },
-        "ปลาหมอจากัวร์": { title: "ปลาหมอจากัวร์ (Jaguar Guapote)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Parachromis_managuensis_-_Jaguar_cichlid.jpg/800px-Parachromis_managuensis_-_Jaguar_cichlid.jpg", description: "ปลาหมอสีขนาดใหญ่ นิสัยก้าวร้าว หวงถิ่น มีลวดลายที่สวยงามดุดันคล้ายลายของเสือจากัวร์", type: "Freshwater", category: "Ornamental", habitat: "Central America", identify: "ลำตัวแบนข้าง ปากกว้าง พื้นลำตัวเหลือบทองหรือเงิน มีจุดและลวดลายสีดำกระจายหนาแน่นทั่วตัว" },
-        "ปลาเสือข้างลาย": { title: "ปลาเสือข้างลาย (Black Spotted Barb)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Puntigrus_tetrazona.jpg/800px-Puntigrus_tetrazona.jpg", description: "ปลาน้ำจืดขนาดเล็ก นิสัยตื่นตัว มักอยู่รวมกันเป็นฝูง นิยมเลี้ยงในตู้ไม้น้ำเพื่อเพิ่มความมีชีวิตชีวา", type: "Freshwater", category: "Ornamental", habitat: "SE Asia", identify: "ลำตัวแบนข้าง พื้นลำตัวสีเงินอมเหลืองหรือส้ม มีแถบสีดำพาดขวางลำตัวเป็นแนวตั้งอย่างชัดเจน" },
-        "ปลากราย": { title: "ปลากราย (Knifefish)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Chitala_ornata_01.jpg/800px-Chitala_ornata_01.jpg", description: "ปลารูปร่างแปลกตา ตอนเล็กนิยมเลี้ยงตู้สวยงาม แต่เมื่อโตเต็มที่นิยมนำมาทำลูกชิ้นและทอดมันปลากราย", type: "Freshwater", category: "Ornamental / Economic", habitat: "SE Asia", identify: "ลำตัวแบนข้างมากคล้ายมีด ครีบก้นยาวติดกับครีบหาง มีจุดสีดำขอบขาวเรียงกันเป็นแถวเหนือฐานครีบก้น" }
+        "ปลาช่อน": { title: "ปลาช่อน (Snakehead)", image: "./Snakehead.jpg", description: "ปลาน้ำจืดเศรษฐกิจยอดนิยม เนื้อแน่น อร่อย มีความทนทานสูง สามารถฮุบอากาศหายใจได้โดยตรง", type: "Freshwater", category: "Economic", habitat: "SE Asia", identify: "หัวคล้ายงู ลำตัวกลมยาว มีเกล็ดสีดำหรือน้ำตาลเข้ม มีลายพาดเฉียงจางๆ" },
+        "ปลาดุก": { title: "ปลาดุก (Catfish)", image: "./Catfish.jpg", description: "ปลาไม่มีเกล็ดที่ทนทานต่อน้ำขุ่นข้น เลี้ยงง่าย โตไว นิยมนำมาย่าง ทำปลาดุกฟู หรือแกง", type: "Freshwater", category: "Economic", habitat: "SE Asia", identify: "ไม่มีเกล็ด ลำตัวยาว หัวแบนกว้าง มีหนวด 4 คู่รอบปาก ครีบหลังและครีบก้นยาว" },
+        "ปลากระดี่": { title: "ปลากระดี่ (Gourami)", image: "./Gourami.jpg", description: "ปลาน้ำจืดขนาดเล็ก นิยมนำมาทำปลาร้าหรือปลาแห้ง บางชนิดที่มีสีสันสวยงามนิยมนำมาเลี้ยงตู้", type: "Freshwater", category: "Economic", habitat: "Asia", identify: "ลำตัวแบนข้าง รูปไข่ มีครีบอกเป็นเส้นก้านยาวคล้ายหนวด 1 คู่ยื่นออกมาชัดเจน" },
+        "ปลากุเล้า": { title: "ปลากุเล้า (Fourfinger Threadfin)", image: "./FourfingerThreadfin.jpg", description: "ปลาทะเลและน้ำกร่อย เนื้อละเอียด รสชาติดีเยี่ยม นิยมนำมาทำปลากุเลาเค็มที่ได้ชื่อว่าเป็น 'ราชาปลาเค็ม'", type: "Marine / Brackish", category: "Economic", habitat: "Coastal", identify: "ลำตัวยาวแบนข้าง ปากกว้าง ครีบอกมีก้านครีบอิสระยื่นยาวออกมาเป็นเส้น 4 เส้นใต้เหงือก" },
+        "ปลานวลจันทร์": { title: "ปลานวลจันทร์ (Bangus)", image: "./Bangus.jpg", description: "ปลาเศรษฐกิจสำคัญ ทานตะไคร่น้ำเป็นอาหาร เลี้ยงง่าย นิยมมากในฟิลิปปินส์และไต้หวัน", type: "Marine / Fresh", category: "Economic", habitat: "Indo-Pacific", identify: "ลำตัวเพรียวยาวแบนข้าง เกล็ดสีเงินแวววาว ตากลมโตและมีเยื่อใสคลุมตา ปากเล็กไม่มีฟัน" },
+        "ปลาทอง": { title: "ปลาทอง (Gold Fish)", image: "./Gold Fish.jpg", description: "ปลาสวยงามยอดนิยมอันดับต้นๆ ของโลก เลี้ยงง่าย มีหลายสายพันธุ์และถูกพัฒนาให้มีสีสันหลากหลาย", type: "Freshwater", category: "Ornamental", habitat: "Aquarium", identify: "ลำตัวอ้วนป้อม สีสันสดใส (ส้ม, แดง, ขาว, ดำ) บางพันธุ์มีวุ้นที่หัวหรือตาโปนออกมาชัดเจน" },
+        "ปลาปั้กเป้าเขียวจุด": { title: "ปลาปั้กเป้าเขียวจุด (Green Spotted Puffer)", image: "./GreenSpottedPuffer.jpg", description: "ปลาปักเป้าขนาดเล็ก สีสันสวยงามแต่นิสัยดุร้าย ชอบกินหอยและกุ้ง นิยมเลี้ยงในตู้น้ำกร่อย", type: "Brackish / Fresh", category: "Ornamental", habitat: "SE Asia", identify: "พื้นลำตัวส่วนบนสีเขียวตองอ่อน มีจุดสีดำกระจายทั่วตัว ท้องสีขาว สามารถพองตัวได้เมื่อตกใจ" },
+        "ปลาหมอจากัวร์": { title: "ปลาหมอจากัวร์ (Jaguar Guapote)", image: "./JaguarGapote.jpg", description: "ปลาหมอสีขนาดใหญ่ นิสัยก้าวร้าว หวงถิ่น มีลวดลายที่สวยงามดุดันคล้ายลายของเสือจากัวร์", type: "Freshwater", category: "Ornamental", habitat: "Central America", identify: "ลำตัวแบนข้าง ปากกว้าง พื้นลำตัวเหลือบทองหรือเงิน มีจุดและลวดลายสีดำกระจายหนาแน่นทั่วตัว" },
+        "ปลาเสือข้างลาย": { title: "ปลาเสือข้างลาย (Black Spotted Barb)", image: "./BlackSpottedBarb.jpg", description: "ปลาน้ำจืดขนาดเล็ก นิสัยตื่นตัว มักอยู่รวมกันเป็นฝูง นิยมเลี้ยงในตู้ไม้น้ำเพื่อเพิ่มความมีชีวิตชีวา", type: "Freshwater", category: "Ornamental", habitat: "SE Asia", identify: "ลำตัวแบนข้าง พื้นลำตัวสีเงินอมเหลืองหรือส้ม มีแถบสีดำพาดขวางลำตัวเป็นแนวตั้งอย่างชัดเจน" },
+        "ปลากราย": { title: "ปลากราย (Knifefish)", image: "./Knifefish.jpg", description: "ปลารูปร่างแปลกตา ตอนเล็กนิยมเลี้ยงตู้สวยงาม แต่เมื่อโตเต็มที่นิยมนำมาทำลูกชิ้นและทอดมันปลากราย", type: "Freshwater", category: "Ornamental / Economic", habitat: "SE Asia", identify: "ลำตัวแบนข้างมากคล้ายมีด ครีบก้นยาวติดกับครีบหาง มีจุดสีดำขอบขาวเรียงกันเป็นแถวเหนือฐานครีบก้น" }
     };
 
     const searchButton = document.getElementById('searchButton');
@@ -173,17 +159,15 @@
         }
     });
 
-    // 🎯 ตรงนี้คือจุดที่แก้ไข! ให้ดึงคำค้นหามาจาก URL
+    // ดึงคำค้นหามาจากหน้าแรก
     window.onload = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const searchQuery = urlParams.get('search');
 
         if (searchQuery) {
-            // ถ้าส่งมาจากหน้าแรก ให้เอาคำนั้นใส่กล่องแล้วค้นหาเลย
             searchInput.value = searchQuery;
             performSearch();
         } else {
-            // ถ้าไม่มี (พิมพ์เข้าหน้านี้ตรงๆ) โชว์ปลาทอง
             searchInput.value = "ปลาทอง";
             performSearch();
         }
