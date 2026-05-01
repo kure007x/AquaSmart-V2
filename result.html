@@ -5,294 +5,285 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Result - AquaSmart</title>
     <style>
-        /* รีเซ็ตค่าเริ่มต้นและตั้งค่าฟอนต์ */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #eaf3fa; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 400px; min-height: 100vh; padding: 20px 16px 100px 16px; position: relative; }
+        .header-title { color: #8898aa; font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
+        
+        .search-container { display: flex; gap: 8px; margin-bottom: 20px; }
+        .search-input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid #e5e7eb; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .search-input:focus { border-color: #2563eb; }
+        
+        #errorMessage { display: none; color: #ef4444; text-align: center; margin-bottom: 16px; font-weight: 600; background-color: #fee2e2; padding: 10px; border-radius: 12px; }
+        
+        .card { background-color: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+        .image-card { display: flex; justify-content: center; align-items: center; padding: 10px; }
+        .image-card img { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; }
+        
+        .title-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .title-header h2 { font-size: 1.4rem; color: #111827; }
+        .status-tag { background-color: #dbeafe; color: #3b82f6; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .status-tag::before { content: ""; width: 6px; height: 6px; background-color: #3b82f6; border-radius: 50%; }
+        
+        /* สีกรอบสำหรับปลาสวยงาม */
+        .status-tag.ornamental { background-color: #fce7f3; color: #db2777; }
+        .status-tag.ornamental::before { background-color: #db2777; }
 
-        body {
-            background-color: #eaf3fa; /* สีพื้นหลังฟ้าอ่อนแบบในรูป */
-            display: flex;
-            justify-content: center;
-        }
-
-        /* จำลองหน้าจอมือถือ */
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            min-height: 100vh;
-            padding: 20px 16px 100px 16px; /* เว้นที่ด้านล่างให้เมนู */
-            position: relative;
-        }
-
-        .header-title {
-            color: #8898aa;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        /* สไตล์ของการ์ดทั่วไป */
-        .card {
-            background-color: #ffffff;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-        }
-
-        /* การ์ดรูปภาพ */
-        .image-card {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-        }
-        .image-card img {
-            width: 100%;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-
-        /* ส่วนหัวข้อและแท็ก */
-        .title-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .title-header h2 {
-            font-size: 1.4rem;
-            color: #111827;
-        }
-        .status-tag {
-            background-color: #dbeafe;
-            color: #3b82f6;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .status-tag::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            background-color: #3b82f6;
-            border-radius: 50%;
-        }
-        .description {
-            color: #6b7280;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        /* ส่วนข้อมูลทั่วไป (Grid) */
-        .section-title {
-            font-size: 1.1rem;
-            color: #111827;
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .info-box {
-            background-color: #f3f8ff;
-            border-radius: 12px;
-            padding: 12px 8px;
-            text-align: center;
-        }
-        .info-box h4 {
-            font-size: 0.85rem;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-        .info-box p {
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-
-        /* ส่วน How to Identify */
-        .identify-box {
-            background-color: #f3f8ff;
-            border-radius: 12px;
-            padding: 16px;
-        }
-        .identify-box h4 {
-            font-size: 0.95rem;
-            color: #111827;
-            margin-bottom: 6px;
-        }
-        .identify-box p {
-            font-size: 0.85rem;
-            color: #6b7280;
-            line-height: 1.4;
-        }
-
-        /* ปุ่มและ Action */
-        .action-row {
-            display: flex;
-            gap: 12px;
-        }
-        .btn-primary {
-            flex: 1;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-            transition: background 0.2s;
-        }
-        .btn-primary:active {
-            background-color: #1d4ed8;
-        }
-        .btn-icon {
-            background-color: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            width: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-        .btn-icon svg {
-            width: 20px;
-            height: 20px;
-            stroke: #6b7280;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        /* เมนูด้านล่าง (Bottom Nav) */
-        .bottom-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 32px);
-            max-width: 368px; /* 400 - 32 */
-            background-color: white;
-            border-radius: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-        }
-        .nav-item {
-            width: 50px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            stroke: #6b7280;
-            fill: none;
-            stroke-width: 2;
-        }
-        /* เมนูที่ถูกเลือก (Active) */
-        .nav-item.active {
-            background-color: #2563eb;
-        }
-        .nav-item.active svg {
-            stroke: white;
-        }
+        .description { color: #6b7280; font-size: 0.9rem; line-height: 1.5; }
+        
+        .section-title { font-size: 1.1rem; color: #111827; margin-bottom: 12px; font-weight: 700; }
+        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .info-box { background-color: #f3f8ff; border-radius: 12px; padding: 12px 8px; text-align: center; }
+        .info-box h4 { font-size: 0.85rem; color: #111827; margin-bottom: 4px; }
+        .info-box p { font-size: 0.75rem; color: #6b7280; }
+        
+        .identify-box { background-color: #f3f8ff; border-radius: 12px; padding: 16px; }
+        .identify-box h4 { font-size: 0.95rem; color: #111827; margin-bottom: 6px; }
+        .identify-box p { font-size: 0.85rem; color: #6b7280; line-height: 1.4; }
+        
+        .action-row { display: flex; gap: 12px; }
+        .btn-primary { flex: 1; background-color: #2563eb; color: white; border: none; border-radius: 24px; padding: 14px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: background 0.2s; }
+        .btn-primary:active { background-color: #1d4ed8; }
+        .btn-icon { background-color: white; border: 1px solid #e5e7eb; border-radius: 16px; width: 50px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .btn-icon svg { width: 20px; height: 20px; stroke: #6b7280; fill: none; stroke-width: 2; }
+        
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 368px; background-color: white; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); z-index: 10; }
+        .nav-item { width: 50px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 20px; cursor: pointer; }
+        .nav-item svg { width: 24px; height: 24px; stroke: #6b7280; fill: none; stroke-width: 2; }
+        .nav-item.active { background-color: #2563eb; }
+        .nav-item.active svg { stroke: white; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="header-title">Search Result</div>
+    <div class="header-title">AquaSmart Search</div>
 
-    <!-- 1. การ์ดรูปภาพ -->
-    <div class="card image-card">
-        <!-- เปลี่ยน src เป็นลิงก์รูปปลาของนายได้เลย -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Oreochromis_niloticus_%28Nile_tilapia%29.jpg/800px-Oreochromis_niloticus_%28Nile_tilapia%29.jpg" alt="Tilapia Fish">
+    <!-- กล่องค้นหา -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="พิมพ์ชื่อปลา... เช่น ปลาทอง">
+        <button id="searchButton" class="btn-primary" style="flex: 0 0 auto; padding: 12px 20px;">ค้นหา</button>
     </div>
 
-    <!-- 2. การ์ดชื่อปลาและคำอธิบาย -->
-    <div class="card">
-        <div class="title-header">
-            <h2>Tilapia</h2>
-            <div class="status-tag">Search Result</div>
-        </div>
-        <p class="description">
-            A popular freshwater fish commonly used in aquaculture throughout tropical regions worldwide.
-        </p>
-    </div>
+    <!-- แจ้งเตือนเมื่อไม่พบข้อมูล -->
+    <div id="errorMessage">❌ ไม่พบข้อมูลปลาที่คุณค้นหา</div>
 
-    <!-- 3. การ์ดข้อมูลทั่วไป -->
-    <div class="card">
-        <h3 class="section-title">General Information</h3>
-        
-        <div class="info-grid">
-            <div class="info-box">
-                <h4>Type</h4>
-                <p>Freshwater Fish</p>
-            </div>
-            <div class="info-box">
-                <h4>Category</h4>
-                <p>Economic Fish</p>
-            </div>
-            <div class="info-box">
-                <h4>Habitat</h4>
-                <p>South Africa</p>
-            </div>
+    <!-- พื้นที่แสดงผลลัพธ์ -->
+    <div id="resultArea" style="display: none;">
+        <!-- 1. การ์ดรูปภาพ -->
+        <div class="card image-card">
+            <img id="fishImage" src="" alt="Fish Image">
         </div>
 
-        <div class="identify-box">
-            <h4>How to Identify</h4>
-            <p>Laterally compressed body, long dorsal fin, gray-green coloring with faint vertical stripes.</p>
+        <!-- 2. การ์ดชื่อปลาและคำอธิบาย -->
+        <div class="card">
+            <div class="title-header">
+                <h2 id="fishTitle">ชื่อปลา</h2>
+                <div id="fishCategoryBadge" class="status-tag">Match</div>
+            </div>
+            <p id="fishDescription" class="description">คำอธิบาย</p>
         </div>
-    </div>
 
-    <!-- 4. การ์ดปุ่มกด -->
-    <div class="card">
-        <h3 class="section-title">General Information</h3>
-        <div class="action-row">
-            <button class="btn-primary">view full details</button>
-            <button class="btn-icon">
-                <!-- ไอคอน Bookmark -->
-                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-            </button>
+        <!-- 3. การ์ดข้อมูลทั่วไป -->
+        <div class="card">
+            <h3 class="section-title">General Information</h3>
+            
+            <div class="info-grid">
+                <div class="info-box">
+                    <h4>Type</h4>
+                    <p id="fishType">-</p>
+                </div>
+                <div class="info-box">
+                    <h4>Category</h4>
+                    <p id="fishCategory">-</p>
+                </div>
+                <div class="info-box">
+                    <h4>Habitat</h4>
+                    <p id="fishHabitat">-</p>
+                </div>
+            </div>
+
+            <div class="identify-box">
+                <h4>How to Identify</h4>
+                <p id="fishIdentify">-</p>
+            </div>
+        </div>
+
+        <!-- 4. การ์ดปุ่มกด -->
+        <div class="card">
+            <h3 class="section-title">More Action</h3>
+            <div class="action-row">
+                <button class="btn-primary">View Full Details</button>
+                <button class="btn-icon">
+                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- เมนูด้านล่างสุด (Bottom Navbar) -->
     <div class="bottom-nav">
-        <!-- ปุ่ม Home (Active) -->
-        <div class="nav-item active">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-        </div>
-        <!-- ปุ่ม History/Clock -->
-        <div class="nav-item">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        </div>
-        <!-- ปุ่ม Profile -->
-        <div class="nav-item">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-        </div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
     </div>
 </div>
+
+<script>
+    // 1. ฐานข้อมูลปลา 10 ชนิด (ข้อมูลตรงตามที่เทรนเป๊ะ!)
+    const fishDatabase = {
+        // --- หมวดปลาเศรษฐกิจ ---
+        "ปลาช่อน": {
+            title: "ปลาช่อน (Snakehead)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Channa_striata_G1.jpg/800px-Channa_striata_G1.jpg",
+            description: "ปลาน้ำจืดเศรษฐกิจยอดนิยม เนื้อแน่น อร่อย มีความทนทานสูง สามารถฮุบอากาศหายใจได้โดยตรง",
+            type: "Freshwater",
+            category: "Economic",
+            habitat: "SE Asia",
+            identify: "หัวคล้ายงู ลำตัวกลมยาว มีเกล็ดสีดำหรือน้ำตาลเข้ม มีลายพาดเฉียงจางๆ"
+        },
+        "ปลาดุก": {
+            title: "ปลาดุก (Catfish)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Clarias_batrachus_01.jpg/800px-Clarias_batrachus_01.jpg",
+            description: "ปลาไม่มีเกล็ดที่ทนทานต่อน้ำขุ่นข้น เลี้ยงง่าย โตไว นิยมนำมาย่าง ทำปลาดุกฟู หรือแกง",
+            type: "Freshwater",
+            category: "Economic",
+            habitat: "SE Asia",
+            identify: "ไม่มีเกล็ด ลำตัวยาว หัวแบนกว้าง มีหนวด 4 คู่รอบปาก ครีบหลังและครีบก้นยาว"
+        },
+        "ปลากระดี่": {
+            title: "ปลากระดี่ (Gourami)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Trichopodus_trichopterus_-_01.jpg/800px-Trichopodus_trichopterus_-_01.jpg",
+            description: "ปลาน้ำจืดขนาดเล็ก นิยมนำมาทำปลาร้าหรือปลาแห้ง บางชนิดที่มีสีสันสวยงามนิยมนำมาเลี้ยงตู้",
+            type: "Freshwater",
+            category: "Economic",
+            habitat: "Asia",
+            identify: "ลำตัวแบนข้าง รูปไข่ มีครีบอกเป็นเส้นก้านยาวคล้ายหนวด 1 คู่ยื่นออกมาชัดเจน"
+        },
+        "ปลากุเล้า": {
+            title: "ปลากุเล้า (Fourfinger Threadfin)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Eleutheronema_tetradactylum.jpg/800px-Eleutheronema_tetradactylum.jpg",
+            description: "ปลาทะเลและน้ำกร่อย เนื้อละเอียด รสชาติดีเยี่ยม นิยมนำมาทำปลากุเลาเค็มที่ได้ชื่อว่าเป็น 'ราชาปลาเค็ม'",
+            type: "Marine / Brackish",
+            category: "Economic",
+            habitat: "Coastal",
+            identify: "ลำตัวยาวแบนข้าง ปากกว้าง ครีบอกมีก้านครีบอิสระยื่นยาวออกมาเป็นเส้น 4 เส้นใต้เหงือก"
+        },
+        "ปลานวลจันทร์": {
+            title: "ปลานวลจันทร์ (Bangus)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Chanos_chanos.jpg/800px-Chanos_chanos.jpg",
+            description: "หรือปลา Milkfish ปลาเศรษฐกิจสำคัญ ทานตะไคร่น้ำเป็นอาหาร เลี้ยงง่าย นิยมมากในฟิลิปปินส์และไต้หวัน",
+            type: "Marine / Fresh",
+            category: "Economic",
+            habitat: "Indo-Pacific",
+            identify: "ลำตัวเพรียวยาวแบนข้าง เกล็ดสีเงินแวววาว ตากลมโตและมีเยื่อใสคลุมตา ปากเล็กไม่มีฟัน"
+        },
+
+        // --- หมวดปลาสวยงาม ---
+        "ปลาทอง": {
+            title: "ปลาทอง (Gold Fish)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Goldfish3.jpg/800px-Goldfish3.jpg",
+            description: "ปลาสวยงามยอดนิยมอันดับต้นๆ ของโลก เลี้ยงง่าย มีหลายสายพันธุ์และถูกพัฒนาให้มีสีสันหลากหลาย",
+            type: "Freshwater",
+            category: "Ornamental",
+            habitat: "Aquarium",
+            identify: "ลำตัวอ้วนป้อม สีสันสดใส (ส้ม, แดง, ขาว, ดำ) บางพันธุ์มีวุ้นที่หัวหรือตาโปนออกมาชัดเจน"
+        },
+        "ปลาปั้กเป้าเขียวจุด": {
+            title: "ปลาปั้กเป้าเขียวจุด (Green Spotted Puffer)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Tetraodon_nigroviridis.jpg/800px-Tetraodon_nigroviridis.jpg",
+            description: "ปลาปักเป้าขนาดเล็ก สีสันสวยงามแต่นิสัยดุร้าย ชอบกินหอยและกุ้ง นิยมเลี้ยงในตู้น้ำกร่อย",
+            type: "Brackish / Fresh",
+            category: "Ornamental",
+            habitat: "SE Asia",
+            identify: "พื้นลำตัวส่วนบนสีเขียวตองอ่อน มีจุดสีดำกระจายทั่วตัว ท้องสีขาว สามารถพองตัวได้เมื่อตกใจ"
+        },
+        "ปลาหมอจากัวร์": {
+            title: "ปลาหมอจากัวร์ (Jaguar Guapote)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Parachromis_managuensis_-_Jaguar_cichlid.jpg/800px-Parachromis_managuensis_-_Jaguar_cichlid.jpg",
+            description: "ปลาหมอสีขนาดใหญ่ นิสัยก้าวร้าว หวงถิ่น มีลวดลายที่สวยงามดุดันคล้ายลายของเสือจากัวร์",
+            type: "Freshwater",
+            category: "Ornamental",
+            habitat: "Central America",
+            identify: "ลำตัวแบนข้าง ปากกว้าง พื้นลำตัวเหลือบทองหรือเงิน มีจุดและลวดลายสีดำกระจายหนาแน่นทั่วตัว"
+        },
+        "ปลาเสือข้างลาย": {
+            title: "ปลาเสือข้างลาย (Black Spotted Barb)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Puntigrus_tetrazona.jpg/800px-Puntigrus_tetrazona.jpg",
+            description: "ปลาน้ำจืดขนาดเล็ก นิสัยตื่นตัว มักอยู่รวมกันเป็นฝูง นิยมเลี้ยงในตู้ไม้น้ำเพื่อเพิ่มความมีชีวิตชีวา",
+            type: "Freshwater",
+            category: "Ornamental",
+            habitat: "SE Asia",
+            identify: "ลำตัวแบนข้าง พื้นลำตัวสีเงินอมเหลืองหรือส้ม มีแถบสีดำพาดขวางลำตัวเป็นแนวตั้งอย่างชัดเจน"
+        },
+        "ปลากราย": {
+            title: "ปลากราย (Knifefish)",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Chitala_ornata_01.jpg/800px-Chitala_ornata_01.jpg",
+            description: "ปลารูปร่างแปลกตา ตอนเล็กนิยมเลี้ยงตู้สวยงาม แต่เมื่อโตเต็มที่นิยมนำมาทำลูกชิ้นและทอดมันปลากราย",
+            type: "Freshwater",
+            category: "Ornamental / Economic",
+            habitat: "SE Asia",
+            identify: "ลำตัวแบนข้างมากคล้ายมีด ครีบก้นยาวติดกับครีบหาง มีจุดสีดำขอบขาวเรียงกันเป็นแถวเหนือฐานครีบก้น"
+        }
+    };
+
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchInput');
+    const errorMessage = document.getElementById('errorMessage');
+    const resultArea = document.getElementById('resultArea');
+    const fishCategoryBadge = document.getElementById('fishCategoryBadge');
+
+    function performSearch() {
+        const query = searchInput.value.trim(); 
+        const result = fishDatabase[query];
+
+        if (query === "") {
+            errorMessage.innerText = "⚠️ กรุณาพิมพ์ชื่อปลาก่อนค้นหา";
+            errorMessage.style.display = 'block';
+            resultArea.style.display = 'none';
+            return;
+        }
+
+        if (result) {
+            errorMessage.style.display = 'none';
+            resultArea.style.display = 'block';
+            
+            document.getElementById('fishTitle').innerText = result.title;
+            document.getElementById('fishImage').src = result.image;
+            document.getElementById('fishDescription').innerText = result.description;
+            document.getElementById('fishType').innerText = result.type;
+            document.getElementById('fishCategory').innerText = result.category;
+            document.getElementById('fishHabitat').innerText = result.habitat;
+            document.getElementById('fishIdentify').innerText = result.identify;
+
+            // ตกแต่งป้าย Tag ให้สีต่างกันระหว่าง ปลาเศรษฐกิจ กับ ปลาสวยงาม
+            if(result.category.includes("Ornamental")) {
+                fishCategoryBadge.innerText = "ปลาสวยงาม";
+                fishCategoryBadge.className = "status-tag ornamental";
+            } else {
+                fishCategoryBadge.innerText = "ปลาเศรษฐกิจ";
+                fishCategoryBadge.className = "status-tag";
+            }
+
+        } else {
+            errorMessage.innerText = `❌ ไม่พบข้อมูลของ "${query}" ในระบบ`;
+            errorMessage.style.display = 'block';
+            resultArea.style.display = 'none';
+        }
+    }
+
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // เริ่มต้นให้ค้นหา "ปลาทอง" (หมวดปลาสวยงาม) เพื่อโชว์ UI สวยๆ เป็นตัวอย่าง
+    searchInput.value = "ปลาทอง";
+    performSearch();
+    searchInput.value = "";
+</script>
 
 </body>
 </html>
