@@ -5,87 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Result - AquaSmart</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #eaf3fa; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 400px; min-height: 100vh; padding: 20px 16px 100px 16px; position: relative; }
-        .header-title { color: #8898aa; font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
-        
-        /* 🛠️ แก้ปัญหาแก้กดไม่ได้: ดันกล่องค้นหาให้อยู่บนสุด */
-        .search-container { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 20px; 
-            position: relative; 
-            z-index: 9999; /* อยู่บนสุดของจอ */
-        }
-        .search-input { 
-            flex: 1; 
-            padding: 12px 16px; 
-            border-radius: 24px; 
-            border: 1px solid #e5e7eb; 
-            font-size: 1rem; 
-            outline: none; 
-            transition: border-color 0.2s; 
-            position: relative;
-            z-index: 9999; /* อยู่บนสุดของจอ */
-        }
-        .search-input:focus { border-color: #2563eb; }
-        
-        #errorMessage { display: none; color: #ef4444; text-align: center; margin-bottom: 16px; font-weight: 600; background-color: #fee2e2; padding: 10px; border-radius: 12px; }
-        
-        .card { background-color: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
-        .image-card { display: flex; justify-content: center; align-items: center; padding: 10px; }
-        .image-card img { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; }
-        
-        .title-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .title-header h2 { font-size: 1.4rem; color: #111827; }
-        .status-tag { background-color: #dbeafe; color: #3b82f6; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-        .status-tag::before { content: ""; width: 6px; height: 6px; background-color: #3b82f6; border-radius: 50%; }
-        
-        .status-tag.ornamental { background-color: #fce7f3; color: #db2777; }
-        .status-tag.ornamental::before { background-color: #db2777; }
+    /* --------------------------------------
+       CSS สำหรับกล่องค้นหา (แก้บั๊กกดไม่ได้)
+    -------------------------------------- */
+    .search-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 20px 0;
+        width: 100%;
+    }
 
-        .description { color: #6b7280; font-size: 0.9rem; line-height: 1.5; }
+    .search-input-wrapper {
+        position: relative;
+        flex: 1; /* ขยายเต็มพื้นที่ที่เหลือ */
+    }
+
+    /* 🎯 ตัวการสำคัญ: ไอคอนแว่นขยาย */
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: #9ca3af;
+        /* คำสั่งวิเศษ: ปิดการรับคลิก ให้เมาส์ทะลุไปโดนช่องพิมพ์ด้านล่าง! */
+        pointer-events: none; 
+        z-index: 20;
+    }
+
+    /* 🎯 ช่องพิมพ์ข้อความ */
+    .search-box {
+        width: 100%;
+        padding: 14px 16px 14px 48px; /* เว้น Padding ด้านซ้าย 48px หลบแว่นขยาย */
+        border: 1px solid #e5e7eb;
+        border-radius: 30px;
+        font-size: 1rem;
+        outline: none;
+        background-color: white;
+        transition: border-color 0.2s, box-shadow 0.2s;
         
-        .section-title { font-size: 1.1rem; color: #111827; margin-bottom: 12px; font-weight: 700; }
-        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-        .info-box { background-color: #f3f8ff; border-radius: 12px; padding: 12px 8px; text-align: center; }
-        .info-box h4 { font-size: 0.85rem; color: #111827; margin-bottom: 4px; }
-        .info-box p { font-size: 0.75rem; color: #6b7280; }
+        /* สั่งให้ลอยขึ้นมาให้คลิกได้ */
+        position: relative;
+        z-index: 10; 
+    }
+
+    .search-box:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* ปุ่มกล้องสีฟ้า */
+    .camera-btn {
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+        background-color: #3b82f6;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .camera-btn:active {
+        transform: scale(0.95);
+        background-color: #2563eb;
+    }
+
+    .camera-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: white;
+        fill: none;
+        stroke-width: 2;
+    }
+</style>
+
+<!-- --------------------------------------
+     HTML สำหรับกล่องค้นหา (เอาไปวางแทนของเดิม)
+-------------------------------------- -->
+<div class="search-section">
+    
+    <!-- 1. ส่วนกล่องพิมพ์ข้อความ -->
+    <div class="search-input-wrapper">
+        <!-- ไอคอนแว่นขยาย -->
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
         
-        .identify-box { background-color: #f3f8ff; border-radius: 12px; padding: 16px; }
-        .identify-box h4 { font-size: 0.95rem; color: #111827; margin-bottom: 6px; }
-        .identify-box p { font-size: 0.85rem; color: #6b7280; line-height: 1.4; }
-        
-        .action-row { display: flex; gap: 12px; }
-        
-        /* 🛠️ ดันปุ่มค้นหาให้อยู่บนสุดด้วยเหมือนกัน */
-        .btn-primary { 
-            flex: 1; 
-            background-color: #2563eb; 
-            color: white; 
-            border: none; 
-            border-radius: 24px; 
-            padding: 14px; 
-            font-size: 1rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); 
-            transition: background 0.2s; 
-            position: relative;
-            z-index: 9999;
+        <!-- กล่อง Input ที่เราจะใช้พิมพ์ -->
+        <input type="text" id="mainSearchInput" class="search-box" placeholder="ค้นหาชื่อปลา...">
+    </div>
+
+    <!-- 2. ปุ่มกล้อง AI สีฟ้า -->
+    <button class="camera-btn" onclick="openCamera()">
+        <!-- ไอคอนกล้อง -->
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+    </button>
+
+</div>
+
+<script>
+    // โค้ดสำหรับดักจับตอนกด Enter เพื่อให้เปลี่ยนหน้าไปที่ result.html
+    document.getElementById('mainSearchInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const query = this.value.trim();
+            if (query !== "") {
+                // ส่งค่าที่พิมพ์ไปหน้า result.html (สมมติว่าไฟล์นายชื่อ result.html)
+                // โดยส่งผ่าน URL Parameter (เช่น result.html?search=ปลานิล)
+                window.location.href = `result.html?search=${encodeURIComponent(query)}`;
+            }
         }
-        .btn-primary:active { background-color: #1d4ed8; }
-        
-        .btn-icon { background-color: white; border: 1px solid #e5e7eb; border-radius: 16px; width: 50px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .btn-icon svg { width: 20px; height: 20px; stroke: #6b7280; fill: none; stroke-width: 2; }
-        
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 368px; background-color: white; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); z-index: 9999; }
-        .nav-item { width: 50px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 20px; cursor: pointer; }
-        .nav-item svg { width: 24px; height: 24px; stroke: #6b7280; fill: none; stroke-width: 2; }
-        .nav-item.active { background-color: #2563eb; }
-        .nav-item.active svg { stroke: white; }
-    </style>
+    });
+
+    // ฟังก์ชันเปิดกล้อง (อันนี้ของเดิมนายมีอยู่แล้ว เรียกใช้ได้เลย)
+    function openCamera() {
+        console.log("เปิดกล้อง AI สแกนปลา!");
+        // โค้ดเรียกกล้องของนายใส่ตรงนี้...
+    }
+</script>
 </head>
 <body>
 
