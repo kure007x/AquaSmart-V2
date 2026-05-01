@@ -11,43 +11,11 @@
         .app-container { width: 100%; max-width: 400px; min-height: 100vh; padding: 20px 16px 100px 16px; position: relative; }
         .header-title { color: #8898aa; font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
         
-        /* --- 🎯 กล่องค้นหา (ใส่เกราะป้องกันการกดไม่ได้) --- */
-        .search-container { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 20px; 
-            position: relative; 
-            z-index: 9999; /* ดันให้อยู่บนสุด */
-        }
-        .search-input { 
-            flex: 1; 
-            padding: 14px 16px; 
-            border-radius: 30px; 
-            border: 1px solid #e5e7eb; 
-            font-size: 1rem; 
-            outline: none; 
-            transition: border-color 0.2s; 
-            position: relative;
-            z-index: 9999; /* ดันให้อยู่บนสุด */
-            background-color: white;
-        }
+        /* --- 🎯 กล่องค้นหา --- */
+        .search-container { display: flex; gap: 8px; margin-bottom: 20px; position: relative; z-index: 9999; }
+        .search-input { flex: 1; padding: 14px 16px; border-radius: 30px; border: 1px solid #e5e7eb; font-size: 1rem; outline: none; transition: border-color 0.2s; position: relative; z-index: 9999; background-color: white; }
         .search-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        
-        /* ปุ่มค้นหาสีฟ้า */
-        .btn-primary { 
-            background-color: #2563eb; 
-            color: white; 
-            border: none; 
-            border-radius: 30px; 
-            padding: 14px 20px; 
-            font-size: 1rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); 
-            transition: background 0.2s; 
-            position: relative;
-            z-index: 9999; /* ดันให้อยู่บนสุด */
-        }
+        .btn-primary { background-color: #2563eb; color: white; border: none; border-radius: 30px; padding: 14px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: background 0.2s; position: relative; z-index: 9999; }
         .btn-primary:active { background-color: #1d4ed8; transform: scale(0.98); }
 
         /* --- การ์ดและส่วนอื่นๆ --- */
@@ -88,18 +56,15 @@
 <body>
 
 <div class="app-container">
-    <div class="header-title">AquaSmart Search</div>
+    <div class="header-title">AquaSmart Search Result</div>
 
-    <!-- 🎯 กล่องค้นหาที่ถูกต้อง มีอันเดียว และอยู่บนสุด -->
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="พิมพ์ชื่อปลา... เช่น ปลาทอง">
         <button id="searchButton" class="btn-primary">ค้นหา</button>
     </div>
 
-    <!-- แจ้งเตือนเมื่อไม่พบข้อมูล -->
     <div id="errorMessage">❌ ไม่พบข้อมูลปลาที่คุณค้นหา</div>
 
-    <!-- พื้นที่แสดงผลลัพธ์ -->
     <div id="resultArea" style="display: none;">
         <div class="card image-card">
             <img id="fishImage" src="" alt="Fish Image">
@@ -128,17 +93,17 @@
         <div class="card">
             <h3 class="section-title">More Action</h3>
             <div class="action-row">
-                <button class="btn-full">View Full Details</button>
-                <button class="btn-icon">
-                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                </button>
+                <button class="btn-full" onclick="window.location.href='index.html'">กลับไปสแกนปลา</button>
             </div>
         </div>
     </div>
 
     <!-- เมนูด้านล่างสุด -->
     <div class="bottom-nav">
-        <div class="nav-item active"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+        <!-- กดปุ่ม Home แล้วกลับหน้าแรก -->
+        <div class="nav-item active" onclick="window.location.href='index.html'">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        </div>
         <div class="nav-item"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
         <div class="nav-item"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
     </div>
@@ -208,10 +173,21 @@
         }
     });
 
-    // เริ่มต้นแสดงปลาทอง
-    searchInput.value = "ปลาทอง";
-    performSearch();
-    searchInput.value = "";
+    // 🎯 ตรงนี้คือจุดที่แก้ไข! ให้ดึงคำค้นหามาจาก URL
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('search');
+
+        if (searchQuery) {
+            // ถ้าส่งมาจากหน้าแรก ให้เอาคำนั้นใส่กล่องแล้วค้นหาเลย
+            searchInput.value = searchQuery;
+            performSearch();
+        } else {
+            // ถ้าไม่มี (พิมพ์เข้าหน้านี้ตรงๆ) โชว์ปลาทอง
+            searchInput.value = "ปลาทอง";
+            performSearch();
+        }
+    };
 </script>
 
 </body>
