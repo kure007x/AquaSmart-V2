@@ -192,6 +192,8 @@
         }
 
         document.getElementById('btnCamera').onclick = () => {
+            // เคลียร์ค่าไฟล์เดิมทิ้งก่อน เพื่อให้กดเลือกรูปใหม่ (หรือรูปเดิม) ได้เสมอ
+            document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
         };
 
