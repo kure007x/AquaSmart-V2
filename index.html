@@ -206,18 +206,10 @@
                 }
 
                 // 🎯 โค้ดใหม่: ครอปรูปเป็นสี่เหลี่ยมจัตุรัสตรงกลาง (Center Crop) ลดอาการภาพเบี้ยว
+                // กลับมาใช้แบบบีบภาพให้พอดีกรอบ (ไม่ตัดหัวตัดหางปลาทิ้ง)
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgEl);
-                    
-                    const [h, w] = t.shape;
-                    const size = Math.min(h, w); 
-                    
-                    const startY = Math.floor((h - size) / 2);
-                    const startX = Math.floor((w - size) / 2);
-                    
-                    t = tf.slice(t, [startY, startX, 0], [size, size, 3]);
                     t = tf.image.resizeBilinear(t, [224, 224]);
-                    
                     return t.toFloat().div(255.0).expandDims(0);
                 });
 
