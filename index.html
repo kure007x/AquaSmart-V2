@@ -75,7 +75,7 @@
         <!-- Loading State -->
         <div id="loading-section" class="hidden bg-white rounded-[2rem] p-10 shadow-sm text-center">
             <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
-            <p class="text-blue-600 font-bold">กำลังวิเคราะห์ภาพปลา...</p>
+            <p class="text-blue-600 font-bold">กำลังประมวลผลข้อมูล...</p>
         </div>
 
         <!-- Result State -->
@@ -84,7 +84,7 @@
             <!-- รูปปลา & ชื่อ -->
             <div class="bg-white rounded-[2rem] p-4 shadow-sm text-center">
                 <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
-                    <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" alt="Preview">
+                    <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" alt="ไม่มีรูปภาพ">
                 </div>
                 <div class="flex justify-between items-center px-2">
                     <div class="text-left">
@@ -256,11 +256,53 @@
             document.getElementById(`tab-btn-${tab}`).classList.add('active');
         }
 
-        // --- ระบบ AI ---
+        // --- ฟังก์ชันยัดข้อมูลลง UI ---
+        function fillDataToUI(data, fishNameInput) {
+            currentFishData = data; 
+            document.getElementById('fishNameEn').innerText = data.en_name || '-';
+            document.getElementById('descBasic').innerText = data.description || '-';
+
+            if(data.general) {
+                document.getElementById('g-type').innerText = data.general.type || '-';
+                document.getElementById('g-cat').innerText = data.general.category || '-';
+                document.getElementById('g-hab').innerText = data.general.habitat || '-';
+                document.getElementById('g-ident').innerText = data.general.identify || '-';
+                document.getElementById('g-life').innerText = data.general.lifespan || '-';
+                document.getElementById('g-size').innerText = data.general.adult_size || '-';
+            }
+            
+            if(data.farmer) {
+                document.getElementById('f-raise').innerText = data.farmer.raise_method || '-';
+                document.getElementById('f-pond').innerText = (data.farmer.pond_type || '') + " " + (data.farmer.pond_size || '');
+                document.getElementById('f-pop').innerText = data.farmer.population || '-';
+                document.getElementById('f-avoid').innerText = data.farmer.avoid_pets || '-';
+                document.getElementById('f-disease').innerText = data.farmer.disease || '-';
+                document.getElementById('f-prevent').innerText = data.farmer.prevent || '-';
+            }
+
+            if(data.ornamental) {
+                document.getElementById('o-env').innerText = data.ornamental.raise_source || '-';
+                document.getElementById('o-temp').innerText = data.ornamental.temperature || '-';
+                document.getElementById('o-ph').innerText = data.ornamental.ph || '-';
+                document.getElementById('o-water').innerText = data.ornamental.water_prep || '-';
+                document.getElementById('o-feed').innerText = data.ornamental.feed_rec || '-';
+                document.getElementById('o-freq').innerText = (data.ornamental.feed_amount || '') + " (" + (data.ornamental.feed_freq || '') + ")";
+            }
+
+            document.getElementById('basic-info-box').classList.remove('hidden');
+            document.getElementById('full-data-box').classList.add('hidden');
+            document.getElementById('full-data-box').classList.remove('flex');
+            switchTab('general');
+
+            document.getElementById('loading-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('result-section').classList.add('flex');
+        }
+
+        // --- ระบบ AI โหลดเมื่อเปิดหน้าเว็บ ---
         window.onload = async () => {
             checkAuth();
             try {
-                // 🎯 ใช้โหลด Graph Model จาก Kaggle
                 model = await tf.loadGraphModel('./model.json');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
@@ -268,7 +310,46 @@
             } catch (err) { console.error(err); }
         };
 
-        // 🎯 เคลียร์ไฟล์ก่อนเลือกเสมอ
+        // 🎯 ระบบค้นหาด้วยการพิมพ์และกด Enter
+        const searchInput = document.getElementById('mainSearchInput');
+        if(searchInput) {
+            searchInput.addEventListener('keypress', async function (e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query !== "") {
+                        // ค้นหาว่าชื่อปลาที่พิมพ์มา มีใน fishList ไหม?
+                        const idx = fishList.findIndex(fish => fish.includes(query));
+
+                        if (idx !== -1) {
+                            searchInput.blur();
+                            document.getElementById('default-section').classList.add('hidden');
+                            document.getElementById('result-section').classList.add('hidden');
+                            document.getElementById('result-section').classList.remove('flex');
+                            document.getElementById('loading-section').classList.remove('hidden');
+
+                            setTimeout(async () => {
+                                document.getElementById('prob').innerText = "100.0%"; // พิมพ์หาตรงๆ มั่นใจ 100%
+                                document.getElementById('fishName').innerText = fishList[idx];
+                                document.getElementById('previewImage').src = "";
+                                document.getElementById('previewImage').alt = "ดึงข้อมูลจากระบบค้นหา";
+
+                                try {
+                                    const res = await fetch('./fish_data.json');
+                                    const db = await res.json();
+                                    const data = db[fishList[idx]];
+                                    if(data) fillDataToUI(data, fishList[idx]);
+                                } catch (err) { console.error(err); }
+                            }, 500);
+
+                        } else {
+                            alert("ไม่พบข้อมูล '" + query + "' ในระบบครับ ลองพิมพ์ใหม่อีกครั้ง (เช่น ปลาทอง, ปลาดุก)");
+                        }
+                    }
+                }
+            });
+        }
+
+        // 🎯 เคลียร์ไฟล์ก่อนเลือกเสมอ (ระบบกล้อง)
         document.getElementById('btnCamera').onclick = () => {
             document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
@@ -283,7 +364,6 @@
             document.getElementById('result-section').classList.remove('flex');
             document.getElementById('loading-section').classList.remove('hidden');
 
-            // 🎯 แก้บั๊กภาพหลอน
             const imgForAI = new Image();
             imgForAI.onload = async () => {
                 document.getElementById('previewImage').src = imgForAI.src;
@@ -293,7 +373,6 @@
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
                     t = tf.image.resizeBilinear(t, [224, 224]);
-                    // 🎯 หาร 255.0 ให้ตรงกับ Kaggle
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
@@ -308,56 +387,15 @@
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
                     const data = db[fishList[idx]];
-
-                    if(data) {
-                        currentFishData = data; 
-                        
-                        document.getElementById('fishNameEn').innerText = data.en_name || '-';
-                        document.getElementById('descBasic').innerText = data.description || '-';
-
-                        if(data.general) {
-                            document.getElementById('g-type').innerText = data.general.type || '-';
-                            document.getElementById('g-cat').innerText = data.general.category || '-';
-                            document.getElementById('g-hab').innerText = data.general.habitat || '-';
-                            document.getElementById('g-ident').innerText = data.general.identify || '-';
-                            document.getElementById('g-life').innerText = data.general.lifespan || '-';
-                            document.getElementById('g-size').innerText = data.general.adult_size || '-';
-                        }
-                        
-                        if(data.farmer) {
-                            document.getElementById('f-raise').innerText = data.farmer.raise_method || '-';
-                            document.getElementById('f-pond').innerText = (data.farmer.pond_type || '') + " " + (data.farmer.pond_size || '');
-                            document.getElementById('f-pop').innerText = data.farmer.population || '-';
-                            document.getElementById('f-avoid').innerText = data.farmer.avoid_pets || '-';
-                            document.getElementById('f-disease').innerText = data.farmer.disease || '-';
-                            document.getElementById('f-prevent').innerText = data.farmer.prevent || '-';
-                        }
-
-                        if(data.ornamental) {
-                            document.getElementById('o-env').innerText = data.ornamental.raise_source || '-';
-                            document.getElementById('o-temp').innerText = data.ornamental.temperature || '-';
-                            document.getElementById('o-ph').innerText = data.ornamental.ph || '-';
-                            document.getElementById('o-water').innerText = data.ornamental.water_prep || '-';
-                            document.getElementById('o-feed').innerText = data.ornamental.feed_rec || '-';
-                            document.getElementById('o-freq').innerText = (data.ornamental.feed_amount || '') + " (" + (data.ornamental.feed_freq || '') + ")";
-                        }
-                    }
+                    if(data) fillDataToUI(data, fishList[idx]);
                 } catch (err) { console.error(err); }
-
-                document.getElementById('basic-info-box').classList.remove('hidden');
-                document.getElementById('full-data-box').classList.add('hidden');
-                document.getElementById('full-data-box').classList.remove('flex');
-                switchTab('general');
-
-                document.getElementById('loading-section').classList.add('hidden');
-                document.getElementById('result-section').classList.remove('hidden');
-                document.getElementById('result-section').classList.add('flex');
             };
             imgForAI.src = URL.createObjectURL(file);
         };
 
         window.resetUI = () => {
             document.getElementById('imageInput').value = ""; 
+            document.getElementById('mainSearchInput').value = "";
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('result-section').classList.remove('flex');
             document.getElementById('loading-section').classList.add('hidden');
