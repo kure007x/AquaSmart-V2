@@ -85,6 +85,7 @@
             <!-- 🌟 ส่วนหัว: รูปปลา ชื่อ รายละเอียด -->
             <div class="info-card !pb-5">
                 <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
+                    <!-- 🚨 ตรงนี้แหละครับที่แก้บั๊ก ใส่ this.onerror=null ป้องกันการโหลดวนซ้ำ -->
                     <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" onerror="this.onerror=null; this.src='https://placehold.co/400x250?text=No+Image'">
                 </div>
                 <div class="flex justify-between items-start px-1 mb-2">
@@ -92,7 +93,6 @@
                         <h2 id="fishName" class="text-2xl font-black text-slate-800">-</h2>
                         <p id="fishNameEn" class="text-sm font-medium text-slate-400">-</p>
                     </div>
-                    <!-- Badge ตรงนี้เปลี่ยนเป็น Search Result หรือ 100.0% ผ่าน JS -->
                     <span id="probBadge" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm"><span class="text-blue-400">•</span> <span id="prob">Search Result</span></span>
                 </div>
                 <p class="info-label px-1 mt-4">รายละเอียด</p>
@@ -206,9 +206,9 @@
                             <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อัตราการเติบโต</p><p id="o-growth" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
                             <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อัตราการรอดชีวิต</p><p id="o-survive" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">โรคที่พบบ่อย</p><p id="o-disease" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">วิธีป้องกันโรค</p><p id="o-prevent" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        <div class="flex gap-2 mb-2">
+                            <div class="flex-1 bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">โรคที่พบบ่อย</p><p id="o-disease" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="flex-1 bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">วิธีป้องกันโรค</p><p id="o-prevent" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อายุเฉลี่ย</p><p id="o-life" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
@@ -228,6 +228,7 @@
 
             </div>
 
+            <button onclick="resetUI()" class="w-full mt-4 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 shadow-sm transition-colors">Scan Another Fish</button>
         </div>
     </div>
 
@@ -253,7 +254,6 @@
 
         const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
 
-        // --- ระบบ Login & Tabs ---
         function checkAuth() {
             const isLog = localStorage.getItem('isLoggedIn');
             const btn = document.getElementById('user-btn');
@@ -310,25 +310,21 @@
             document.getElementById(`tab-btn-${tab}`).classList.add('active');
         }
 
-        // --- ฟังก์ชันยัดข้อมูลลง UI ---
         function fillDataToUI(data, isFromSearch) {
             currentFishData = data; 
             document.getElementById('fishNameEn').innerText = data.en_name || '-';
             document.getElementById('descBasic').innerText = data.description || '-';
 
-            // ถ้ามาจากการค้นหา ให้ป้ายบอกว่า Search Result ไม่งั้นบอกเปอร์เซ็นต์
             if(isFromSearch) {
                 document.getElementById('prob').innerText = "Search Result";
             }
 
-            // --- ข้อมูลหน้า Basic ---
             if(data.general) {
                 document.getElementById('b-type').innerText = data.general.type || '-';
                 document.getElementById('b-cat').innerText = data.general.category || '-';
                 document.getElementById('b-hab').innerText = data.general.habitat || '-';
                 document.getElementById('b-ident').innerText = data.general.identify || '-';
 
-                // --- ข้อมูลแท็บ General ---
                 document.getElementById('g-type').innerText = data.general.type || '-';
                 document.getElementById('g-cat').innerText = data.general.category || '-';
                 document.getElementById('g-hab').innerText = data.general.habitat || '-';
@@ -337,7 +333,6 @@
                 document.getElementById('g-size').innerText = data.general.adult_size || '-';
             }
             
-            // --- ข้อมูลแท็บ Farmer ---
             if(data.farmer) {
                 document.getElementById('f-raise').innerText = data.farmer.raise_method || '-';
                 document.getElementById('f-pond').innerText = (data.farmer.pond_type || '') + " " + (data.farmer.pond_size || '');
@@ -354,7 +349,6 @@
                 document.getElementById('f-size').innerText = data.farmer.adult_size || '-';
             }
 
-            // --- ข้อมูลแท็บ Ornamental ---
             if(data.ornamental) {
                 document.getElementById('o-raise').innerText = data.ornamental.raise_method || '-';
                 document.getElementById('o-water').innerText = data.ornamental.water_prep || '-';
@@ -376,7 +370,6 @@
                 document.getElementById('o-feed-freq').innerText = data.ornamental.feed_freq || '-';
             }
 
-            // โชว์หน้า Basic สับแท็บเตรียมไว้
             document.getElementById('basic-content').classList.remove('hidden');
             document.getElementById('full-content').classList.add('hidden');
             document.getElementById('full-content').classList.remove('flex');
@@ -387,7 +380,6 @@
             document.getElementById('result-section').classList.add('flex');
         }
 
-        // --- ระบบ AI โหลดเมื่อเปิดหน้าเว็บ ---
         window.onload = async () => {
             checkAuth();
             try {
@@ -398,7 +390,6 @@
             } catch (err) { console.error(err); }
         };
 
-        // 🎯 ระบบค้นหา (ดึงรูปภาพจากชื่ออังกฤษด้วย)
         const searchInput = document.getElementById('mainSearchInput');
         if(searchInput) {
             searchInput.addEventListener('keypress', async function (e) {
@@ -422,12 +413,11 @@
                                     const db = await res.json();
                                     const data = db[fishList[idx]];
                                     
-                                    // 🌟 ดึงรูปภาพจากโฟลเดอร์ images ด้วยชื่อภาษาอังกฤษ
                                     if(data && data.en_name) {
                                         document.getElementById('previewImage').src = `images/${data.en_name}.jpg`;
                                     }
 
-                                    if(data) fillDataToUI(data, true); // true = มาจากช่องค้นหา
+                                    if(data) fillDataToUI(data, true); 
                                 } catch (err) { console.error(err); }
                             }, 500);
 
@@ -439,7 +429,6 @@
             });
         }
 
-        // 🎯 ระบบสแกนด้วยกล้อง
         document.getElementById('btnCamera').onclick = () => {
             document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
@@ -477,7 +466,7 @@
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
                     const data = db[fishList[idx]];
-                    if(data) fillDataToUI(data, false); // false = มาจากสแกนรูป
+                    if(data) fillDataToUI(data, false); 
                 } catch (err) { console.error(err); }
             };
             imgForAI.src = URL.createObjectURL(file);
