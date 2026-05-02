@@ -153,23 +153,13 @@
     <script>
         let model;
 
-        // 🎯 1. รายชื่อปลาเรียงตาม A-Z เหมือนใน Kaggle (class_indices) เป๊ะๆ
         const fishList = [
-            'ปลานวลจันทร์',     // 0: Bangus
-            'ปลาเสือข้างลาย',   // 1: Black Spotted Barb
-            'ปลาดุก',           // 2: Catfish
-            'ปลากุเล้า',         // 3: Fourfinger Threadfin
-            'ปลาทอง',           // 4: Gold Fish
-            'ปลากระดี่',         // 5: Gourami
-            'ปลาปั้กเป้าเขียวจุด', // 6: Green Spotted Puffer
-            'ปลาหมอจากัวร์',    // 7: Jaguar Gapote
-            'ปลากราย',         // 8: Knifefish
-            'ปลาช่อน'           // 9: Snakehead
+            'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง',
+            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
         ];
 
         window.onload = async () => {
             try {
-                // โค้ด Kaggle เซฟเป็น Graph Model เราเลยใช้ loadGraphModel ถูกต้องแล้วครับ
                 model = await tf.loadGraphModel('./model.json');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
@@ -191,8 +181,8 @@
             });
         }
 
+        // 🎯 เคลียร์ค่าไฟล์เดิมออกก่อน เพื่อให้กดเลือกรูปซ้ำได้ 100%
         document.getElementById('btnCamera').onclick = () => {
-            // เคลียร์ค่าไฟล์เดิมทิ้งก่อน เพื่อให้กดเลือกรูปใหม่ (หรือรูปเดิม) ได้เสมอ
             document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
         };
@@ -205,18 +195,23 @@
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('loading-section').classList.remove('hidden');
 
-            const imgEl = document.getElementById('previewImage');
-            imgEl.src = URL.createObjectURL(file);
+            // 🎯 แก้บั๊กภาพหลอน! สร้าง Image Object แยกให้ AI อ่านโดยเฉพาะ
+            const imgForAI = new Image();
+            
+            // รอให้รูปโหลดเข้าความจำเสร็จ 100% ค่อยให้ AI เข้าไปวิเคราะห์
+            imgForAI.onload = async () => {
+                // อัปเดตโชว์รูปหน้าเว็บ
+                document.getElementById('previewImage').src = imgForAI.src;
 
-            imgEl.onload = async () => {
+                // รอ 1 เฟรมให้เบราว์เซอร์เตรียมตัว
+                await tf.nextFrame();
+
                 if(!model) return;
 
-                // 🎯 2. จุดสำคัญที่สุด: ปรับสูตรคำนวณสีให้ตรงกับ Kaggle (หารด้วย 255.0)
                 const tensor = tf.tidy(() => {
-                    let t = tf.browser.fromPixels(imgEl);
+                    // ให้ AI อ่านจาก imgForAI ที่เป็นรูปใหม่เท่านั้น! ไม่มั่วแน่นอน
+                    let t = tf.browser.fromPixels(imgForAI);
                     t = tf.image.resizeBilinear(t, [224, 224]);
-                    
-                    // Kaggle ใช้ rescale=1./255 ดังนั้นต้องหารด้วย 255.0 ให้ได้ค่า 0-1
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
@@ -235,13 +230,21 @@
                         document.getElementById('desc').innerText = data.description;
                         document.getElementById('cat').innerText = data.category;
                         document.getElementById('tips').innerText = data.tips;
+                    } else {
+                        document.getElementById('fishName').innerText = fishList[idx];
+                        document.getElementById('desc').innerText = "ไม่พบข้อมูลในฐานข้อมูล";
                     }
-                } catch (err) {}
+                } catch (err) {
+                    document.getElementById('fishName').innerText = fishList[idx];
+                }
 
                 document.getElementById('prob').innerText = prob + "%";
                 document.getElementById('loading-section').classList.add('hidden');
                 document.getElementById('result-section').classList.remove('hidden');
             };
+
+            // กำหนด source ทีหลังสุด เพื่อบังคับให้เข้า imgForAI.onload เสมอ
+            imgForAI.src = URL.createObjectURL(file);
         };
 
         window.resetUI = () => {
