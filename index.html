@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AquaSmart ML</title>
-    <!-- นำเข้า TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -16,11 +15,14 @@
         #splash-screen, #login-modal { transition: opacity 0.3s; }
         .tab-btn.active { background-color: white; color: #2563eb; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .tab-btn { color: #64748b; font-weight: 600; }
+        .info-card { background: white; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; margin-bottom: 0.5rem; }
+        .info-label { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.25rem; }
+        .info-value { font-size: 0.875rem; font-weight: 600; color: #334155; }
     </style>
 </head>
 <body class="bg-[#f0f5fa] min-h-screen flex justify-center pb-24">
 
-    <!-- ⏳ หน้าจอโหลด AI -->
+    <!-- ⏳ Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 bg-[#f0f5fa] z-[100] flex items-center justify-center">
         <div class="text-center">
             <h1 class="text-3xl font-black text-[#111827] animate-pulse mb-2">AquaSmart ML</h1>
@@ -35,27 +37,26 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
             </div>
             <h2 class="text-2xl font-bold text-slate-800 mb-2">เข้าสู่ระบบ</h2>
-            <p class="text-slate-500 text-sm mb-6">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลเชิงลึกของปลาแบบครบถ้วน (เกษตรกร / ปลาสวยงาม)</p>
+            <p class="text-slate-500 text-sm mb-6">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึกทั้งหมด (เกษตรกร / ปลาสวยงาม)</p>
             <button onclick="performLogin()" class="w-full py-3 bg-[#2563eb] text-white font-bold rounded-xl hover:bg-blue-700 transition-colors mb-3">เข้าสู่ระบบ (Demo)</button>
             <button onclick="closeLoginModal()" class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors">ยกเลิก</button>
         </div>
     </div>
 
-    <!-- 📱 Mobile Container -->
+    <!-- 📱 Main Container -->
     <div class="w-full max-w-md p-4 flex flex-col gap-4 relative">
-        <!-- 1. Header -->
+        <!-- Header -->
         <div class="bg-white rounded-[2rem] p-6 shadow-sm flex justify-between items-center mt-2">
             <div>
                 <h1 class="text-[26px] font-extrabold text-[#111827] leading-tight tracking-tight">AquaSmart ML</h1>
                 <p class="text-[14px] text-slate-400 font-medium mt-1">Fish search engine</p>
             </div>
-            <!-- Profile Icon (คลิกเพื่อ Login/Logout) -->
-            <button onclick="toggleUserStatus()" id="user-btn" class="w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3px] border-slate-200 text-slate-400 hover:border-blue-300 transition-colors">
+            <button onclick="toggleUserStatus()" id="user-btn" class="w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3px] border-slate-200 text-slate-400 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" /></svg>
             </button>
         </div>
 
-        <!-- 2. Search & Camera -->
+        <!-- Search Bar -->
         <div class="bg-white rounded-full p-2 pl-5 shadow-sm flex items-center gap-3 relative z-50">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-slate-800"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
             <input type="text" id="mainSearchInput" placeholder="ค้นหาชื่อปลา... (เช่น ปลาทอง)" class="flex-1 bg-transparent outline-none text-sm font-medium text-slate-600 placeholder-slate-400">
@@ -63,8 +64,8 @@
             <button id="btnCamera" class="w-12 h-12 bg-[#2563eb] rounded-full flex items-center justify-center text-white shadow-md shadow-blue-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg></button>
         </div>
 
-        <!-- Default State (Top Searched Fish) -->
-        <div id="default-section" class="bg-white rounded-[2rem] p-6 shadow-sm">
+        <!-- Default List -->
+        <div id="default-section" class="info-card">
             <h2 class="text-xl font-bold text-[#111827] mb-5">Top Searched Fish</h2>
             <div class="space-y-3">
                 <div class="flex items-center p-2 pl-3 bg-[#f8fafc] rounded-[1.5rem]"><div class="text-3xl mr-4">🐟</div><div><h3 class="font-bold text-slate-800 text-[15px]">ปลานิล</h3><p class="text-xs text-slate-400">1200 searches</p></div></div>
@@ -72,104 +73,161 @@
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="loading-section" class="hidden bg-white rounded-[2rem] p-10 shadow-sm text-center">
+        <!-- Loading -->
+        <div id="loading-section" class="hidden info-card text-center py-10">
             <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
             <p class="text-blue-600 font-bold">กำลังประมวลผลข้อมูล...</p>
         </div>
 
-        <!-- Result State -->
-        <div id="result-section" class="hidden flex-col gap-4 mt-2">
+        <!-- Result Section -->
+        <div id="result-section" class="hidden flex-col gap-2 mt-2">
             
-            <!-- รูปปลา & ชื่อ -->
-            <div class="bg-white rounded-[2rem] p-4 shadow-sm text-center">
+            <!-- 🌟 ส่วนหัว: รูปปลา ชื่อ รายละเอียด -->
+            <div class="info-card !pb-5">
                 <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
-                    <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" alt="ไม่มีรูปภาพ">
+                    <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
                 </div>
-                <div class="flex justify-between items-center px-2">
+                <div class="flex justify-between items-start px-1 mb-2">
                     <div class="text-left">
                         <h2 id="fishName" class="text-2xl font-black text-slate-800">-</h2>
                         <p id="fishNameEn" class="text-sm font-medium text-slate-400">-</p>
                     </div>
-                    <span id="prob" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-xl text-xs font-bold border border-blue-200">0%</span>
+                    <!-- Badge ตรงนี้เปลี่ยนเป็น Search Result หรือ 100.0% ผ่าน JS -->
+                    <span id="probBadge" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm"><span class="text-blue-400">•</span> <span id="prob">Search Result</span></span>
                 </div>
-                <p id="descBasic" class="text-slate-500 text-sm mt-3 text-left px-2 leading-relaxed">-</p>
+                <p class="info-label px-1 mt-4">รายละเอียด</p>
+                <p id="descBasic" class="text-slate-600 text-sm px-1 leading-relaxed">-</p>
             </div>
 
-            <!-- กล่องล็อค (ถ้ายังไม่ Login) -->
-            <div id="basic-info-box" class="bg-white rounded-[2rem] p-6 shadow-sm">
-                <p class="text-center text-slate-500 text-sm mb-4">เข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึก</p>
-                <button onclick="checkAuthAndUnlock()" class="w-full py-4 bg-[#2563eb] text-white font-bold rounded-2xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors">
-                    🔓 ดูข้อมูลทั้งหมด (Full Data)
-                </button>
+            <!-- 🔒 โหมด Basic -->
+            <div id="basic-content" class="flex flex-col gap-2">
+                <div class="info-card">
+                    <h3 class="font-bold text-slate-800 mb-4">General Information</h3>
+                    <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                        <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Type</p><p id="b-type" class="info-value text-xs">-</p></div>
+                        <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Category</p><p id="b-cat" class="info-value text-xs">-</p></div>
+                        <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Habitat</p><p id="b-hab" class="info-value text-xs">-</p></div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl">
+                        <p class="info-label">How to Identify (วิธีสังเกต)</p>
+                        <p id="b-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p>
+                    </div>
+                </div>
+
+                <!-- กล่องปุ่มดูข้อมูลทั้งหมด -->
+                <div class="info-card !bg-transparent !border-none !shadow-none !p-0 mt-2">
+                    <button onclick="checkAuthAndUnlock()" class="w-full py-4 bg-[#2563eb] text-white font-bold rounded-2xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                        <span>view full details</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" /></svg>
+                    </button>
+                    <p class="text-center text-slate-400 text-xs mt-3">เข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึก</p>
+                </div>
             </div>
 
-            <!-- ข้อมูลเชิงลึก (โชว์เมื่อ Login แล้ว) -->
-            <div id="full-data-box" class="hidden flex-col gap-4">
-                
+            <!-- 🔓 โหมด Full Data (เปิดเมื่อ Login + กดปุ่ม) -->
+            <div id="full-content" class="hidden flex-col gap-2">
                 <!-- Tab Menu -->
-                <div class="bg-slate-100 p-1.5 rounded-full flex justify-between">
+                <div class="bg-white p-1.5 rounded-full flex justify-between mb-2 shadow-sm border border-slate-100">
                     <button onclick="switchTab('general')" id="tab-btn-general" class="tab-btn active flex-1 py-2 rounded-full text-sm transition-all">General</button>
                     <button onclick="switchTab('farmer')" id="tab-btn-farmer" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Farmer</button>
                     <button onclick="switchTab('ornamental')" id="tab-btn-ornamental" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Ornamental</button>
                 </div>
 
                 <!-- 🔵 TAB 1: GENERAL -->
-                <div id="tab-general" class="space-y-4">
-                    <div class="bg-white rounded-[2rem] p-6 shadow-sm">
+                <div id="tab-general" class="space-y-2">
+                    <div class="info-card border-blue-50">
                         <h3 class="font-bold text-slate-800 mb-4 text-lg">General Information</h3>
-                        <div class="flex gap-2 mb-4">
-                            <div class="flex-1 bg-slate-50 p-3 rounded-2xl text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">Type</p><p id="g-type" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="flex-1 bg-slate-50 p-3 rounded-2xl text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">Category</p><p id="g-cat" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="flex-1 bg-slate-50 p-3 rounded-2xl text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">Habitat</p><p id="g-hab" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Type</p><p id="g-type" class="info-value text-xs">-</p></div>
+                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Category</p><p id="g-cat" class="info-value text-xs">-</p></div>
+                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Habitat</p><p id="g-hab" class="info-value text-xs">-</p></div>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="text-[11px] text-slate-400 font-bold uppercase">How to Identify (วิธีสังเกต)</p><p id="g-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p></div>
+                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">How to Identify (วิธีสังเกต)</p><p id="g-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p></div>
                     </div>
-                    <div class="bg-white rounded-[2rem] p-6 shadow-sm">
+                    <div class="info-card border-blue-50">
                         <h3 class="font-bold text-slate-800 mb-4 text-lg">General Biology</h3>
-                        <div class="bg-slate-50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-slate-400 font-bold uppercase">Average Lifespan</p><p id="g-life" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="text-[11px] text-slate-400 font-bold uppercase">Adult Size</p><p id="g-size" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-slate-50 p-4 rounded-2xl mb-2"><p class="info-label">Average Lifespan (อายุเฉลี่ย)</p><p id="g-life" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">Adult Size (ขนาดโตเต็มวัย)</p><p id="g-size" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
                     </div>
                 </div>
 
                 <!-- 🟢 TAB 2: FARMER -->
-                <div id="tab-farmer" class="hidden space-y-4">
-                    <div class="bg-white rounded-[2rem] p-6 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Farming Method</h3>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-slate-400 font-bold uppercase">How to Raise (วิธีเลี้ยง)</p><p id="f-raise" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-slate-400 font-bold uppercase">Pond Details (ชนิด/ขนาดบ่อ)</p><p id="f-pond" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="text-[11px] text-slate-400 font-bold uppercase">Population per Pond</p><p id="f-pop" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                <div id="tab-farmer" class="hidden space-y-2">
+                    <div class="info-card border-blue-50">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับเกษตรกร</h3>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">วิธีเลี้ยง</p><p id="f-raise" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">ชนิดบ่อ และ ขนาดบ่อ</p><p id="f-pond" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">จำนวนประชากรต่อบ่อ</p><p id="f-pop" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
                     </div>
-                    <div class="bg-white rounded-[2rem] p-6 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Care & Prevention</h3>
-                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-red-400 font-bold uppercase">Do Not Raise With</p><p id="f-avoid" class="text-sm font-medium text-red-900 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-slate-400 font-bold uppercase">Common Disease</p><p id="f-disease" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="text-[11px] text-slate-400 font-bold uppercase">Prevention</p><p id="f-prevent" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                    <div class="info-card border-blue-50">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ระบบนิเวศ & สุขภาพ</h3>
+                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ห้ามเลี้ยงร่วมกับ</p><p id="f-avoid" class="text-sm font-medium text-red-900 mt-1">-</p></div>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">อัตราการรอดชีวิต</p><p id="f-survive" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">โรคที่พบบ่อย</p><p id="f-disease" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">วิธีป้องกันโรค</p><p id="f-prevent" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
+                    </div>
+                    <div class="info-card border-blue-50">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">อาหาร & การเจริญเติบโต</h3>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">ประเภทอาหารที่แนะนำ</p><p id="f-feed-rec" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ไม่แนะนำ</p><p id="f-feed-not" class="text-sm font-medium text-red-900 mt-1">-</p></div>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">ปริมาณอาหาร</p><p id="f-feed-amt" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">รอบต่อวัน</p><p id="f-feed-freq" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">ระยะเวลาโตเต็มวัย</p><p id="f-time" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">ขนาดโตเต็มวัย</p><p id="f-size" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- 🟠 TAB 3: ORNAMENTAL -->
-                <div id="tab-ornamental" class="hidden space-y-4">
-                    <div class="bg-white rounded-[2rem] p-6 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Aquarium Setup</h3>
-                        <div class="bg-slate-50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-slate-400 font-bold uppercase">Environment</p><p id="o-env" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="flex gap-2 mb-2">
-                            <div class="flex-1 bg-slate-50 p-3 rounded-2xl"><p class="text-[10px] text-slate-400 font-bold uppercase">Temp</p><p id="o-temp" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="flex-1 bg-slate-50 p-3 rounded-2xl"><p class="text-[10px] text-slate-400 font-bold uppercase">pH</p><p id="o-ph" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                <div id="tab-ornamental" class="hidden space-y-2">
+                    <div class="info-card border-amber-50">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับคนเลี้ยงปลาสวยงาม</h3>
+                        <div class="bg-amber-50/50 p-4 rounded-2xl mb-2"><p class="info-label">วิธีเลี้ยง</p><p id="o-raise" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-amber-50/50 p-4 rounded-2xl mb-2"><p class="info-label">วิธีเตรียมน้ำ</p><p id="o-water" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ค่า pH</p><p id="o-ph" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อุณหภูมิน้ำ</p><p id="o-temp" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="text-[11px] text-slate-400 font-bold uppercase">Water Prep</p><p id="o-water" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ชนิดแหล่งเลี้ยง</p><p id="o-source" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ขนาดแหล่งเลี้ยง</p><p id="o-source-size" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
+                        <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">จำนวนประชากร</p><p id="o-pop" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
                     </div>
-                    <div class="bg-white rounded-[2rem] p-6 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Feeding Guide</h3>
-                        <div class="bg-slate-50 p-4 rounded-2xl mb-2"><p class="text-[11px] text-slate-400 font-bold uppercase">Recommended</p><p id="o-feed" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="text-[11px] text-slate-400 font-bold uppercase">Amount & Freq</p><p id="o-freq" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                    <div class="info-card border-amber-50">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ระบบนิเวศ & สุขภาพ</h3>
+                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ห้ามเลี้ยงร่วมกับ</p><p id="o-avoid" class="text-sm font-medium text-red-900 mt-1">-</p></div>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อัตราการเติบโต</p><p id="o-growth" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อัตราการรอดชีวิต</p><p id="o-survive" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">โรคที่พบบ่อย</p><p id="o-disease" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">วิธีป้องกันโรค</p><p id="o-prevent" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อายุเฉลี่ย</p><p id="o-life" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ขนาดโตเต็มวัย</p><p id="o-size" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
+                    </div>
+                    <div class="info-card border-amber-50">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">อาหาร</h3>
+                        <div class="bg-amber-50/50 p-4 rounded-2xl mb-2"><p class="info-label">ประเภทอาหารที่แนะนำ</p><p id="o-feed-rec" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ไม่แนะนำ</p><p id="o-feed-not" class="text-sm font-medium text-red-900 mt-1">-</p></div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ปริมาณอาหาร</p><p id="o-feed-amt" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">รอบต่อวัน</p><p id="o-feed-freq" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- ปุ่มเริ่มใหม่ -->
-            <button onclick="resetUI()" class="w-full mt-4 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-colors">Scan Another Fish</button>
         </div>
     </div>
 
@@ -188,16 +246,12 @@
         </div>
     </div>
 
-    <!-- 🧠 AI & LOGIC SCRIPT -->
+    <!-- 🧠 SCRIPT -->
     <script>
         let model;
         let currentFishData = null; 
 
-        // 🎯 รายชื่อปลา ต้องเรียงตรงกับ Kaggle เป๊ะๆ
-        const fishList = [
-            'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง',
-            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
-        ];
+        const fishList = ['ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'];
 
         // --- ระบบ Login & Tabs ---
         function checkAuth() {
@@ -239,9 +293,9 @@
 
         function checkAuthAndUnlock() {
             if(localStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('basic-info-box').classList.add('hidden');
-                document.getElementById('full-data-box').classList.remove('hidden');
-                document.getElementById('full-data-box').classList.add('flex');
+                document.getElementById('basic-content').classList.add('hidden');
+                document.getElementById('full-content').classList.remove('hidden');
+                document.getElementById('full-content').classList.add('flex');
             } else {
                 document.getElementById('login-modal').classList.remove('hidden');
             }
@@ -257,12 +311,24 @@
         }
 
         // --- ฟังก์ชันยัดข้อมูลลง UI ---
-        function fillDataToUI(data, fishNameInput) {
+        function fillDataToUI(data, isFromSearch) {
             currentFishData = data; 
             document.getElementById('fishNameEn').innerText = data.en_name || '-';
             document.getElementById('descBasic').innerText = data.description || '-';
 
+            // ถ้ามาจากการค้นหา ให้ป้ายบอกว่า Search Result ไม่งั้นบอกเปอร์เซ็นต์
+            if(isFromSearch) {
+                document.getElementById('prob').innerText = "Search Result";
+            }
+
+            // --- ข้อมูลหน้า Basic ---
             if(data.general) {
+                document.getElementById('b-type').innerText = data.general.type || '-';
+                document.getElementById('b-cat').innerText = data.general.category || '-';
+                document.getElementById('b-hab').innerText = data.general.habitat || '-';
+                document.getElementById('b-ident').innerText = data.general.identify || '-';
+
+                // --- ข้อมูลแท็บ General ---
                 document.getElementById('g-type').innerText = data.general.type || '-';
                 document.getElementById('g-cat').innerText = data.general.category || '-';
                 document.getElementById('g-hab').innerText = data.general.habitat || '-';
@@ -271,27 +337,49 @@
                 document.getElementById('g-size').innerText = data.general.adult_size || '-';
             }
             
+            // --- ข้อมูลแท็บ Farmer ---
             if(data.farmer) {
                 document.getElementById('f-raise').innerText = data.farmer.raise_method || '-';
                 document.getElementById('f-pond').innerText = (data.farmer.pond_type || '') + " " + (data.farmer.pond_size || '');
                 document.getElementById('f-pop').innerText = data.farmer.population || '-';
                 document.getElementById('f-avoid').innerText = data.farmer.avoid_pets || '-';
+                document.getElementById('f-survive').innerText = data.farmer.survival_rate || '-';
                 document.getElementById('f-disease').innerText = data.farmer.disease || '-';
                 document.getElementById('f-prevent').innerText = data.farmer.prevent || '-';
+                document.getElementById('f-feed-rec').innerText = data.farmer.feed_rec || '-';
+                document.getElementById('f-feed-not').innerText = data.farmer.feed_not_rec || '-';
+                document.getElementById('f-feed-amt').innerText = data.farmer.feed_amount || '-';
+                document.getElementById('f-feed-freq').innerText = data.farmer.feed_freq || '-';
+                document.getElementById('f-time').innerText = data.farmer.adult_time || '-';
+                document.getElementById('f-size').innerText = data.farmer.adult_size || '-';
             }
 
+            // --- ข้อมูลแท็บ Ornamental ---
             if(data.ornamental) {
-                document.getElementById('o-env').innerText = data.ornamental.raise_source || '-';
-                document.getElementById('o-temp').innerText = data.ornamental.temperature || '-';
-                document.getElementById('o-ph').innerText = data.ornamental.ph || '-';
+                document.getElementById('o-raise').innerText = data.ornamental.raise_method || '-';
                 document.getElementById('o-water').innerText = data.ornamental.water_prep || '-';
-                document.getElementById('o-feed').innerText = data.ornamental.feed_rec || '-';
-                document.getElementById('o-freq').innerText = (data.ornamental.feed_amount || '') + " (" + (data.ornamental.feed_freq || '') + ")";
+                document.getElementById('o-ph').innerText = data.ornamental.ph || '-';
+                document.getElementById('o-temp').innerText = data.ornamental.temperature || '-';
+                document.getElementById('o-source').innerText = data.ornamental.raise_source || '-';
+                document.getElementById('o-source-size').innerText = data.ornamental.source_size || '-';
+                document.getElementById('o-pop').innerText = data.ornamental.population || '-';
+                document.getElementById('o-avoid').innerText = data.ornamental.avoid_pets || '-';
+                document.getElementById('o-growth').innerText = data.ornamental.growth_rate || '-';
+                document.getElementById('o-survive').innerText = data.ornamental.survival_rate || '-';
+                document.getElementById('o-disease').innerText = data.ornamental.disease || '-';
+                document.getElementById('o-prevent').innerText = data.ornamental.prevent || '-';
+                document.getElementById('o-life').innerText = data.ornamental.lifespan || '-';
+                document.getElementById('o-size').innerText = data.ornamental.adult_size || '-';
+                document.getElementById('o-feed-rec').innerText = data.ornamental.feed_rec || '-';
+                document.getElementById('o-feed-not').innerText = data.ornamental.feed_not_rec || '-';
+                document.getElementById('o-feed-amt').innerText = data.ornamental.feed_amount || '-';
+                document.getElementById('o-feed-freq').innerText = data.ornamental.feed_freq || '-';
             }
 
-            document.getElementById('basic-info-box').classList.remove('hidden');
-            document.getElementById('full-data-box').classList.add('hidden');
-            document.getElementById('full-data-box').classList.remove('flex');
+            // โชว์หน้า Basic สับแท็บเตรียมไว้
+            document.getElementById('basic-content').classList.remove('hidden');
+            document.getElementById('full-content').classList.add('hidden');
+            document.getElementById('full-content').classList.remove('flex');
             switchTab('general');
 
             document.getElementById('loading-section').classList.add('hidden');
@@ -310,14 +398,13 @@
             } catch (err) { console.error(err); }
         };
 
-        // 🎯 ระบบค้นหาด้วยการพิมพ์และกด Enter
+        // 🎯 ระบบค้นหา (ดึงรูปภาพจากชื่ออังกฤษด้วย)
         const searchInput = document.getElementById('mainSearchInput');
         if(searchInput) {
             searchInput.addEventListener('keypress', async function (e) {
                 if (e.key === 'Enter') {
                     const query = this.value.trim();
                     if (query !== "") {
-                        // ค้นหาว่าชื่อปลาที่พิมพ์มา มีใน fishList ไหม?
                         const idx = fishList.findIndex(fish => fish.includes(query));
 
                         if (idx !== -1) {
@@ -328,28 +415,31 @@
                             document.getElementById('loading-section').classList.remove('hidden');
 
                             setTimeout(async () => {
-                                document.getElementById('prob').innerText = "100.0%"; // พิมพ์หาตรงๆ มั่นใจ 100%
                                 document.getElementById('fishName').innerText = fishList[idx];
-                                document.getElementById('previewImage').src = "";
-                                document.getElementById('previewImage').alt = "ดึงข้อมูลจากระบบค้นหา";
-
+                                
                                 try {
                                     const res = await fetch('./fish_data.json');
                                     const db = await res.json();
                                     const data = db[fishList[idx]];
-                                    if(data) fillDataToUI(data, fishList[idx]);
+                                    
+                                    // 🌟 ดึงรูปภาพจากโฟลเดอร์ images ด้วยชื่อภาษาอังกฤษ
+                                    if(data && data.en_name) {
+                                        document.getElementById('previewImage').src = `images/${data.en_name}.jpg`;
+                                    }
+
+                                    if(data) fillDataToUI(data, true); // true = มาจากช่องค้นหา
                                 } catch (err) { console.error(err); }
                             }, 500);
 
                         } else {
-                            alert("ไม่พบข้อมูล '" + query + "' ในระบบครับ ลองพิมพ์ใหม่อีกครั้ง (เช่น ปลาทอง, ปลาดุก)");
+                            alert("ไม่พบข้อมูล '" + query + "' ในระบบครับ ลองพิมพ์ใหม่อีกครั้ง");
                         }
                     }
                 }
             });
         }
 
-        // 🎯 เคลียร์ไฟล์ก่อนเลือกเสมอ (ระบบกล้อง)
+        // 🎯 ระบบสแกนด้วยกล้อง
         document.getElementById('btnCamera').onclick = () => {
             document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
@@ -387,7 +477,7 @@
                     const res = await fetch('./fish_data.json');
                     const db = await res.json();
                     const data = db[fishList[idx]];
-                    if(data) fillDataToUI(data, fishList[idx]);
+                    if(data) fillDataToUI(data, false); // false = มาจากสแกนรูป
                 } catch (err) { console.error(err); }
             };
             imgForAI.src = URL.createObjectURL(file);
