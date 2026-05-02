@@ -153,13 +153,23 @@
     <script>
         let model;
 
+        // 🎯 1. รายชื่อปลาเรียงตาม A-Z เหมือนใน Kaggle (class_indices) เป๊ะๆ
         const fishList = [
-            'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง',
-            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
+            'ปลานวลจันทร์',     // 0: Bangus
+            'ปลาเสือข้างลาย',   // 1: Black Spotted Barb
+            'ปลาดุก',           // 2: Catfish
+            'ปลากุเล้า',         // 3: Fourfinger Threadfin
+            'ปลาทอง',           // 4: Gold Fish
+            'ปลากระดี่',         // 5: Gourami
+            'ปลาปั้กเป้าเขียวจุด', // 6: Green Spotted Puffer
+            'ปลาหมอจากัวร์',    // 7: Jaguar Gapote
+            'ปลากราย',         // 8: Knifefish
+            'ปลาช่อน'           // 9: Snakehead
         ];
 
         window.onload = async () => {
             try {
+                // โค้ด Kaggle เซฟเป็น Graph Model เราเลยใช้ loadGraphModel ถูกต้องแล้วครับ
                 model = await tf.loadGraphModel('./model.json');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
@@ -199,11 +209,13 @@
             imgEl.onload = async () => {
                 if(!model) return;
 
-                // 🎯 จุดสำคัญ: ปรับสูตรคำนวณสี (Normalization) ให้ภาพชัดเจนตรงใจ AI (Teachable Machine)
+                // 🎯 2. จุดสำคัญที่สุด: ปรับสูตรคำนวณสีให้ตรงกับ Kaggle (หารด้วย 255.0)
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgEl);
                     t = tf.image.resizeBilinear(t, [224, 224]);
-                    return t.toFloat().div(127.5).sub(1).expandDims(0); // เปลี่ยนสูตรเป็นบรรทัดนี้
+                    
+                    // Kaggle ใช้ rescale=1./255 ดังนั้นต้องหารด้วย 255.0 ให้ได้ค่า 0-1
+                    return t.toFloat().div(255.0).expandDims(0); 
                 });
 
                 const pred = await model.predict(tensor).data();
