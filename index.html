@@ -457,30 +457,35 @@
 
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
-                const prob = (pred[idx] * 100).toFixed(1);
+                const probValue = pred[idx] * 100; // ค่าความมั่นใจเป็น %
 
-                document.getElementById('prob').innerText = prob + "%";
-                document.getElementById('fishName').innerText = fishList[idx];
+                // 🚨 ตรวจสอบเงื่อนไขความแม่นยำต่ำกว่า 50%
+                if (probValue < 50) {
+                    document.getElementById('loading-section').classList.add('hidden');
+                    document.getElementById('result-section').classList.remove('hidden');
+                    document.getElementById('result-section').classList.add('flex');
 
-                try {
-                    const res = await fetch('./fish_data.json');
-                    const db = await res.json();
-                    const data = db[fishList[idx]];
-                    if(data) fillDataToUI(data, false); 
-                } catch (err) { console.error(err); }
+                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้ชัดเจน";
+                    document.getElementById('fishNameEn').innerText = "Low Confidence";
+                    document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
+                    document.getElementById('descBasic').innerText = "AI ไม่มั่นใจในผลลัพธ์ครับ กรุณาอัปโหลดภาพใหม่ที่ชัดเจนกว่านี้ เห็นปลาเต็มตัว หรือลองเปลี่ยนมุมถ่ายเพื่อความแม่นยำนะครับ";
+                    
+                    // ซ่อนส่วนข้อมูลเชิงลึกและปุ่มต่างๆ เพราะข้อมูลไม่น่าเชื่อถือ
+                    document.getElementById('basic-content').classList.add('hidden');
+                    document.getElementById('full-content').classList.add('hidden');
+                    currentFishData = null;
+                } else {
+                    // ✅ กรณีความแม่นยำ 50% ขึ้นไป ทำงานตามปกติ
+                    document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
+                    document.getElementById('fishName').innerText = fishList[idx];
+
+                    try {
+                        const res = await fetch('./fish_data.json');
+                        const db = await res.json();
+                        const data = db[fishList[idx]];
+                        if(data) fillDataToUI(data, false); 
+                    } catch (err) { console.error(err); }
+                }
             };
             imgForAI.src = URL.createObjectURL(file);
         };
-
-        window.resetUI = () => {
-            document.getElementById('imageInput').value = ""; 
-            document.getElementById('mainSearchInput').value = "";
-            document.getElementById('result-section').classList.add('hidden');
-            document.getElementById('result-section').classList.remove('flex');
-            document.getElementById('loading-section').classList.add('hidden');
-            document.getElementById('default-section').classList.remove('hidden');
-            currentFishData = null;
-        };
-    </script>
-</body>
-</html>
