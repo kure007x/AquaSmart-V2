@@ -438,6 +438,7 @@
             const file = e.target.files[0];
             if(!file) return;
 
+            // ซ่อนหน้าผลลัพธ์และแสดงหน้าโหลด
             document.getElementById('default-section').classList.add('hidden');
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('result-section').classList.remove('flex');
@@ -449,36 +450,45 @@
                 await tf.nextFrame();
                 if(!model) return;
 
+                // แปลงรูปภาพเป็น Tensor ให้ AI อ่าน
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
+                // ให้ AI ทายผล
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
                 const probValue = pred[idx] * 100; // ค่าความมั่นใจเป็น %
 
-                // 🚨 ตรวจสอบเงื่อนไขความแม่นยำต่ำกว่า 50%
-                if (probValue < 50) {
+                // 🚨 ตรวจสอบเงื่อนไขความแม่นยำต่ำกว่า 90%
+                if (probValue < 90) {
                     document.getElementById('loading-section').classList.add('hidden');
                     document.getElementById('result-section').classList.remove('hidden');
                     document.getElementById('result-section').classList.add('flex');
 
-                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้ชัดเจน";
-                    document.getElementById('fishNameEn').innerText = "Low Confidence";
+                    // เปลี่ยนหัวข้อเป็นผลลัพธ์ไม่ชัดเจน
+                    document.getElementById('fishName').innerText = "ผลลัพธ์ไม่ชัดเจน";
+                    document.getElementById('fishNameEn').innerText = "Please try again";
                     document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                    document.getElementById('descBasic').innerText = "AI ไม่มั่นใจในผลลัพธ์ครับ กรุณาอัปโหลดภาพใหม่ที่ชัดเจนกว่านี้ เห็นปลาเต็มตัว หรือลองเปลี่ยนมุมถ่ายเพื่อความแม่นยำนะครับ";
                     
-                    // ซ่อนส่วนข้อมูลเชิงลึกและปุ่มต่างๆ เพราะข้อมูลไม่น่าเชื่อถือ
+                    // 💬 ข้อความแจ้งเตือนผู้ใช้แบบสุภาพ
+                    document.getElementById('descBasic').innerText = "ขออภัยครับ ระบบยังไม่สามารถระบุสายพันธุ์ได้อย่างแน่ชัด เพื่อความถูกต้องของข้อมูล รบกวนคุณถ่ายภาพใหม่อีกครั้ง โดยให้เห็นตัวปลาชัดเจนและอยู่ในจุดที่มีแสงสว่างเพียงพอนะครับ";
+                    
+                    // ซ่อนกรอบเนื้อหาเชิงลึกเพื่อไม่ให้แสดงข้อมูลผิดๆ
                     document.getElementById('basic-content').classList.add('hidden');
                     document.getElementById('full-content').classList.add('hidden');
                     currentFishData = null;
                 } else {
-                    // ✅ กรณีความแม่นยำ 50% ขึ้นไป ทำงานตามปกติ
+                    // ✅ กรณีความแม่นยำ 90% ขึ้นไป ทำงานตามปกติ
                     document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                     document.getElementById('fishName').innerText = fishList[idx];
 
+                    // แสดงกรอบเนื้อหากลับมา (เผื่อถูกซ่อนไปจากการทายผิดรอบก่อน)
+                    document.getElementById('basic-content').classList.remove('hidden');
+
+                    // ดึงข้อมูลจากไฟล์ JSON มาแสดง
                     try {
                         const res = await fetch('./fish_data.json');
                         const db = await res.json();
