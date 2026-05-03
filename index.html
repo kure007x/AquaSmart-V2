@@ -489,3 +489,16 @@
             };
             imgForAI.src = URL.createObjectURL(file);
         };
+
+        window.resetUI = () => {
+            document.getElementById('imageInput').value = ""; 
+            document.getElementById('mainSearchInput').value = "";
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('flex');
+            document.getElementById('loading-section').classList.add('hidden');
+            document.getElementById('default-section').classList.remove('hidden');
+            currentFishData = null;
+        };
+    </script>
+</body>
+</html>
