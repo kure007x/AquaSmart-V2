@@ -85,7 +85,6 @@
             <!-- 🌟 ส่วนหัว: รูปปลา ชื่อ รายละเอียด -->
             <div class="info-card !pb-5">
                 <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
-                    <!-- 🚨 ตรงนี้แหละครับที่แก้บั๊ก ใส่ this.onerror=null ป้องกันการโหลดวนซ้ำ -->
                     <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" onerror="this.onerror=null; this.src='https://placehold.co/400x250?text=No+Image'">
                 </div>
                 <div class="flex justify-between items-start px-1 mb-2">
@@ -247,7 +246,7 @@
         </div>
     </div>
 
-    <!-- 🧠 SCRIPT -->
+    <!-- 🧠 SCRIPT AI -->
     <script>
         let model;
         let currentFishData = null; 
@@ -438,7 +437,6 @@
             const file = e.target.files[0];
             if(!file) return;
 
-            // ซ่อนหน้าผลลัพธ์และแสดงหน้าโหลด
             document.getElementById('default-section').classList.add('hidden');
             document.getElementById('result-section').classList.add('hidden');
             document.getElementById('result-section').classList.remove('flex');
@@ -450,17 +448,15 @@
                 await tf.nextFrame();
                 if(!model) return;
 
-                // แปลงรูปภาพเป็น Tensor ให้ AI อ่าน
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
                     t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
-                // ให้ AI ทายผล
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
-                const probValue = pred[idx] * 100; // ค่าความมั่นใจเป็น %
+                const probValue = pred[idx] * 100; 
 
                 // 🚨 ตรวจสอบเงื่อนไขความแม่นยำต่ำกว่า 90%
                 if (probValue < 90) {
@@ -468,15 +464,12 @@
                     document.getElementById('result-section').classList.remove('hidden');
                     document.getElementById('result-section').classList.add('flex');
 
-                    // เปลี่ยนหัวข้อเป็นผลลัพธ์ไม่ชัดเจน
                     document.getElementById('fishName').innerText = "ผลลัพธ์ไม่ชัดเจน";
                     document.getElementById('fishNameEn').innerText = "Please try again";
                     document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                     
-                    // 💬 ข้อความแจ้งเตือนผู้ใช้แบบสุภาพ
                     document.getElementById('descBasic').innerText = "ขออภัยครับ ระบบยังไม่สามารถระบุสายพันธุ์ได้อย่างแน่ชัด เพื่อความถูกต้องของข้อมูล รบกวนคุณถ่ายภาพใหม่อีกครั้ง โดยให้เห็นตัวปลาชัดเจนและอยู่ในจุดที่มีแสงสว่างเพียงพอนะครับ";
                     
-                    // ซ่อนกรอบเนื้อหาเชิงลึกเพื่อไม่ให้แสดงข้อมูลผิดๆ
                     document.getElementById('basic-content').classList.add('hidden');
                     document.getElementById('full-content').classList.add('hidden');
                     currentFishData = null;
@@ -485,10 +478,13 @@
                     document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                     document.getElementById('fishName').innerText = fishList[idx];
 
-                    // แสดงกรอบเนื้อหากลับมา (เผื่อถูกซ่อนไปจากการทายผิดรอบก่อน)
                     document.getElementById('basic-content').classList.remove('hidden');
 
-                    // ดึงข้อมูลจากไฟล์ JSON มาแสดง
+                    // 🌟 ส่งข้อมูลเข้า Firebase Database ทันทีที่สแกนผ่านเกณฑ์
+                    if (window.saveScanHistoryToDB) {
+                        window.saveScanHistoryToDB(fishList[idx], probValue.toFixed(1));
+                    }
+
                     try {
                         const res = await fetch('./fish_data.json');
                         const db = await res.json();
@@ -508,6 +504,42 @@
             document.getElementById('loading-section').classList.add('hidden');
             document.getElementById('default-section').classList.remove('hidden');
             currentFishData = null;
+        };
+    </script>
+
+    <!-- 🌟 ระบบเชื่อมต่อ Firestore Database (Firebase v10) 🌟 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+        // กุญแจ Firebase ของโปรเจกต์ AquaSmart-V2
+        const firebaseConfig = {
+            apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
+            authDomain: "aquasmart-v2.firebaseapp.com",
+            projectId: "aquasmart-v2",
+            storageBucket: "aquasmart-v2.firebasestorage.app",
+            messagingSenderId: "482478104079",
+            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
+            measurementId: "G-43DYK4D6QR"
+        };
+
+        // สตาร์ทเครื่องยนต์ Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ฟังก์ชันรับข้อมูลจาก AI แล้วส่งขึ้น Cloud
+        window.saveScanHistoryToDB = async function(fishName, confidenceScore) {
+            try {
+                const docRef = await addDoc(collection(db, "scan_history"), {
+                    fish_name: fishName,
+                    confidence: Number(confidenceScore),
+                    status: "Success",
+                    timestamp: new Date()
+                });
+                console.log("✅ บันทึกประวัติลง Database สำเร็จ! Document ID: ", docRef.id);
+            } catch (e) {
+                console.error("❌ เกิดข้อผิดพลาดในการบันทึก: ", e);
+            }
         };
     </script>
 </body>
