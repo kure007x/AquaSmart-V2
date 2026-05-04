@@ -37,7 +37,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
             </div>
             <h2 class="text-2xl font-bold text-slate-800 mb-2">เข้าสู่ระบบ</h2>
-            <p class="text-slate-500 text-sm mb-6">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึกทั้งหมด (เกษตรกร / ปลาสวยงาม)</p>
+            <p class="text-slate-500 text-sm mb-6">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึกทั้งหมด</p>
             <button onclick="performLogin()" class="w-full py-3 bg-[#2563eb] text-white font-bold rounded-xl hover:bg-blue-700 transition-colors mb-3">เข้าสู่ระบบ (Demo)</button>
             <button onclick="closeLoginModal()" class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors">ยกเลิก</button>
         </div>
@@ -64,7 +64,7 @@
             <button id="btnCamera" class="w-12 h-12 bg-[#2563eb] rounded-full flex items-center justify-center text-white shadow-md shadow-blue-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg></button>
         </div>
 
-        <!-- Default List -->
+        <!-- Default List (Shown at start) -->
         <div id="default-section" class="info-card">
             <h2 class="text-xl font-bold text-[#111827] mb-5">Top Searched Fish</h2>
             <div class="space-y-3">
@@ -73,210 +73,179 @@
             </div>
         </div>
 
-        <!-- Loading -->
+        <!-- ⏳ Loading Section -->
         <div id="loading-section" class="hidden info-card text-center py-10">
             <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
             <p class="text-blue-600 font-bold">กำลังประมวลผลข้อมูล...</p>
         </div>
 
-        <!-- Result Section -->
+        <!-- 📊 Result Section -->
         <div id="result-section" class="hidden flex-col gap-2 mt-2">
             
-            <!-- 🌟 ส่วนหัว: รูปปลา ชื่อ รายละเอียด -->
+            <!-- 🌟 Image & Basic Info -->
             <div class="info-card !pb-5">
                 <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
-                    <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" onerror="this.onerror=null; this.src='https://placehold.co/400x250?text=No+Image'">
+                    <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="">
                 </div>
                 <div class="flex justify-between items-start px-1 mb-2">
                     <div class="text-left">
                         <h2 id="fishName" class="text-2xl font-black text-slate-800">-</h2>
                         <p id="fishNameEn" class="text-sm font-medium text-slate-400">-</p>
                     </div>
-                    <span id="probBadge" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm"><span class="text-blue-400">•</span> <span id="prob">Search Result</span></span>
+                    <span id="probBadge" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm">
+                        <span id="prob">Result</span>
+                    </span>
                 </div>
                 <p class="info-label px-1 mt-4">รายละเอียด</p>
                 <p id="descBasic" class="text-slate-600 text-sm px-1 leading-relaxed">-</p>
             </div>
 
-            <!-- 🔒 โหมด Basic -->
+            <!-- 🔒 Basic Mode Toggle (Pre-Login) -->
             <div id="basic-content" class="flex flex-col gap-2">
                 <div class="info-card">
-                    <h3 class="font-bold text-slate-800 mb-4">General Information</h3>
-                    <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                    <h3 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider">General Information</h3>
+                    <div class="grid grid-cols-3 gap-2 text-center">
                         <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Type</p><p id="b-type" class="info-value text-xs">-</p></div>
                         <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Category</p><p id="b-cat" class="info-value text-xs">-</p></div>
                         <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Habitat</p><p id="b-hab" class="info-value text-xs">-</p></div>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl">
-                        <p class="info-label">How to Identify (วิธีสังเกต)</p>
-                        <p id="b-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p>
-                    </div>
                 </div>
-
-                <!-- กล่องปุ่มดูข้อมูลทั้งหมด -->
-                <div class="info-card !bg-transparent !border-none !shadow-none !p-0 mt-2">
-                    <button onclick="checkAuthAndUnlock()" class="w-full py-4 bg-[#2563eb] text-white font-bold rounded-2xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                        <span>view full details</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" /></svg>
-                    </button>
-                    <p class="text-center text-slate-400 text-xs mt-3">เข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึก</p>
-                </div>
+                <button onclick="checkAuthAndUnlock()" class="w-full py-4 bg-[#2563eb] text-white font-bold rounded-2xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                    <span>View Full Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" /></svg>
+                </button>
             </div>
 
-            <!-- 🔓 โหมด Full Data (เปิดเมื่อ Login + กดปุ่ม) -->
+            <!-- 🔓 Full Content (Post-Login) -->
             <div id="full-content" class="hidden flex-col gap-2">
-                <!-- Tab Menu -->
+                <!-- 🛠️ Dynamic Tab Menu -->
                 <div class="bg-white p-1.5 rounded-full flex justify-between mb-2 shadow-sm border border-slate-100">
-                    <button onclick="switchTab('general')" id="tab-btn-general" class="tab-btn active flex-1 py-2 rounded-full text-sm transition-all">General</button>
-                    <button onclick="switchTab('farmer')" id="tab-btn-farmer" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Farmer</button>
-                    <button onclick="switchTab('ornamental')" id="tab-btn-ornamental" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Ornamental</button>
+                    <button onclick="switchTab('general')" id="tab-btn-general" class="tab-btn active flex-1 py-2 rounded-full text-sm">General</button>
+                    <!-- Buttons below will show/hide via JS based on Category -->
+                    <button onclick="switchTab('farmer')" id="tab-btn-farmer" class="tab-btn flex-1 py-2 rounded-full text-sm hidden">Farmer</button>
+                    <button onclick="switchTab('ornamental')" id="tab-btn-ornamental" class="tab-btn flex-1 py-2 rounded-full text-sm hidden">Ornamental</button>
                 </div>
 
-                <!-- 🔵 TAB 1: GENERAL -->
+                <!-- 🔵 TAB 1: GENERAL (Always available) -->
                 <div id="tab-general" class="space-y-2">
-                    <div class="info-card border-blue-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">General Information</h3>
-                        <div class="grid grid-cols-3 gap-2 mb-4 text-center">
-                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Type</p><p id="g-type" class="info-value text-xs">-</p></div>
-                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Category</p><p id="g-cat" class="info-value text-xs">-</p></div>
-                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="info-label">Habitat</p><p id="g-hab" class="info-value text-xs">-</p></div>
+                    <div class="info-card">
+                        <h3 class="font-bold text-slate-800 mb-4">Biological Data</h3>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">Lifespan</p><p id="g-life" class="info-value">-</p></div>
+                            <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">Adult Size</p><p id="g-size" class="info-value">-</p></div>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">How to Identify (วิธีสังเกต)</p><p id="g-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p></div>
-                    </div>
-                    <div class="info-card border-blue-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">General Biology</h3>
-                        <div class="bg-slate-50 p-4 rounded-2xl mb-2"><p class="info-label">Average Lifespan (อายุเฉลี่ย)</p><p id="g-life" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">Adult Size (ขนาดโตเต็มวัย)</p><p id="g-size" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
+                        <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">How to Identify (วิธีสังเกต)</p><p id="g-ident" class="text-sm text-slate-600 mt-1">-</p></div>
                     </div>
                 </div>
 
-                <!-- 🟢 TAB 2: FARMER -->
+                <!-- 🟢 TAB 2: FARMER (Conditional) -->
                 <div id="tab-farmer" class="hidden space-y-2">
                     <div class="info-card border-blue-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับเกษตรกร</h3>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">วิธีเลี้ยง</p><p id="f-raise" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">ชนิดบ่อ และ ขนาดบ่อ</p><p id="f-pond" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">จำนวนประชากรต่อบ่อ</p><p id="f-pop" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                    </div>
-                    <div class="info-card border-blue-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ระบบนิเวศ & สุขภาพ</h3>
-                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ห้ามเลี้ยงร่วมกับ</p><p id="f-avoid" class="text-sm font-medium text-red-900 mt-1">-</p></div>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">อัตราการรอดชีวิต</p><p id="f-survive" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">โรคที่พบบ่อย</p><p id="f-disease" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">วิธีป้องกันโรค</p><p id="f-prevent" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        <h3 class="font-bold text-blue-800 mb-4">Management (เกษตรกร)</h3>
+                        <div class="space-y-2">
+                            <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">วิธีเลี้ยง</p><p id="f-raise" class="info-value">-</p></div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">ชนิดบ่อ/ขนาด</p><p id="f-pond" class="info-value">-</p></div>
+                                <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">จำนวนประชากร</p><p id="f-pop" class="info-value">-</p></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="info-card border-blue-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">อาหาร & การเจริญเติบโต</h3>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl mb-2"><p class="info-label">ประเภทอาหารที่แนะนำ</p><p id="f-feed-rec" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ไม่แนะนำ</p><p id="f-feed-not" class="text-sm font-medium text-red-900 mt-1">-</p></div>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">ปริมาณอาหาร</p><p id="f-feed-amt" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">รอบต่อวัน</p><p id="f-feed-freq" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">ระยะเวลาโตเต็มวัย</p><p id="f-time" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-blue-50/50 p-3 rounded-2xl"><p class="info-label">ขนาดโตเต็มวัย</p><p id="f-size" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                    <div class="info-card border-red-50">
+                        <h3 class="font-bold text-red-800 mb-4">Health & Eco</h3>
+                        <div class="space-y-2">
+                            <div class="bg-red-50 p-4 rounded-2xl"><p class="info-label">ห้ามเลี้ยงร่วมกับ</p><p id="f-avoid" class="info-value">-</p></div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">โรคพบบ่อย</p><p id="f-disease" class="info-value">-</p></div>
+                                <div class="bg-blue-50/50 p-4 rounded-2xl"><p class="info-label">วิธีป้องกัน</p><p id="f-prevent" class="info-value">-</p></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 🟠 TAB 3: ORNAMENTAL -->
+                <!-- 🟠 TAB 3: ORNAMENTAL (Conditional) -->
                 <div id="tab-ornamental" class="hidden space-y-2">
                     <div class="info-card border-amber-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับคนเลี้ยงปลาสวยงาม</h3>
-                        <div class="bg-amber-50/50 p-4 rounded-2xl mb-2"><p class="info-label">วิธีเลี้ยง</p><p id="o-raise" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-amber-50/50 p-4 rounded-2xl mb-2"><p class="info-label">วิธีเตรียมน้ำ</p><p id="o-water" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ค่า pH</p><p id="o-ph" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อุณหภูมิน้ำ</p><p id="o-temp" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ชนิดแหล่งเลี้ยง</p><p id="o-source" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ขนาดแหล่งเลี้ยง</p><p id="o-source-size" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                        </div>
-                        <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">จำนวนประชากร</p><p id="o-pop" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                    </div>
-                    <div class="info-card border-amber-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">ระบบนิเวศ & สุขภาพ</h3>
-                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ห้ามเลี้ยงร่วมกับ</p><p id="o-avoid" class="text-sm font-medium text-red-900 mt-1">-</p></div>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อัตราการเติบโต</p><p id="o-growth" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อัตราการรอดชีวิต</p><p id="o-survive" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                        </div>
-                        <div class="flex gap-2 mb-2">
-                            <div class="flex-1 bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">โรคที่พบบ่อย</p><p id="o-disease" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="flex-1 bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">วิธีป้องกันโรค</p><p id="o-prevent" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">อายุเฉลี่ย</p><p id="o-life" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ขนาดโตเต็มวัย</p><p id="o-size" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        <h3 class="font-bold text-amber-800 mb-4">Aquarium Care (ปลาสวยงาม)</h3>
+                        <div class="space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">ค่า pH</p><p id="o-ph" class="info-value">-</p></div>
+                                <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">อุณหภูมิน้ำ</p><p id="o-temp" class="info-value">-</p></div>
+                            </div>
+                            <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">วิธีเตรียมน้ำ</p><p id="o-water" class="info-value">-</p></div>
                         </div>
                     </div>
                     <div class="info-card border-amber-50">
-                        <h3 class="font-bold text-slate-800 mb-4 text-lg">อาหาร</h3>
-                        <div class="bg-amber-50/50 p-4 rounded-2xl mb-2"><p class="info-label">ประเภทอาหารที่แนะนำ</p><p id="o-feed-rec" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
-                        <div class="bg-red-50 p-4 rounded-2xl mb-2"><p class="info-label !text-red-400">ไม่แนะนำ</p><p id="o-feed-not" class="text-sm font-medium text-red-900 mt-1">-</p></div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">ปริมาณอาหาร</p><p id="o-feed-amt" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
-                            <div class="bg-amber-50/50 p-3 rounded-2xl"><p class="info-label">รอบต่อวัน</p><p id="o-feed-freq" class="text-xs font-bold text-slate-700 mt-1">-</p></div>
+                        <h3 class="font-bold text-amber-800 mb-4">Biology & Feed</h3>
+                        <div class="space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">โรคพบบ่อย</p><p id="o-disease" class="info-value">-</p></div>
+                                <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">อัตราเติบโต</p><p id="o-growth" class="info-value">-</p></div>
+                            </div>
+                            <div class="bg-amber-50/50 p-4 rounded-2xl"><p class="info-label">อาหารที่แนะนำ</p><p id="o-feed-rec" class="info-value">-</p></div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <button onclick="resetUI()" class="w-full mt-4 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 shadow-sm transition-colors">Scan Another Fish</button>
+            <button onclick="resetUI()" class="w-full mt-4 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-colors">Scan Another Fish</button>
         </div>
     </div>
 
-    <!-- แถบเมนูด้านล่าง -->
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-50">
-        <div class="bg-white rounded-full p-2 shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex justify-between items-center border border-slate-50">
-            <button onclick="resetUI()" class="bg-[#2563eb] text-white w-24 h-12 rounded-full flex items-center justify-center shadow-md shadow-blue-200/50">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
-            </button>
-            <button class="w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            </button>
-            <button class="w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-            </button>
-        </div>
-    </div>
-
-    <!-- 🧠 SCRIPT AI -->
+    <!-- 🧠 CORE LOGIC SCRIPT -->
     <script>
         let model;
-        let currentFishData = null; 
+        let currentFishData = null;
 
-        // ตัวแปรแปลงชื่อไทยเป็น ID ภาษาอังกฤษของ Firebase 
         const fishMapping = {
-            'ปลานวลจันทร์': 'Bangus',
-            'ปลาเสือข้างลาย': 'Black Spotted Barb',
-            'ปลาดุก': 'Catfish',
-            'ปลากุเล้า': 'Fourfinger Threadfin',
-            'ปลาทอง': 'Gold Fish',
-            'ปลากระดี่': 'Gourami',
-            'ปลาปั้กเป้าเขียวจุด': 'Green Spotted Puffer',
-            'ปลาหมอจากัวร์': 'Jaguar Gapote',
-            'ปลากราย': 'Knifefish',
-            'ปลาช่อน': 'Snakehead'
+            'ปลานวลจันทร์': 'Bangus', 'ปลาเสือข้างลาย': 'Black Spotted Barb', 'ปลาดุก': 'Catfish',
+            'ปลากุเล้า': 'Fourfinger Threadfin', 'ปลาทอง': 'Gold Fish', 'ปลากระดี่': 'Gourami',
+            'ปลาปั้กเป้าเขียวจุด': 'Green Spotted Puffer', 'ปลาหมอจากัวร์': 'Jaguar Gapote',
+            'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
+        };
+        const fishList = Object.keys(fishMapping);
+
+        // 🟢 Splash Screen Handling
+        window.onload = async () => {
+            checkAuth();
+            try {
+                model = await tf.loadGraphModel('./model.json');
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 300);
+            } catch (err) { console.error(err); }
         };
 
-        const fishList = Object.keys(fishMapping); 
+        // 🟢 Tab Switching Logic
+        function switchTab(tab) {
+            ['general', 'farmer', 'ornamental'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (el) el.classList.add('hidden');
+                if (btn) btn.classList.remove('active');
+            });
+            const targetEl = document.getElementById(`tab-${tab}`);
+            const targetBtn = document.getElementById(`tab-btn-${tab}`);
+            if (targetEl) targetEl.classList.remove('hidden');
+            if (targetBtn) targetBtn.classList.add('active');
+        }
 
+        // 🟢 UI Reset
+        function resetUI() {
+            document.getElementById('imageInput').value = "";
+            document.getElementById('mainSearchInput').value = "";
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('loading-section').classList.add('hidden');
+            document.getElementById('default-section').classList.remove('hidden');
+            currentFishData = null;
+        }
+
+        // 🟢 Auth Handling
         function checkAuth() {
             const isLog = localStorage.getItem('isLoggedIn');
             const btn = document.getElementById('user-btn');
-            if(isLog === 'true') {
-                btn.classList.add('border-blue-500', 'text-blue-500'); 
-                btn.classList.remove('border-slate-200', 'text-slate-400');
-            } else {
-                btn.classList.add('border-slate-200', 'text-slate-400');
-                btn.classList.remove('border-blue-500', 'text-blue-500');
-            }
+            btn.className = (isLog === 'true') ? 
+                "w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3px] border-blue-500 text-blue-500" :
+                "w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3px] border-slate-200 text-slate-400";
         }
 
         function toggleUserStatus() {
@@ -295,239 +264,146 @@
             localStorage.setItem('isLoggedIn', 'true');
             document.getElementById('login-modal').classList.add('hidden');
             checkAuth();
-            if(currentFishData) {
-                checkAuthAndUnlock();
-            }
+            if(currentFishData) checkAuthAndUnlock();
         }
 
-        function closeLoginModal() {
-            document.getElementById('login-modal').classList.add('hidden');
-        }
+        function closeLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
 
         function checkAuthAndUnlock() {
             if(localStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('basic-content').classList.add('hidden');
                 document.getElementById('full-content').classList.remove('hidden');
-                document.getElementById('full-content').classList.add('flex');
             } else {
                 document.getElementById('login-modal').classList.remove('hidden');
             }
         }
 
-        function switchTab(tab) {
-            ['general', 'farmer', 'ornamental'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${t}`).classList.remove('active');
-            });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).classList.add('active');
-        }
-
-        window.onload = async () => {
-            checkAuth();
-            try {
-                model = await tf.loadGraphModel('./model.json');
-                const splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 300);
-            } catch (err) { console.error("Model load error:", err); }
-        };
-
-        const searchInput = document.getElementById('mainSearchInput');
-        if(searchInput) {
-            searchInput.addEventListener('keypress', async function (e) {
-                if (e.key === 'Enter') {
-                    const query = this.value.trim();
-                    if (query !== "") {
-                        const idx = fishList.findIndex(fish => fish.includes(query));
-
-                        if (idx !== -1) {
-                            searchInput.blur();
-                            document.getElementById('default-section').classList.add('hidden');
-                            document.getElementById('result-section').classList.add('hidden');
-                            document.getElementById('result-section').classList.remove('flex');
-                            document.getElementById('loading-section').classList.remove('hidden');
-
-                            const thaiName = fishList[idx];
-                            const dbFishId = fishMapping[thaiName]; 
-
-                            setTimeout(async () => {
-                                // ดึงข้อมูล Firebase (ไม่บันทึกประวัติเพราะเป็นการค้นหาด้วยข้อความ)
-                                if(window.fetchFishDataFromFirebase) {
-                                    window.fetchFishDataFromFirebase(dbFishId, true);
-                                }
-                            }, 500);
-
-                        } else {
-                            alert("ไม่พบข้อมูล '" + query + "' ในระบบครับ ลองพิมพ์ใหม่อีกครั้ง");
-                        }
-                    }
-                }
-            });
-        }
-
-        document.getElementById('btnCamera').onclick = () => {
-            document.getElementById('imageInput').value = ""; 
-            document.getElementById('imageInput').click();
-        };
-
+        // 🟢 Camera/AI Trigger
+        document.getElementById('btnCamera').onclick = () => document.getElementById('imageInput').click();
+        
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
 
             document.getElementById('default-section').classList.add('hidden');
-            document.getElementById('result-section').classList.add('hidden');
-            document.getElementById('result-section').classList.remove('flex');
             document.getElementById('loading-section').classList.remove('hidden');
 
-            const imgForAI = new Image();
-            imgForAI.onload = async () => {
-                document.getElementById('previewImage').src = imgForAI.src;
+            const img = new Image();
+            img.onload = async () => {
+                document.getElementById('previewImage').src = img.src;
                 await tf.nextFrame();
-                if(!model) return;
-
                 const tensor = tf.tidy(() => {
-                    let t = tf.browser.fromPixels(imgForAI);
-                    t = tf.image.resizeBilinear(t, [224, 224]);
-                    return t.toFloat().div(255.0).expandDims(0); 
+                    let t = tf.browser.fromPixels(img).resizeBilinear([224, 224]);
+                    return t.toFloat().div(255.0).expandDims(0);
                 });
 
                 const pred = await model.predict(tensor).data();
                 const idx = pred.indexOf(Math.max(...pred));
-                const probValue = pred[idx] * 100; 
+                const probValue = pred[idx] * 100;
+                const thaiName = fishList[idx];
+                const dbFishId = fishMapping[thaiName];
 
-                // 🚨 ตรวจสอบเงื่อนไขความแม่นยำต่ำกว่า 90%
-                if (probValue < 90) {
-                    console.log("⚠️ ความแม่นยำต่ำกว่าเกณฑ์: " + probValue.toFixed(1) + "%");
-                    
-                    document.getElementById('loading-section').classList.add('hidden');
-                    document.getElementById('result-section').classList.remove('hidden');
-                    document.getElementById('result-section').classList.add('flex');
-
-                    document.getElementById('fishName').innerText = "ผลลัพธ์ไม่ชัดเจน";
-                    document.getElementById('fishNameEn').innerText = "Please try again";
-                    document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                    document.getElementById('descBasic').innerText = "ขออภัยครับ ระบบยังไม่สามารถระบุสายพันธุ์ได้อย่างแน่ชัด รบกวนคุณถ่ายภาพใหม่อีกครั้ง";
-                    
-                    document.getElementById('basic-content').classList.add('hidden');
-                    document.getElementById('full-content').classList.add('hidden');
-                    currentFishData = null;
+                if (probValue > 90) {
+                    document.getElementById('prob').innerText = probValue.toFixed(1) + "% Accuracy";
+                    // Call Firebase Module
+                    if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1));
+                    if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(dbFishId);
                 } else {
-                    // ✅ กรณีความแม่นยำ 90% ขึ้นไป
-                    console.log("✅ ความแม่นยำผ่านเกณฑ์: " + probValue.toFixed(1) + "%");
-                    const thaiName = fishList[idx];
-                    const dbFishId = fishMapping[thaiName]; 
-                    
-                    document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                    
-                    // 🌟 1. สั่งบันทึกประวัติสแกนลง Database
-                    if(window.saveScanHistoryToDB) {
-                        console.log("-> กำลังเรียกฟังก์ชันบันทึกข้อมูล");
-                        window.saveScanHistoryToDB(thaiName, probValue.toFixed(1));
-                    } else {
-                        console.error("❌ หาฟังก์ชัน saveScanHistoryToDB ไม่เจอ!");
-                    }
-
-                    // 🌟 2. ดึงข้อมูลมาแสดงจาก Database
-                    if(window.fetchFishDataFromFirebase) {
-                        window.fetchFishDataFromFirebase(dbFishId, false);
-                    }
+                    alert("ความแม่นยำต่ำเกินไป กรุณาถ่ายภาพใหม่ให้ชัดเจนกว่านี้ครับ");
+                    resetUI();
                 }
             };
-            imgForAI.src = URL.createObjectURL(file);
-        };
-
-        window.resetUI = () => {
-            document.getElementById('imageInput').value = ""; 
-            document.getElementById('mainSearchInput').value = "";
-            document.getElementById('result-section').classList.add('hidden');
-            document.getElementById('result-section').classList.remove('flex');
-            document.getElementById('loading-section').classList.add('hidden');
-            document.getElementById('default-section').classList.remove('hidden');
-            currentFishData = null;
+            img.src = URL.createObjectURL(file);
         };
     </script>
 
-    <!-- 🌟 ระบบเชื่อมต่อ Firestore Database (Firebase v10) 🌟 -->
+    <!-- 🌟 FIREBASE ENGINE (THE HEART) 🌟 -->
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    
-    const firebaseConfig = {
-        apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
-        authDomain: "aquasmart-v2.firebaseapp.com",
-        projectId: "aquasmart-v2",
-        storageBucket: "aquasmart-v2.firebasestorage.app",
-        messagingSenderId: "482478104079",
-        appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
-        measurementId: "G-43DYK4D6QR"
-    };
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
+            authDomain: "aquasmart-v2.firebaseapp.com",
+            projectId: "aquasmart-v2",
+            storageBucket: "aquasmart-v2.firebasestorage.app",
+            messagingSenderId: "482478104079",
+            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
+            measurementId: "G-43DYK4D6QR"
+        };
 
-    // ฟังก์ชันดึงข้อมูลจาก Firebase และเอาไปหยอดใส่ UI
-    window.fetchFishDataFromFirebase = async function(dbFishId, isFromSearch) {
-        try {
-            console.log("🔍 กำลังดึงข้อมูลจากคอลเลกชัน fish_info ID: " + dbFishId);
-            const docRef = doc(db, "fish_info", dbFishId);
-            const docSnap = await getDoc(docRef);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-            if (docSnap.exists()) {
-                const fishData = docSnap.data();
-                currentFishData = true; 
+        // 🧠 FUNCTION: Fetch & Filter Tabs
+        window.fetchFishDataFromFirebase = async function(dbFishId) {
+            try {
+                const docSnap = await getDoc(doc(db, "fish_info", dbFishId));
 
-                document.getElementById('fishName').innerText = fishData.thai_name || '-';
-                document.getElementById('fishNameEn').innerText = fishData.english_name || '-';
-                document.getElementById('descBasic').innerText = fishData.description || '-';
-                
-                if(fishData.image_url) {
-                    document.getElementById('previewImage').src = fishData.image_url;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.currentFishData = data; 
+
+                    // 1. Populate UI Fields
+                    document.getElementById('fishName').innerText = data.thai_name || '-';
+                    document.getElementById('fishNameEn').innerText = data.english_name || '-';
+                    document.getElementById('descBasic').innerText = data.description || '-';
+                    if(data.image_url) document.getElementById('previewImage').src = data.image_url;
+
+                    // 2. Logic: Show/Hide Tabs based on Category
+                    const btnFarmer = document.getElementById('tab-btn-farmer');
+                    const btnOrna = document.getElementById('tab-btn-ornamental');
+                    
+                    // Reset visibility first
+                    btnFarmer.classList.add('hidden');
+                    btnOrna.classList.add('hidden');
+
+                    if (data.category === 'farmer') {
+                        btnFarmer.classList.remove('hidden');
+                        // Map Farmer specific data
+                        document.getElementById('f-raise').innerText = data.f_raise || '-';
+                        document.getElementById('f-pond').innerText = data.f_pond || '-';
+                        document.getElementById('f-pop').innerText = data.f_pop || '-';
+                        document.getElementById('f-avoid').innerText = data.f_avoid || '-';
+                        document.getElementById('f-disease').innerText = data.f_disease || '-';
+                        document.getElementById('f-prevent').innerText = data.f_prevent || '-';
+                    } else if (data.category === 'ornamental') {
+                        btnOrna.classList.remove('hidden');
+                        // Map Ornamental specific data
+                        document.getElementById('o-ph').innerText = data.o_ph || '-';
+                        document.getElementById('o-temp').innerText = data.o_temp || '-';
+                        document.getElementById('o-water').innerText = data.o_water || '-';
+                        document.getElementById('o-disease').innerText = data.o_disease || '-';
+                        document.getElementById('o-growth').innerText = data.o_growth || '-';
+                        document.getElementById('o-feed-rec').innerText = data.o_feed || '-';
+                    }
+
+                    // 3. Map General Data
+                    document.getElementById('b-type').innerText = data.type || '-';
+                    document.getElementById('b-cat').innerText = data.category === 'farmer' ? 'ปลาเศรษฐกิจ' : 'ปลาสวยงาม';
+                    document.getElementById('b-hab').innerText = data.habitat || '-';
+                    document.getElementById('g-life').innerText = data.lifespan || '-';
+                    document.getElementById('g-size').innerText = data.adult_size || '-';
+                    document.getElementById('g-ident').innerText = data.identify || '-';
+
+                    // 4. Update UI States
+                    document.getElementById('loading-section').classList.add('hidden');
+                    document.getElementById('result-section').classList.remove('hidden');
+                    switchTab('general');
                 }
-                if(isFromSearch) {
-                    document.getElementById('prob').innerText = "Search Result";
-                }
+            } catch (err) { console.error("Firebase Error:", err); }
+        };
 
-                document.getElementById('basic-content').classList.remove('hidden');
-                document.getElementById('full-content').classList.add('hidden');
-                document.getElementById('full-content').classList.remove('flex');
-                
-                document.getElementById('loading-section').classList.add('hidden');
-                document.getElementById('result-section').classList.remove('hidden');
-                document.getElementById('result-section').classList.add('flex');
-            } else {
-                console.log("ไม่พบประวัติปลาชนิดนี้ในระบบ");
-                document.getElementById('fishName').innerText = "ยังไม่มีข้อมูล";
-                document.getElementById('descBasic').innerText = "กรุณาเพิ่มข้อมูลในหน้า Admin ก่อนครับ";
-                
-                document.getElementById('loading-section').classList.add('hidden');
-                document.getElementById('result-section').classList.remove('hidden');
-                document.getElementById('result-section').classList.add('flex');
-            }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-        }
-    };
-
-    // ฟังก์ชันบันทึกประวัติการสแกนลง Firebase
-    window.saveScanHistoryToDB = async function(fishName, probValue) {
-        try {
-            console.log("⏳ เริ่มส่งข้อมูลเข้าคอลเลกชัน scan_history: " + fishName + " (" + probValue + "%)");
-            
-            const historyRef = collection(db, "scan_history");
-            await addDoc(historyRef, {
-                fish_name: fishName,
-                confidence_percent: parseFloat(probValue),
-                scan_date: serverTimestamp() 
-            });
-            
-            console.log("✅ บันทึกประวัติการสแกนลงฐานข้อมูลสำเร็จ!");
-        } catch (error) {
-            console.error("❌ เกิดข้อผิดพลาดในการบันทึกประวัติ:", error);
-            // แจ้งเตือนแบบเด้งขึ้นจอให้กูเร่รู้ตัวทันที!
-            alert("บันทึกประวัติการสแกนไม่สำเร็จ! ลองเช็ค Console (F12) ดูครับ \nError: " + error.message);
-        }
-    };
+        // 🧠 FUNCTION: History Tracking
+        window.saveScanHistoryToDB = async function(name, prob) {
+            try {
+                await addDoc(collection(db, "scan_history"), {
+                    fish_name: name,
+                    confidence_percent: parseFloat(prob),
+                    scan_date: serverTimestamp() 
+                });
+            } catch (err) { console.error("History Error:", err); }
+        };
     </script>
 </body>
 </html>

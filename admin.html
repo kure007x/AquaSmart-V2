@@ -3,106 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaSmart-V2 | ระบบหลังบ้าน (Admin)</title>
-    <!-- โหลด Tailwind CSS มาใช้ตกแต่งหน้าเว็บ -->
+    <title>AquaSmart-V2 | Admin Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-10 font-sans">
-
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
-        <h1 class="text-3xl font-bold text-blue-600 mb-6 border-b pb-4">🐟 เพิ่มข้อมูลปลาชนิดใหม่</h1>
+<body class="bg-gray-100 p-5 font-sans">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+        <h1 class="text-3xl font-bold text-blue-600 mb-6 border-b pb-4">🐟 จัดการข้อมูลปลาเชิงลึก</h1>
         
-        <!-- ฟอร์มกรอกข้อมูล -->
-        <div class="space-y-5">
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">ชื่อปลา (ภาษาไทย)</label>
-                <input type="text" id="fishNameTH" placeholder="เช่น ปลาหมอคางดำ" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- ข้อมูลพื้นฐาน -->
+            <div class="space-y-4">
+                <h2 class="font-bold text-lg text-gray-800 border-l-4 border-blue-500 pl-2">ข้อมูลหลัก</h2>
+                <input type="text" id="fishNameTH" placeholder="ชื่อปลา (ไทย)" class="w-full p-2 border rounded">
+                <input type="text" id="fishNameEN" placeholder="ชื่อปลา (อังกฤษ/ID)" class="w-full p-2 border rounded">
+                <select id="category" class="w-full p-2 border rounded bg-blue-50">
+                    <option value="farmer">ปลาเศรษฐกิจ (เกษตรกร)</option>
+                    <option value="ornamental">ปลาสวยงาม</option>
+                </select>
+                <textarea id="fishDesc" placeholder="รายละเอียดทั่วไป" class="w-full p-2 border rounded"></textarea>
+                <input type="file" id="fishImage" class="w-full p-1 border rounded text-sm">
             </div>
 
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">ชื่อปลา (ภาษาอังกฤษ / เผื่อทำเป็น ID)</label>
-                <input type="text" id="fishNameEN" placeholder="เช่น blackchin_tilapia" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <!-- General Information -->
+            <div class="space-y-4">
+                <h2 class="font-bold text-lg text-gray-800 border-l-4 border-green-500 pl-2">General Info</h2>
+                <input type="text" id="g_type" placeholder="Type (เช่น ปลาน้ำจืด)" class="w-full p-2 border rounded">
+                <input type="text" id="g_habitat" placeholder="Habitat (แหล่งที่อยู่)" class="w-full p-2 border rounded">
+                <input type="text" id="g_identify" placeholder="วิธีสังเกต" class="w-full p-2 border rounded">
+                <input type="text" id="g_lifespan" placeholder="อายุเฉลี่ย" class="w-full p-2 border rounded">
+                <input type="text" id="g_adult_size" placeholder="ขนาดโตเต็มวัย" class="w-full p-2 border rounded">
             </div>
-
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">คำอธิบายวิธีเลี้ยงเบื้องต้น</label>
-                <textarea id="fishDescription" rows="4" placeholder="กรอกข้อมูลลักษณะนิสัยหรือการดูแล..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">อัปโหลดรูปภาพตัวอย่างปลา</label>
-                <input type="file" id="fishImageFile" accept="image/*" class="w-full text-gray-700 p-2 border rounded-lg bg-gray-50">
-            </div>
-
-            <button id="btnSave" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300">
-                💾 บันทึกข้อมูลลงฐานข้อมูล
-            </button>
         </div>
+
+        <hr class="my-8">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Farmer Section -->
+            <div class="p-4 bg-blue-50 rounded-xl space-y-3">
+                <h2 class="font-bold text-blue-700">สำหรับเกษตรกร (Farmer)</h2>
+                <input type="text" id="f_raise" placeholder="วิธีเลี้ยง" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="f_pond" placeholder="ชนิด/ขนาดบ่อ" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="f_pop" placeholder="จำนวนต่อบ่อ" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="f_disease" placeholder="โรคที่พบบ่อย/วิธีป้องกัน" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="f_feed" placeholder="อาหาร/รอบต่อวัน" class="w-full p-2 border rounded text-sm">
+            </div>
+
+            <!-- Ornamental Section -->
+            <div class="p-4 bg-amber-50 rounded-xl space-y-3">
+                <h2 class="font-bold text-amber-700">สำหรับปลาสวยงาม (Ornamental)</h2>
+                <input type="text" id="o_raise" placeholder="วิธีเลี้ยง" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="o_water" placeholder="วิธีเตรียมน้ำ/pH/Temp" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="o_growth" placeholder="อัตราการเติบโต/รอดชีวิต" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="o_disease" placeholder="โรค/การป้องกัน" class="w-full p-2 border rounded text-sm">
+                <input type="text" id="o_feed" placeholder="อาหาร/ปริมาณ" class="w-full p-2 border rounded text-sm">
+            </div>
+        </div>
+
+        <button id="btnSave" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-8 hover:bg-blue-700 shadow-lg">
+            💾 บันทึกข้อมูลลงฐานข้อมูล Firebase
+        </button>
     </div>
 
-    <!-- โค้ด JavaScript สำหรับเชื่อมต่อ Firebase ต้องอยู่ข้างในแท็ก script แบบนี้ครับ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-// 🚨 ใส่ Config ของโปรเจกต์ AquaSmart-V2
         const firebaseConfig = {
             apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
             authDomain: "aquasmart-v2.firebaseapp.com",
             projectId: "aquasmart-v2",
             storageBucket: "aquasmart-v2.firebasestorage.app",
             messagingSenderId: "482478104079",
-            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
-            measurementId: "G-43DYK4D6QR"
+            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        document.getElementById('btnSave').addEventListener('click', async () => {
-            const nameTH = document.getElementById('fishNameTH').value;
-            const nameEN = document.getElementById('fishNameEN').value;
-            const description = document.getElementById('fishDescription').value;
-            const imageFile = document.getElementById('fishImageFile').files[0];
-
-            if (!nameTH || !nameEN || !imageFile) {
-                alert("กูเร่! กรอกชื่อปลาและเลือกรูปให้ครบก่อนนะ");
-                return;
-            }
-
-            console.log("เริ่มกระบวนการบันทึก...");
+        document.getElementById('btnSave').onclick = async () => {
+            const id = document.getElementById('fishNameEN').value;
+            const file = document.getElementById('fishImage').files[0];
             const btn = document.getElementById('btnSave');
+            
+            if(!id) return alert("กรุณาใส่ชื่อภาษาอังกฤษเป็น ID");
+            
             btn.disabled = true;
             btn.innerText = "⏳ กำลังบันทึก...";
 
             try {
-                const storageRef = ref(storage, 'fish_samples/' + nameEN + '.jpg');
-                const uploadTask = await uploadBytes(storageRef, imageFile);
-                const imageURL = await getDownloadURL(uploadTask.ref);
-                console.log("อัปโหลดรูปสำเร็จ: " + imageURL);
+                let imgUrl = "";
+                if(file) {
+                    const sRef = ref(storage, `fish_images/${id}.jpg`);
+                    await uploadBytes(sRef, file);
+                    imgUrl = await getDownloadURL(sRef);
+                }
 
-                await setDoc(doc(db, "fish_info", nameEN), {
-                    thai_name: nameTH,
-                    english_name: nameEN,
-                    description: description,
-                    image_url: imageURL,
-                    updated_at: new Date()
+                await setDoc(doc(db, "fish_info", id), {
+                    thai_name: document.getElementById('fishNameTH').value,
+                    english_name: id,
+                    category: document.getElementById('category').value,
+                    description: document.getElementById('fishDesc').value,
+                    image_url: imgUrl,
+                    // General
+                    type: document.getElementById('g_type').value,
+                    habitat: document.getElementById('g_habitat').value,
+                    identify: document.getElementById('g_identify').value,
+                    lifespan: document.getElementById('g_lifespan').value,
+                    adult_size: document.getElementById('g_adult_size').value,
+                    // Farmer Data
+                    f_raise: document.getElementById('f_raise').value,
+                    f_pond: document.getElementById('f_pond').value,
+                    f_pop: document.getElementById('f_pop').value,
+                    f_disease: document.getElementById('f_disease').value,
+                    f_feed: document.getElementById('f_feed').value,
+                    // Ornamental Data
+                    o_raise: document.getElementById('o_raise').value,
+                    o_water: document.getElementById('o_water').value,
+                    o_growth: document.getElementById('o_growth').value,
+                    o_disease: document.getElementById('o_disease').value,
+                    o_feed: document.getElementById('o_feed').value
                 });
 
-                console.log("บันทึกข้อมูลลงฐานข้อมูลสำเร็จ!");
-                alert("✅ บันทึกข้อมูลปลา " + nameTH + " เรียบร้อยแล้ว!");
-                location.reload(); 
-
-            } catch (error) {
-                console.error("เกิดข้อผิดพลาด:", error);
-                alert("❌ บันทึกไม่สำเร็จ: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "💾 บันทึกข้อมูลลงฐานข้อมูล";
-            }
-        });
+                alert("✅ บันทึกข้อมูลสำเร็จ!");
+                location.reload();
+            } catch (e) { alert("❌ พัง: " + e.message); }
+        };
     </script>
 </body>
 </html>
