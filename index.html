@@ -477,10 +477,64 @@
                 const fishData = docSnap.data();
                 currentFishData = true; 
 
+                // 📌 อัปเดตข้อมูลส่วนหัว
                 document.getElementById('fishName').innerText = fishData.thai_name || '-';
                 document.getElementById('fishNameEn').innerText = fishData.english_name || '-';
                 document.getElementById('descBasic').innerText = fishData.description || '-';
                 
+                // แปลงคำศัพท์ให้สวยงาม
+                let catText = '-';
+                if(fishData.category === 'farmer') catText = 'ปลาเศรษฐกิจ';
+                if(fishData.category === 'ornamental') catText = 'ปลาสวยงาม';
+
+                // 📌 อัปเดตข้อมูลโหมด Basic และแท็บ General
+                document.getElementById('b-type').innerText = fishData.type || '-';
+                document.getElementById('g-type').innerText = fishData.type || '-';
+                document.getElementById('b-cat').innerText = catText;
+                document.getElementById('g-cat').innerText = catText;
+                document.getElementById('b-hab').innerText = fishData.habitat || '-';
+                document.getElementById('g-hab').innerText = fishData.habitat || '-';
+                document.getElementById('b-ident').innerText = fishData.identify || '-';
+                document.getElementById('g-ident').innerText = fishData.identify || '-';
+                document.getElementById('g-life').innerText = fishData.lifespan || '-';
+                document.getElementById('g-size').innerText = fishData.adult_size || '-';
+
+                // 📌 อัปเดตข้อมูลแท็บ Farmer
+                document.getElementById('f-raise').innerText = fishData.f_raise || '-';
+                document.getElementById('f-pond').innerText = fishData.f_pond || '-';
+                document.getElementById('f-pop').innerText = fishData.f_pop || '-';
+                document.getElementById('f-avoid').innerText = fishData.f_avoid || '-';
+                document.getElementById('f-survive').innerText = fishData.f_survive || '-';
+                document.getElementById('f-disease').innerText = fishData.f_disease || '-';
+                document.getElementById('f-prevent').innerText = fishData.f_prevent || '-';
+                document.getElementById('f-feed-rec').innerText = fishData.f_feed_rec || '-';
+                document.getElementById('f-feed-not').innerText = fishData.f_feed_not || '-';
+                document.getElementById('f-feed-amt').innerText = fishData.f_feed_amt || '-';
+                document.getElementById('f-feed-freq').innerText = fishData.f_feed_freq || '-';
+                document.getElementById('f-time').innerText = fishData.f_adult_time || '-';
+                document.getElementById('f-size').innerText = fishData.adult_size || '-'; 
+
+                // 📌 อัปเดตข้อมูลแท็บ Ornamental
+                document.getElementById('o-raise').innerText = fishData.o_raise || '-';
+                document.getElementById('o-water').innerText = fishData.o_water || '-';
+                document.getElementById('o-ph').innerText = fishData.o_ph || '-';
+                document.getElementById('o-temp').innerText = fishData.o_temp || '-';
+                document.getElementById('o-source').innerText = fishData.o_source || '-';
+                document.getElementById('o-source-size').innerText = fishData.o_source_size || '-';
+                document.getElementById('o-pop').innerText = fishData.o_pop || '-';
+                document.getElementById('o-avoid').innerText = fishData.o_avoid || '-';
+                document.getElementById('o-growth').innerText = fishData.o_growth || '-';
+                document.getElementById('o-survive').innerText = fishData.o_survive || '-';
+                document.getElementById('o-disease').innerText = fishData.o_disease || '-';
+                document.getElementById('o-prevent').innerText = fishData.o_prevent || '-';
+                document.getElementById('o-life').innerText = fishData.lifespan || '-'; 
+                document.getElementById('o-size').innerText = fishData.adult_size || '-'; 
+                document.getElementById('o-feed-rec').innerText = fishData.o_feed_rec || '-';
+                document.getElementById('o-feed-not').innerText = fishData.o_feed_not || '-';
+                document.getElementById('o-feed-amt').innerText = fishData.o_feed_amt || '-';
+                document.getElementById('o-feed-freq').innerText = fishData.o_feed_freq || '-';
+                
+                // รูปภาพ
                 if(fishData.image_url) {
                     document.getElementById('previewImage').src = fishData.image_url;
                 }
@@ -524,7 +578,6 @@
             console.log("✅ บันทึกประวัติการสแกนลงฐานข้อมูลสำเร็จ!");
         } catch (error) {
             console.error("❌ เกิดข้อผิดพลาดในการบันทึกประวัติ:", error);
-            // แจ้งเตือนแบบเด้งขึ้นจอให้กูเร่รู้ตัวทันที!
             alert("บันทึกประวัติการสแกนไม่สำเร็จ! ลองเช็ค Console (F12) ดูครับ \nError: " + error.message);
         }
     };

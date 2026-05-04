@@ -28,10 +28,16 @@
                         <label class="block text-sm font-bold text-slate-500 mb-1">ชื่อปลา (ไทย)</label>
                         <input type="text" id="fishNameTH" placeholder="เช่น ปลาช่อน" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none">
                     </div>
+                    
+                    <!-- อัปเดตช่อง ID ให้มีปุ่มโหลดข้อมูล -->
                     <div class="md:col-span-1">
                         <label class="block text-sm font-bold text-slate-500 mb-1">ชื่อปลา (อังกฤษ/ID)</label>
-                        <input type="text" id="fishNameEN" placeholder="เช่น Snakehead" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none">
+                        <div class="flex gap-2">
+                            <input type="text" id="fishNameEN" placeholder="เช่น Snakehead" class="w-full p-3 border rounded-xl border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <button id="btnLoad" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 rounded-xl text-sm font-bold transition-colors shadow-sm">🔍 ดึงข้อมูล</button>
+                        </div>
                     </div>
+
                     <div class="md:col-span-1">
                         <label class="block text-sm font-bold text-slate-500 mb-1">หมวดหมู่หลัก</label>
                         <select id="category" class="w-full p-3 border rounded-xl bg-white focus:ring-2 focus:ring-blue-400 outline-none">
@@ -44,7 +50,7 @@
                         <textarea id="fishDesc" placeholder="อธิบายภาพรวมของปลาชนิดนี้..." class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none" rows="1"></textarea>
                     </div>
                     <div class="md:col-span-1">
-                        <label class="block text-sm font-bold text-slate-500 mb-1">รูปภาพประกอบ</label>
+                        <label class="block text-sm font-bold text-slate-500 mb-1">อัปเดตรูปภาพประกอบ</label>
                         <input type="file" id="fishImage" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                     </div>
                 </div>
@@ -93,7 +99,7 @@
                     </div>
                 </section>
 
-                <!-- 4. Ornamental Section (อัปเดตใหม่ครบทุกช่อง) -->
+                <!-- 4. Ornamental Section -->
                 <section class="border-2 border-amber-100 p-6 rounded-[2rem] bg-amber-50/30">
                     <h2 class="text-xl font-bold text-amber-700 mb-4">✨ สำหรับปลาสวยงาม (Ornamental)</h2>
                     <div class="space-y-3">
@@ -115,38 +121,42 @@
                             <input type="text" id="o_growth" placeholder="อัตราเติบโต" class="p-3 border rounded-xl">
                             <input type="text" id="o_survive" placeholder="อัตราการรอด" class="p-3 border rounded-xl">
                         </div>
-                        
-                        <!-- 🌟 ส่วนที่เพิ่มเข้ามาใหม่ให้ครบถ้วน -->
                         <div class="grid grid-cols-2 gap-2 text-xs">
                             <input type="text" id="o_disease" placeholder="โรคที่พบบ่อย" class="p-3 border rounded-xl">
                             <input type="text" id="o_prevent" placeholder="วิธีป้องกันโรค" class="p-3 border rounded-xl">
                         </div>
-                        
                         <div class="bg-white p-4 rounded-xl border border-amber-100">
                             <p class="text-xs font-bold text-amber-400 mb-2">อาหาร</p>
                             <input type="text" id="o_feed_rec" placeholder="อาหารที่แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
-                            <input type="text" id="o_feed_not" placeholder="ไม่แนะนำ" class="w-full p-2 border-b mb-2 outline-none"> <!-- เพิ่มอาหารที่ไม่แนะนำ -->
+                            <input type="text" id="o_feed_not" placeholder="ไม่แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="text" id="o_feed_amt" placeholder="ปริมาณอาหาร" class="p-2 border-b outline-none">
-                                <input type="text" id="o_feed_freq" placeholder="รอบ/วัน" class="p-2 border-b outline-none"> <!-- เพิ่มรอบต่อวัน -->
+                                <input type="text" id="o_feed_freq" placeholder="รอบ/วัน" class="p-2 border-b outline-none">
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <button id="btnSave" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-200 transition-all transform active:scale-95 text-lg flex items-center justify-center gap-3">
-                <span>💾 บันทึกข้อมูลปลาเชิงลึกเข้าสู่ฐานข้อมูล</span>
-            </button>
+            <!-- อัปเดตปุ่ม ควบคุม 2 ปุ่ม (บันทึก/อัปเดต และ ลบ) -->
+            <div class="flex flex-col md:flex-row gap-4 mt-8">
+                <button id="btnSave" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-200 transition-all transform active:scale-95 text-lg flex items-center justify-center gap-3">
+                    <span>💾 บันทึก / อัปเดตข้อมูล</span>
+                </button>
+                <button id="btnDelete" class="w-full md:w-1/4 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-red-100 transition-all transform active:scale-95 text-lg flex items-center justify-center gap-3">
+                    <span>🗑️ ลบข้อมูลปลา</span>
+                </button>
+            </div>
+
         </div>
     </div>
 
     <script type="module">
+        // นำเข้า getDoc และ deleteDoc เพิ่มเติม
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-        // 🚨 Config ของกูเร่
         const firebaseConfig = {
             apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
             authDomain: "aquasmart-v2.firebaseapp.com",
@@ -160,6 +170,65 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // 1. ฟังก์ชันโหลดข้อมูลมาแก้ไข (ดึงจาก Firebase มาใส่ฟอร์ม)
+        document.getElementById('btnLoad').onclick = async () => {
+            const id = document.getElementById('fishNameEN').value.trim();
+            if(!id) return alert("⚠️ กรุณาพิมพ์ชื่อภาษาอังกฤษ (ID) ของปลาที่ต้องการดึงข้อมูลก่อนครับ");
+            
+            try {
+                const docSnap = await getDoc(doc(db, "fish_info", id));
+                if (docSnap.exists()) {
+                    const d = docSnap.data();
+                    // ยัดข้อมูลกลับเข้าฟอร์ม
+                    document.getElementById('fishNameTH').value = d.thai_name || '';
+                    document.getElementById('category').value = d.category || 'farmer';
+                    document.getElementById('fishDesc').value = d.description || '';
+                    document.getElementById('g_type').value = d.type || '';
+                    document.getElementById('g_habitat').value = d.habitat || '';
+                    document.getElementById('g_lifespan').value = d.lifespan || '';
+                    document.getElementById('g_adult_size').value = d.adult_size || '';
+                    document.getElementById('g_identify').value = d.identify || '';
+                    
+                    document.getElementById('f_raise').value = d.f_raise || '';
+                    document.getElementById('f_pond').value = d.f_pond || '';
+                    document.getElementById('f_pop').value = d.f_pop || '';
+                    document.getElementById('f_avoid').value = d.f_avoid || '';
+                    document.getElementById('f_survive').value = d.f_survive || '';
+                    document.getElementById('f_disease').value = d.f_disease || '';
+                    document.getElementById('f_prevent').value = d.f_prevent || '';
+                    document.getElementById('f_feed_rec').value = d.f_feed_rec || '';
+                    document.getElementById('f_feed_not').value = d.f_feed_not || '';
+                    document.getElementById('f_feed_amt').value = d.f_feed_amt || '';
+                    document.getElementById('f_feed_freq').value = d.f_feed_freq || '';
+                    document.getElementById('f_adult_time').value = d.f_adult_time || '';
+                    
+                    document.getElementById('o_raise').value = d.o_raise || '';
+                    document.getElementById('o_water').value = d.o_water || '';
+                    document.getElementById('o_ph').value = d.o_ph || '';
+                    document.getElementById('o_temp').value = d.o_temp || '';
+                    document.getElementById('o_source').value = d.o_source || '';
+                    document.getElementById('o_source_size').value = d.o_source_size || '';
+                    document.getElementById('o_pop').value = d.o_pop || '';
+                    document.getElementById('o_avoid').value = d.o_avoid || '';
+                    document.getElementById('o_growth').value = d.o_growth || '';
+                    document.getElementById('o_survive').value = d.o_survive || '';
+                    document.getElementById('o_disease').value = d.o_disease || '';
+                    document.getElementById('o_prevent').value = d.o_prevent || '';
+                    document.getElementById('o_feed_rec').value = d.o_feed_rec || '';
+                    document.getElementById('o_feed_not').value = d.o_feed_not || '';
+                    document.getElementById('o_feed_amt').value = d.o_feed_amt || '';
+                    document.getElementById('o_feed_freq').value = d.o_feed_freq || '';
+
+                    alert(`✅ ดึงข้อมูล ${id} สำเร็จ! แก้ไขในช่องต่างๆ แล้วกด 'บันทึก' เพื่ออัปเดตได้เลย`);
+                } else {
+                    alert("❌ ไม่พบข้อมูลปลานี้ในระบบ (ID อาจจะผิด ลองเช็คตัวพิมพ์เล็ก/ใหญ่ดูครับ)");
+                }
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        };
+
+        // 2. ฟังก์ชันบันทึก / อัปเดตข้อมูล
         document.getElementById('btnSave').onclick = async () => {
             const id = document.getElementById('fishNameEN').value.trim();
             const file = document.getElementById('fishImage').files[0];
@@ -168,14 +237,23 @@
             if(!id) return alert("กูเร่! ต้องใส่ชื่ออังกฤษ (ID) ก่อนนะ");
             
             btn.disabled = true;
-            btn.innerText = "⏳ กำลังประมวลผลข้อมูลมหาศาล...";
+            btn.innerText = "⏳ กำลังประมวลผลข้อมูล...";
 
             try {
+                // ถ้ามีการเลือกรูปใหม่ ค่อยอัปโหลดทับ
                 let imgUrl = "";
                 if(file) {
                     const sRef = ref(storage, `fish_images/${id}.jpg`);
                     await uploadBytes(sRef, file);
                     imgUrl = await getDownloadURL(sRef);
+                }
+
+                // ถ้าไม่ได้เลือกรูปใหม่ เราต้องดึง url เดิมมาใช้ เพื่อไม่ให้รูปหายตอนแก้ไข
+                if(!file) {
+                    const docSnap = await getDoc(doc(db, "fish_info", id));
+                    if (docSnap.exists() && docSnap.data().image_url) {
+                        imgUrl = docSnap.data().image_url;
+                    }
                 }
 
                 const fishData = {
@@ -184,14 +262,11 @@
                     category: document.getElementById('category').value,
                     description: document.getElementById('fishDesc').value,
                     image_url: imgUrl,
-                    // General & Biology (ใช้ร่วมกัน)
                     type: document.getElementById('g_type').value,
                     habitat: document.getElementById('g_habitat').value,
                     lifespan: document.getElementById('g_lifespan').value,
                     adult_size: document.getElementById('g_adult_size').value,
                     identify: document.getElementById('g_identify').value,
-                    
-                    // Farmer specific
                     f_raise: document.getElementById('f_raise').value,
                     f_pond: document.getElementById('f_pond').value,
                     f_pop: document.getElementById('f_pop').value,
@@ -204,8 +279,6 @@
                     f_feed_amt: document.getElementById('f_feed_amt').value,
                     f_feed_freq: document.getElementById('f_feed_freq').value,
                     f_adult_time: document.getElementById('f_adult_time').value,
-                    
-                    // Ornamental specific (อัปเดตเก็บข้อมูลครบแล้ว)
                     o_raise: document.getElementById('o_raise').value,
                     o_water: document.getElementById('o_water').value,
                     o_ph: document.getElementById('o_ph').value,
@@ -227,12 +300,29 @@
 
                 await setDoc(doc(db, "fish_info", id), fishData);
 
-                alert("✅ ข้อมูลปลา " + id + " ถูกบันทึกเรียบร้อยแล้ว!");
+                alert("✅ บันทึกข้อมูลปลา " + id + " เรียบร้อยแล้ว!");
                 location.reload();
             } catch (e) { 
                 alert("❌ เกิดข้อผิดพลาด: " + e.message); 
                 btn.disabled = false;
-                btn.innerText = "💾 ลองบันทึกใหม่อีกครั้ง";
+                btn.innerText = "💾 บันทึก / อัปเดตข้อมูล";
+            }
+        };
+
+        // 3. ฟังก์ชันลบข้อมูลปลา
+        document.getElementById('btnDelete').onclick = async () => {
+            const id = document.getElementById('fishNameEN').value.trim();
+            if(!id) return alert("⚠️ กรุณาพิมพ์ชื่อภาษาอังกฤษ (ID) ของปลาที่ต้องการลบก่อนครับ");
+
+            // ยืนยันก่อนลบ (กันกดผิด)
+            if(confirm(`⚠️ คำเตือน: คุณแน่ใจหรือไม่ว่าจะลบข้อมูลปลา "${id}" ออกจากระบบ? (ลบแล้วกู้คืนไม่ได้นะ!)`)) {
+                try {
+                    await deleteDoc(doc(db, "fish_info", id));
+                    alert(`🗑️ ข้อมูลปลา ${id} ถูกลบออกจากระบบสำเร็จ!`);
+                    location.reload(); // รีเฟรชหน้าเคลียร์ฟอร์ม
+                } catch(e) {
+                    alert("❌ เกิดข้อผิดพลาดตอนลบ: " + e.message);
+                }
             }
         };
     </script>
