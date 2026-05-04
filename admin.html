@@ -11,12 +11,14 @@
 <body class="bg-slate-50 p-4 md:p-10">
 
     <div class="max-w-5xl mx-auto bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-100">
+        <!-- Header -->
         <div class="bg-blue-600 p-8 text-white text-center">
             <h1 class="text-3xl font-bold">🐟 Fish Database Management</h1>
             <p class="text-blue-100 mt-2">จัดการข้อมูลปลาเศรษฐกิจและปลาสวยงามเชิงลึก</p>
         </div>
 
         <div class="p-8 space-y-10">
+            <!-- 1. ข้อมูลหลักและรูปภาพ -->
             <section>
                 <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span class="w-2 h-8 bg-blue-600 rounded-full"></span> ข้อมูลหลัก (Primary Data)
@@ -48,6 +50,7 @@
                 </div>
             </section>
 
+            <!-- 2. General Information & Biology -->
             <section class="bg-slate-50 p-6 rounded-[1.5rem]">
                 <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span class="w-2 h-8 bg-green-500 rounded-full"></span> General Information & Biology
@@ -55,13 +58,14 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <input type="text" id="g_type" placeholder="Type (เช่น ปลาน้ำจืด)" class="p-3 border rounded-xl">
                     <input type="text" id="g_habitat" placeholder="Habitat (แหล่งที่อยู่)" class="p-3 border rounded-xl">
-                    <input type="text" id="g_lifespan" placeholder="Lifespan (อายุเฉลี่ย)" class="p-3 border rounded-xl">
-                    <input type="text" id="g_adult_size" placeholder="Adult Size (ขนาดโตเต็มวัย)" class="p-3 border rounded-xl">
+                    <input type="text" id="g_lifespan" placeholder="Lifespan (อายุเฉลี่ย)" class="p-3 border rounded-xl border-green-300 bg-green-50">
+                    <input type="text" id="g_adult_size" placeholder="Adult Size (ขนาดโตเต็มวัย)" class="p-3 border rounded-xl border-green-300 bg-green-50">
                     <textarea id="g_identify" placeholder="How to Identify (วิธีสังเกต)" class="col-span-full p-3 border rounded-xl" rows="2"></textarea>
                 </div>
             </section>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 3. Farmer Section -->
                 <section class="border-2 border-blue-100 p-6 rounded-[2rem] bg-blue-50/30">
                     <h2 class="text-xl font-bold text-blue-700 mb-4">🚜 สำหรับเกษตรกร (Farmer)</h2>
                     <div class="space-y-3">
@@ -73,8 +77,10 @@
                             <input type="text" id="f_survive" placeholder="อัตราการรอด" class="p-3 border rounded-xl">
                             <input type="text" id="f_adult_time" placeholder="ระยะเวลาโตเต็มวัย" class="p-3 border rounded-xl">
                         </div>
-                        <input type="text" id="f_disease" placeholder="โรคที่พบบ่อย" class="w-full p-3 border rounded-xl">
-                        <input type="text" id="f_prevent" placeholder="วิธีป้องกันโรค" class="w-full p-3 border rounded-xl">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="f_disease" placeholder="โรคที่พบบ่อย" class="w-full p-3 border rounded-xl">
+                            <input type="text" id="f_prevent" placeholder="วิธีป้องกันโรค" class="w-full p-3 border rounded-xl">
+                        </div>
                         <div class="bg-white p-4 rounded-xl border border-blue-100">
                             <p class="text-xs font-bold text-blue-400 mb-2">อาหาร & การเติบโต</p>
                             <input type="text" id="f_feed_rec" placeholder="อาหารที่แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
@@ -87,6 +93,7 @@
                     </div>
                 </section>
 
+                <!-- 4. Ornamental Section (อัปเดตใหม่ครบทุกช่อง) -->
                 <section class="border-2 border-amber-100 p-6 rounded-[2rem] bg-amber-50/30">
                     <h2 class="text-xl font-bold text-amber-700 mb-4">✨ สำหรับปลาสวยงาม (Ornamental)</h2>
                     <div class="space-y-3">
@@ -108,10 +115,21 @@
                             <input type="text" id="o_growth" placeholder="อัตราเติบโต" class="p-3 border rounded-xl">
                             <input type="text" id="o_survive" placeholder="อัตราการรอด" class="p-3 border rounded-xl">
                         </div>
+                        
+                        <!-- 🌟 ส่วนที่เพิ่มเข้ามาใหม่ให้ครบถ้วน -->
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <input type="text" id="o_disease" placeholder="โรคที่พบบ่อย" class="p-3 border rounded-xl">
+                            <input type="text" id="o_prevent" placeholder="วิธีป้องกันโรค" class="p-3 border rounded-xl">
+                        </div>
+                        
                         <div class="bg-white p-4 rounded-xl border border-amber-100">
                             <p class="text-xs font-bold text-amber-400 mb-2">อาหาร</p>
-                            <input type="text" id="o_feed_rec" placeholder="แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
-                            <input type="text" id="o_feed_amt" placeholder="ปริมาณ/รอบ" class="w-full p-2 border-b outline-none">
+                            <input type="text" id="o_feed_rec" placeholder="อาหารที่แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
+                            <input type="text" id="o_feed_not" placeholder="ไม่แนะนำ" class="w-full p-2 border-b mb-2 outline-none"> <!-- เพิ่มอาหารที่ไม่แนะนำ -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="o_feed_amt" placeholder="ปริมาณอาหาร" class="p-2 border-b outline-none">
+                                <input type="text" id="o_feed_freq" placeholder="รอบ/วัน" class="p-2 border-b outline-none"> <!-- เพิ่มรอบต่อวัน -->
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -128,7 +146,7 @@
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-        // 🚨 Config ตัวเดิมของกูเร่
+        // 🚨 Config ของกูเร่
         const firebaseConfig = {
             apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
             authDomain: "aquasmart-v2.firebaseapp.com",
@@ -160,19 +178,19 @@
                     imgUrl = await getDownloadURL(sRef);
                 }
 
-                // รวบรวมข้อมูลทุกช่องลงใน Object เดียว
                 const fishData = {
                     thai_name: document.getElementById('fishNameTH').value,
                     english_name: id,
                     category: document.getElementById('category').value,
                     description: document.getElementById('fishDesc').value,
                     image_url: imgUrl,
-                    // General & Biology
+                    // General & Biology (ใช้ร่วมกัน)
                     type: document.getElementById('g_type').value,
                     habitat: document.getElementById('g_habitat').value,
                     lifespan: document.getElementById('g_lifespan').value,
                     adult_size: document.getElementById('g_adult_size').value,
                     identify: document.getElementById('g_identify').value,
+                    
                     // Farmer specific
                     f_raise: document.getElementById('f_raise').value,
                     f_pond: document.getElementById('f_pond').value,
@@ -186,7 +204,8 @@
                     f_feed_amt: document.getElementById('f_feed_amt').value,
                     f_feed_freq: document.getElementById('f_feed_freq').value,
                     f_adult_time: document.getElementById('f_adult_time').value,
-                    // Ornamental specific
+                    
+                    // Ornamental specific (อัปเดตเก็บข้อมูลครบแล้ว)
                     o_raise: document.getElementById('o_raise').value,
                     o_water: document.getElementById('o_water').value,
                     o_ph: document.getElementById('o_ph').value,
@@ -197,8 +216,12 @@
                     o_avoid: document.getElementById('o_avoid').value,
                     o_growth: document.getElementById('o_growth').value,
                     o_survive: document.getElementById('o_survive').value,
+                    o_disease: document.getElementById('o_disease').value,
+                    o_prevent: document.getElementById('o_prevent').value,
                     o_feed_rec: document.getElementById('o_feed_rec').value,
+                    o_feed_not: document.getElementById('o_feed_not').value,
                     o_feed_amt: document.getElementById('o_feed_amt').value,
+                    o_feed_freq: document.getElementById('o_feed_freq').value,
                     timestamp: new Date()
                 };
 
