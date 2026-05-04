@@ -441,8 +441,7 @@
     <!-- 🌟 ระบบเชื่อมต่อ Firestore Database (Firebase v10) 🌟 -->
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
+    import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
     // 🚨 ใส่ Config ของโปรเจกต์ AquaSmart-V2 (เอามาจากหน้า admin ได้เลย)
     const firebaseConfig = {
         apiKey: "ใส่_API_KEY_ของนายตรงนี้", 
@@ -504,6 +503,26 @@
             }
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
+        }
+    };
+    // ฟังก์ชันบันทึกประวัติการสแกนลง Firebase
+    window.saveScanHistoryToDB = async function(fishName, probValue) {
+        try {
+            console.log("⏳ กำลังบันทึกประวัติการสแกน: " + fishName);
+            
+            // สร้างคอลเลกชันใหม่ชื่อ scan_history (ถ้ายังไม่มี Firebase จะสร้างให้เอง)
+            const historyRef = collection(db, "scan_history");
+            
+            // โยนข้อมูลลงไปเก็บ
+            await addDoc(historyRef, {
+                fish_name: fishName,
+                confidence_percent: parseFloat(probValue),
+                scan_date: serverTimestamp() // เก็บเวลา ณ ตอนที่สแกนแบบเป๊ะๆ
+            });
+            
+            console.log("✅ บันทึกประวัติการสแกนสำเร็จ!");
+        } catch (error) {
+            console.error("❌ เกิดข้อผิดพลาดในการบันทึกประวัติ:", error);
         }
     };
     </script>
