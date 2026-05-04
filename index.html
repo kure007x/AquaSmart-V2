@@ -509,38 +509,51 @@
 
     <!-- 🌟 ระบบเชื่อมต่อ Firestore Database (Firebase v10) 🌟 -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+    // 1. นำเข้า Firebase ตัวเดียวกับหน้า Admin
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // กุญแจ Firebase ของโปรเจกต์ AquaSmart-V2
-        const firebaseConfig = {
-            apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
-            authDomain: "aquasmart-v2.firebaseapp.com",
-            projectId: "aquasmart-v2",
-            storageBucket: "aquasmart-v2.firebasestorage.app",
-            messagingSenderId: "482478104079",
-            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
-            measurementId: "G-43DYK4D6QR"
-        };
+    // 2. ใส่ Config ของโปรเจกต์ AquaSmart-V2
+    const firebaseConfig = {
+        apiKey: "ใส่_API_KEY_ของนายตรงนี้", 
+        authDomain: "aquasmart-v2.firebaseapp.com",
+        projectId: "aquasmart-v2",
+        storageBucket: "aquasmart-v2.firebasestorage.app",
+        messagingSenderId: "482478104079",
+        appId: "ใส่_APP_ID_ของนายตรงนี้"
+    };
 
-        // สตาร์ทเครื่องยนต์ Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    // เริ่มต้นเชื่อมต่อฐานข้อมูล
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // ฟังก์ชันรับข้อมูลจาก AI แล้วส่งขึ้น Cloud
-        window.saveScanHistoryToDB = async function(fishName, confidenceScore) {
-            try {
-                const docRef = await addDoc(collection(db, "scan_history"), {
-                    fish_name: fishName,
-                    confidence: Number(confidenceScore),
-                    status: "Success",
-                    timestamp: new Date()
-                });
-                console.log("✅ บันทึกประวัติลง Database สำเร็จ! Document ID: ", docRef.id);
-            } catch (e) {
-                console.error("❌ เกิดข้อผิดพลาดในการบันทึก: ", e);
+    // 3. ฟังก์ชันหลักสำหรับดึงข้อมูลปลาจาก Firebase (เอาไปแทนโค้ด JSON เดิม)
+    // AI สแกนได้ชื่ออะไร (เช่น "guppy") ให้ส่งชื่อนั้นเข้ามาที่ตัวแปร predictedClassName
+    window.fetchFishDataFromFirebase = async function(predictedClassName) {
+        try {
+            console.log("กำลังค้นหาข้อมูลของ: " + predictedClassName);
+            
+            // วิ่งไปหา Document ในคอลเลกชัน fish_info ที่มี ID ตรงกับชื่อที่ AI สแกนเจอ
+            const docRef = doc(db, "fish_info", predictedClassName);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const fishData = docSnap.data();
+                console.log("เจอข้อมูลปลาแล้ว!", fishData);
+                
+                // 4. เอาข้อมูลไปโชว์บนหน้าเว็บ (แก้ ID ของ HTML ให้ตรงกับเว็บของนายนะ)
+                document.getElementById("showFishName").innerText = fishData.thai_name;
+                document.getElementById("showFishDesc").innerText = fishData.description;
+                document.getElementById("showFishImage").src = fishData.image_url;
+                
+            } else {
+                console.log("ไม่พบข้อมูลปลานี้ในฐานข้อมูล!");
+                document.getElementById("showFishName").innerText = "ยังไม่มีข้อมูลปลาชนิดนี้";
             }
-        };
-    </script>
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
+        }
+    };
+</script>
 </body>
 </html>
