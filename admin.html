@@ -1,49 +1,68 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaSmart-V2 | ระบบหลังบ้าน (Admin)</title>
-    <!-- โหลด Tailwind CSS มาใช้ตกแต่งหน้าเว็บ -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-10 font-sans">
+// 1. นำเข้าโมดูล Firebase ที่จำเป็น
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
-        <h1 class="text-3xl font-bold text-blue-600 mb-6 border-b pb-4">🐟 เพิ่มข้อมูลปลาชนิดใหม่</h1>
+// 2. การตั้งค่า Firebase (กูเร่เช็ค API Key ของตัวเองอีกทีนะ)
+const firebaseConfig = {
+    apiKey: "AIzaSy...", // เอา API Key จากโปรเจกต์ AquaSmart-V2 มาใส่ตรงนี้
+    authDomain: "aquasmart-v2.firebaseapp.com",
+    projectId: "aquasmart-v2",
+    storageBucket: "aquasmart-v2.firebasestorage.app", // ต้องลงท้ายด้วย .app ตามที่เซ็ตไว้
+    messagingSenderId: "482478104079",
+    appId: "1:482478104079:web:..." 
+};
+
+// เริ่มต้นการทำงาน
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// 3. ดักจับเหตุการณ์ตอนกดปุ่มบันทึก
+document.getElementById('btnSave').addEventListener('click', async () => {
+    const nameTH = document.getElementById('fishNameTH').value;
+    const nameEN = document.getElementById('fishNameEN').value;
+    const description = document.getElementById('fishDescription').value;
+    const imageFile = document.getElementById('fishImageFile').files[0];
+
+    // เช็คข้อมูลเบื้องต้น
+    if (!nameTH || !nameEN || !imageFile) {
+        alert("กูเร่! กรอกชื่อปลาและเลือกรูปให้ครบก่อนนะ");
+        return;
+    }
+
+    console.log("เริ่มกระบวนการบันทึก...");
+    const btn = document.getElementById('btnSave');
+    btn.disabled = true;
+    btn.innerText = "⏳ กำลังบันทึก...";
+
+    try {
+        // A. อัปโหลดรูปภาพไปยัง Firebase Storage
+        const storageRef = ref(storage, 'fish_samples/' + nameEN + '.jpg');
+        const uploadTask = await uploadBytes(storageRef, imageFile);
+        const imageURL = await getDownloadURL(uploadTask.ref);
+        console.log("อัปโหลดรูปสำเร็จ: " + imageURL);
+
+        // B. บันทึกข้อมูลข้อความลง Firestore
+        await setDoc(doc(db, "fish_info", nameEN), {
+            thai_name: nameTH,
+            english_name: nameEN,
+            description: description,
+            image_url: imageURL,
+            updated_at: new Date()
+        });
+
+        console.log("บันทึกข้อมูลลงฐานข้อมูลสำเร็จ!");
+        alert("✅ บันทึกข้อมูลปลา " + nameTH + " เรียบร้อยแล้ว!");
         
-        <!-- ฟอร์มกรอกข้อมูล -->
-        <div class="space-y-5">
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">ชื่อปลา (ภาษาไทย)</label>
-                <input type="text" id="fishNameTH" placeholder="เช่น ปลาหมอคางดำ" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+        // ล้างฟอร์มหลังจากบันทึกเสร็จ
+        location.reload(); 
 
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">ชื่อปลา (ภาษาอังกฤษ / เผื่อทำเป็น ID)</label>
-                <input type="text" id="fishNameEN" placeholder="เช่น Blackchin tilapia" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">คำอธิบายวิธีเลี้ยงเบื้องต้น</label>
-                <textarea id="fishDescription" rows="4" placeholder="กรอกข้อมูลลักษณะนิสัยหรือการดูแล..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">อัปโหลดรูปภาพตัวอย่างปลา</label>
-                <input type="file" id="fishImageFile" accept="image/*" class="w-full text-gray-700 p-2 border rounded-lg bg-gray-50">
-            </div>
-
-            <button id="btnSave" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mt-4 transition duration-300">
-                💾 บันทึกข้อมูลลงฐานข้อมูล
-            </button>
-        </div>
-    </div>
-
-    <!-- เตรียมพื้นที่เขียน JavaScript ดันข้อมูลขึ้น Firebase -->
-    <script type="module">
-        // เดี๋ยวเราจะเอาโค้ด Firebase มาใส่ตรงนี้!
-    </script>
-
-</body>
-</html>
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาด:", error);
+        alert("❌ บันทึกไม่สำเร็จ: " + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "💾 บันทึกข้อมูลลงฐานข้อมูล";
+    }
+});
