@@ -46,14 +46,15 @@
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-        // 🚨 กูเร่! อย่าลืมเอา API Key ของโปรเจกต์นายมาใส่ตรงนี้ใหม่นะ!
+// 🚨 ใส่ Config ของโปรเจกต์ AquaSmart-V2
         const firebaseConfig = {
-            apiKey: "ใส่_API_KEY_ของนายตรงนี้", 
+            apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
             authDomain: "aquasmart-v2.firebaseapp.com",
             projectId: "aquasmart-v2",
             storageBucket: "aquasmart-v2.firebasestorage.app",
             messagingSenderId: "482478104079",
-            appId: "ใส่_APP_ID_ของนายตรงนี้"
+            appId: "1:482478104079:web:3edb7a6a7063a75ce8cd7a",
+            measurementId: "G-43DYK4D6QR"
         };
 
         const app = initializeApp(firebaseConfig);
