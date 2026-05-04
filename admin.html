@@ -3,65 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaSmart-V2 | Admin Management</title>
+    <title>AquaSmart-V2 Admin | ระบบจัดการข้อมูลปลาเชิงลึก</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-100 p-5 font-sans">
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-        <h1 class="text-3xl font-bold text-blue-600 mb-6 border-b pb-4">🐟 จัดการข้อมูลปลาเชิงลึก</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- ข้อมูลพื้นฐาน -->
-            <div class="space-y-4">
-                <h2 class="font-bold text-lg text-gray-800 border-l-4 border-blue-500 pl-2">ข้อมูลหลัก</h2>
-                <input type="text" id="fishNameTH" placeholder="ชื่อปลา (ไทย)" class="w-full p-2 border rounded">
-                <input type="text" id="fishNameEN" placeholder="ชื่อปลา (อังกฤษ/ID)" class="w-full p-2 border rounded">
-                <select id="category" class="w-full p-2 border rounded bg-blue-50">
-                    <option value="farmer">ปลาเศรษฐกิจ (เกษตรกร)</option>
-                    <option value="ornamental">ปลาสวยงาม</option>
-                </select>
-                <textarea id="fishDesc" placeholder="รายละเอียดทั่วไป" class="w-full p-2 border rounded"></textarea>
-                <input type="file" id="fishImage" class="w-full p-1 border rounded text-sm">
-            </div>
+<body class="bg-slate-50 p-4 md:p-10">
 
-            <!-- General Information -->
-            <div class="space-y-4">
-                <h2 class="font-bold text-lg text-gray-800 border-l-4 border-green-500 pl-2">General Info</h2>
-                <input type="text" id="g_type" placeholder="Type (เช่น ปลาน้ำจืด)" class="w-full p-2 border rounded">
-                <input type="text" id="g_habitat" placeholder="Habitat (แหล่งที่อยู่)" class="w-full p-2 border rounded">
-                <input type="text" id="g_identify" placeholder="วิธีสังเกต" class="w-full p-2 border rounded">
-                <input type="text" id="g_lifespan" placeholder="อายุเฉลี่ย" class="w-full p-2 border rounded">
-                <input type="text" id="g_adult_size" placeholder="ขนาดโตเต็มวัย" class="w-full p-2 border rounded">
-            </div>
+    <div class="max-w-5xl mx-auto bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-100">
+        <div class="bg-blue-600 p-8 text-white text-center">
+            <h1 class="text-3xl font-bold">🐟 Fish Database Management</h1>
+            <p class="text-blue-100 mt-2">จัดการข้อมูลปลาเศรษฐกิจและปลาสวยงามเชิงลึก</p>
         </div>
 
-        <hr class="my-8">
+        <div class="p-8 space-y-10">
+            <section>
+                <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="w-2 h-8 bg-blue-600 rounded-full"></span> ข้อมูลหลัก (Primary Data)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-slate-500 mb-1">ชื่อปลา (ไทย)</label>
+                        <input type="text" id="fishNameTH" placeholder="เช่น ปลาช่อน" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none">
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-slate-500 mb-1">ชื่อปลา (อังกฤษ/ID)</label>
+                        <input type="text" id="fishNameEN" placeholder="เช่น Snakehead" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none">
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-slate-500 mb-1">หมวดหมู่หลัก</label>
+                        <select id="category" class="w-full p-3 border rounded-xl bg-white focus:ring-2 focus:ring-blue-400 outline-none">
+                            <option value="farmer">ปลาเศรษฐกิจ (เกษตรกร)</option>
+                            <option value="ornamental">ปลาสวยงาม</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-slate-500 mb-1">คำอธิบายย่อ</label>
+                        <textarea id="fishDesc" placeholder="อธิบายภาพรวมของปลาชนิดนี้..." class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none" rows="1"></textarea>
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-slate-500 mb-1">รูปภาพประกอบ</label>
+                        <input type="file" id="fishImage" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+                </div>
+            </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Farmer Section -->
-            <div class="p-4 bg-blue-50 rounded-xl space-y-3">
-                <h2 class="font-bold text-blue-700">สำหรับเกษตรกร (Farmer)</h2>
-                <input type="text" id="f_raise" placeholder="วิธีเลี้ยง" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="f_pond" placeholder="ชนิด/ขนาดบ่อ" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="f_pop" placeholder="จำนวนต่อบ่อ" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="f_disease" placeholder="โรคที่พบบ่อย/วิธีป้องกัน" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="f_feed" placeholder="อาหาร/รอบต่อวัน" class="w-full p-2 border rounded text-sm">
+            <section class="bg-slate-50 p-6 rounded-[1.5rem]">
+                <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="w-2 h-8 bg-green-500 rounded-full"></span> General Information & Biology
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <input type="text" id="g_type" placeholder="Type (เช่น ปลาน้ำจืด)" class="p-3 border rounded-xl">
+                    <input type="text" id="g_habitat" placeholder="Habitat (แหล่งที่อยู่)" class="p-3 border rounded-xl">
+                    <input type="text" id="g_lifespan" placeholder="Lifespan (อายุเฉลี่ย)" class="p-3 border rounded-xl">
+                    <input type="text" id="g_adult_size" placeholder="Adult Size (ขนาดโตเต็มวัย)" class="p-3 border rounded-xl">
+                    <textarea id="g_identify" placeholder="How to Identify (วิธีสังเกต)" class="col-span-full p-3 border rounded-xl" rows="2"></textarea>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <section class="border-2 border-blue-100 p-6 rounded-[2rem] bg-blue-50/30">
+                    <h2 class="text-xl font-bold text-blue-700 mb-4">🚜 สำหรับเกษตรกร (Farmer)</h2>
+                    <div class="space-y-3">
+                        <input type="text" id="f_raise" placeholder="วิธีเลี้ยง" class="w-full p-3 border rounded-xl">
+                        <input type="text" id="f_pond" placeholder="ชนิดบ่อ และ ขนาดบ่อ" class="w-full p-3 border rounded-xl">
+                        <input type="text" id="f_pop" placeholder="จำนวนประชากรต่อบ่อ" class="w-full p-3 border rounded-xl">
+                        <input type="text" id="f_avoid" placeholder="ห้ามเลี้ยงร่วมกับ" class="w-full p-3 border rounded-xl text-red-600">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="f_survive" placeholder="อัตราการรอด" class="p-3 border rounded-xl">
+                            <input type="text" id="f_adult_time" placeholder="ระยะเวลาโตเต็มวัย" class="p-3 border rounded-xl">
+                        </div>
+                        <input type="text" id="f_disease" placeholder="โรคที่พบบ่อย" class="w-full p-3 border rounded-xl">
+                        <input type="text" id="f_prevent" placeholder="วิธีป้องกันโรค" class="w-full p-3 border rounded-xl">
+                        <div class="bg-white p-4 rounded-xl border border-blue-100">
+                            <p class="text-xs font-bold text-blue-400 mb-2">อาหาร & การเติบโต</p>
+                            <input type="text" id="f_feed_rec" placeholder="อาหารที่แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
+                            <input type="text" id="f_feed_not" placeholder="ไม่แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="f_feed_amt" placeholder="ปริมาณ" class="p-2 border-b outline-none">
+                                <input type="text" id="f_feed_freq" placeholder="รอบ/วัน" class="p-2 border-b outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="border-2 border-amber-100 p-6 rounded-[2rem] bg-amber-50/30">
+                    <h2 class="text-xl font-bold text-amber-700 mb-4">✨ สำหรับปลาสวยงาม (Ornamental)</h2>
+                    <div class="space-y-3">
+                        <input type="text" id="o_raise" placeholder="วิธีเลี้ยง" class="w-full p-3 border rounded-xl">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="o_water" placeholder="วิธีเตรียมน้ำ" class="p-3 border rounded-xl">
+                            <input type="text" id="o_ph" placeholder="ค่า pH" class="p-3 border rounded-xl">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="o_temp" placeholder="อุณหภูมิ" class="p-3 border rounded-xl">
+                            <input type="text" id="o_pop" placeholder="จำนวนประชากร" class="p-3 border rounded-xl">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="o_source" placeholder="ชนิดแหล่งเลี้ยง" class="p-3 border rounded-xl">
+                            <input type="text" id="o_source_size" placeholder="ขนาดแหล่งเลี้ยง" class="p-3 border rounded-xl">
+                        </div>
+                        <input type="text" id="o_avoid" placeholder="ห้ามเลี้ยงร่วมกับ" class="w-full p-3 border rounded-xl text-red-600">
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <input type="text" id="o_growth" placeholder="อัตราเติบโต" class="p-3 border rounded-xl">
+                            <input type="text" id="o_survive" placeholder="อัตราการรอด" class="p-3 border rounded-xl">
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-amber-100">
+                            <p class="text-xs font-bold text-amber-400 mb-2">อาหาร</p>
+                            <input type="text" id="o_feed_rec" placeholder="แนะนำ" class="w-full p-2 border-b mb-2 outline-none">
+                            <input type="text" id="o_feed_amt" placeholder="ปริมาณ/รอบ" class="w-full p-2 border-b outline-none">
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <!-- Ornamental Section -->
-            <div class="p-4 bg-amber-50 rounded-xl space-y-3">
-                <h2 class="font-bold text-amber-700">สำหรับปลาสวยงาม (Ornamental)</h2>
-                <input type="text" id="o_raise" placeholder="วิธีเลี้ยง" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="o_water" placeholder="วิธีเตรียมน้ำ/pH/Temp" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="o_growth" placeholder="อัตราการเติบโต/รอดชีวิต" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="o_disease" placeholder="โรค/การป้องกัน" class="w-full p-2 border rounded text-sm">
-                <input type="text" id="o_feed" placeholder="อาหาร/ปริมาณ" class="w-full p-2 border rounded text-sm">
-            </div>
+            <button id="btnSave" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-200 transition-all transform active:scale-95 text-lg flex items-center justify-center gap-3">
+                <span>💾 บันทึกข้อมูลปลาเชิงลึกเข้าสู่ฐานข้อมูล</span>
+            </button>
         </div>
-
-        <button id="btnSave" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-8 hover:bg-blue-700 shadow-lg">
-            💾 บันทึกข้อมูลลงฐานข้อมูล Firebase
-        </button>
     </div>
 
     <script type="module">
@@ -69,6 +128,7 @@
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
+        // 🚨 Config ตัวเดิมของกูเร่
         const firebaseConfig = {
             apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
             authDomain: "aquasmart-v2.firebaseapp.com",
@@ -83,14 +143,14 @@
         const storage = getStorage(app);
 
         document.getElementById('btnSave').onclick = async () => {
-            const id = document.getElementById('fishNameEN').value;
+            const id = document.getElementById('fishNameEN').value.trim();
             const file = document.getElementById('fishImage').files[0];
             const btn = document.getElementById('btnSave');
             
-            if(!id) return alert("กรุณาใส่ชื่อภาษาอังกฤษเป็น ID");
+            if(!id) return alert("กูเร่! ต้องใส่ชื่ออังกฤษ (ID) ก่อนนะ");
             
             btn.disabled = true;
-            btn.innerText = "⏳ กำลังบันทึก...";
+            btn.innerText = "⏳ กำลังประมวลผลข้อมูลมหาศาล...";
 
             try {
                 let imgUrl = "";
@@ -100,35 +160,57 @@
                     imgUrl = await getDownloadURL(sRef);
                 }
 
-                await setDoc(doc(db, "fish_info", id), {
+                // รวบรวมข้อมูลทุกช่องลงใน Object เดียว
+                const fishData = {
                     thai_name: document.getElementById('fishNameTH').value,
                     english_name: id,
                     category: document.getElementById('category').value,
                     description: document.getElementById('fishDesc').value,
                     image_url: imgUrl,
-                    // General
+                    // General & Biology
                     type: document.getElementById('g_type').value,
                     habitat: document.getElementById('g_habitat').value,
-                    identify: document.getElementById('g_identify').value,
                     lifespan: document.getElementById('g_lifespan').value,
                     adult_size: document.getElementById('g_adult_size').value,
-                    // Farmer Data
+                    identify: document.getElementById('g_identify').value,
+                    // Farmer specific
                     f_raise: document.getElementById('f_raise').value,
                     f_pond: document.getElementById('f_pond').value,
                     f_pop: document.getElementById('f_pop').value,
+                    f_avoid: document.getElementById('f_avoid').value,
+                    f_survive: document.getElementById('f_survive').value,
                     f_disease: document.getElementById('f_disease').value,
-                    f_feed: document.getElementById('f_feed').value,
-                    // Ornamental Data
+                    f_prevent: document.getElementById('f_prevent').value,
+                    f_feed_rec: document.getElementById('f_feed_rec').value,
+                    f_feed_not: document.getElementById('f_feed_not').value,
+                    f_feed_amt: document.getElementById('f_feed_amt').value,
+                    f_feed_freq: document.getElementById('f_feed_freq').value,
+                    f_adult_time: document.getElementById('f_adult_time').value,
+                    // Ornamental specific
                     o_raise: document.getElementById('o_raise').value,
                     o_water: document.getElementById('o_water').value,
+                    o_ph: document.getElementById('o_ph').value,
+                    o_temp: document.getElementById('o_temp').value,
+                    o_source: document.getElementById('o_source').value,
+                    o_source_size: document.getElementById('o_source_size').value,
+                    o_pop: document.getElementById('o_pop').value,
+                    o_avoid: document.getElementById('o_avoid').value,
                     o_growth: document.getElementById('o_growth').value,
-                    o_disease: document.getElementById('o_disease').value,
-                    o_feed: document.getElementById('o_feed').value
-                });
+                    o_survive: document.getElementById('o_survive').value,
+                    o_feed_rec: document.getElementById('o_feed_rec').value,
+                    o_feed_amt: document.getElementById('o_feed_amt').value,
+                    timestamp: new Date()
+                };
 
-                alert("✅ บันทึกข้อมูลสำเร็จ!");
+                await setDoc(doc(db, "fish_info", id), fishData);
+
+                alert("✅ ข้อมูลปลา " + id + " ถูกบันทึกเรียบร้อยแล้ว!");
                 location.reload();
-            } catch (e) { alert("❌ พัง: " + e.message); }
+            } catch (e) { 
+                alert("❌ เกิดข้อผิดพลาด: " + e.message); 
+                btn.disabled = false;
+                btn.innerText = "💾 ลองบันทึกใหม่อีกครั้ง";
+            }
         };
     </script>
 </body>
