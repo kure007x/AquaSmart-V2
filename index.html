@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AquaSmart ML</title>
+    <!-- ใช้ TensorFlow.js ตัวล่าสุด -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -26,7 +27,7 @@
     <div id="splash-screen" class="fixed inset-0 bg-[#f0f5fa] z-[100] flex items-center justify-center">
         <div class="text-center">
             <h1 class="text-3xl font-black text-[#111827] animate-pulse mb-2">AquaSmart ML</h1>
-            <p class="text-sm text-slate-500 font-medium">กำลังโหลดระบบ AI...</p>
+            <p class="text-sm text-slate-500 font-medium">กำลังโหลดสมอง AI YOLOv8...</p>
         </div>
     </div>
 
@@ -76,7 +77,7 @@
         <!-- Loading -->
         <div id="loading-section" class="hidden info-card text-center py-10">
             <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
-            <p class="text-blue-600 font-bold">กำลังประมวลผลข้อมูล...</p>
+            <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8...</p>
         </div>
 
         <!-- Result Section -->
@@ -251,7 +252,7 @@
         let model;
         let currentFishData = null; 
 
-        // ตัวแปรแปลงชื่อไทยเป็น ID ภาษาอังกฤษของ Firebase 
+        // 🌟 ตัวแปรตรงนี้เรียง A-Z ไว้ถูกต้องตามหลักการของ YOLOv8 แล้ว ไม่ต้องแก้! 🌟
         const fishMapping = {
             'ปลานวลจันทร์': 'Bangus',
             'ปลาเสือข้างลาย': 'Black Spotted Barb',
@@ -326,6 +327,7 @@
         window.onload = async () => {
             checkAuth();
             try {
+                // โหลดสมอง YOLOv8 
                 model = await tf.loadGraphModel('./model.json');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
@@ -352,7 +354,6 @@
                             const dbFishId = fishMapping[thaiName]; 
 
                             setTimeout(async () => {
-                                // ดึงข้อมูล Firebase (ไม่บันทึกประวัติเพราะเป็นการค้นหาด้วยข้อความ)
                                 if(window.fetchFishDataFromFirebase) {
                                     window.fetchFishDataFromFirebase(dbFishId, true);
                                 }
@@ -386,6 +387,7 @@
                 await tf.nextFrame();
                 if(!model) return;
 
+                // 🌟 การเตรียมรูปภาพให้ YOLOv8 (Normalize 0-1)
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
                     t = tf.image.resizeBilinear(t, [224, 224]);
@@ -420,15 +422,10 @@
                     
                     document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                     
-                    // 🌟 1. สั่งบันทึกประวัติสแกนลง Database
                     if(window.saveScanHistoryToDB) {
-                        console.log("-> กำลังเรียกฟังก์ชันบันทึกข้อมูล");
                         window.saveScanHistoryToDB(thaiName, probValue.toFixed(1));
-                    } else {
-                        console.error("❌ หาฟังก์ชัน saveScanHistoryToDB ไม่เจอ!");
                     }
 
-                    // 🌟 2. ดึงข้อมูลมาแสดงจาก Database
                     if(window.fetchFishDataFromFirebase) {
                         window.fetchFishDataFromFirebase(dbFishId, false);
                     }
