@@ -252,7 +252,7 @@
         let model;
         let currentFishData = null; 
 
-        // 🌟 ตัวแปรตรงนี้เรียง A-Z ไว้ถูกต้องตามหลักการของ YOLOv8 แล้ว ไม่ต้องแก้! 🌟
+        // ตัวแปรนี้เรียง A-Z เพื่อให้รับกับ YOLOv8
         const fishMapping = {
             'ปลานวลจันทร์': 'Bangus',
             'ปลาเสือข้างลาย': 'Black Spotted Barb',
@@ -327,7 +327,7 @@
         window.onload = async () => {
             checkAuth();
             try {
-                // โหลดสมอง YOLOv8 
+                // โหลดโมเดล YOLOv8
                 model = await tf.loadGraphModel('./model.json');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
@@ -355,6 +355,7 @@
 
                             setTimeout(async () => {
                                 if(window.fetchFishDataFromFirebase) {
+                                    // true = ค้นหาผ่านตัวหนังสือ
                                     window.fetchFishDataFromFirebase(dbFishId, true);
                                 }
                             }, 500);
@@ -372,6 +373,7 @@
             document.getElementById('imageInput').click();
         };
 
+        // 🌟 แก้ไขบัคและปลดล็อคเกณฑ์ 90% ตรงนี้ 🌟
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -387,7 +389,6 @@
                 await tf.nextFrame();
                 if(!model) return;
 
-                // 🌟 การเตรียมรูปภาพให้ YOLOv8 (Normalize 0-1)
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
                     t = tf.image.resizeBilinear(t, [224, 224]);
@@ -398,37 +399,22 @@
                 const idx = pred.indexOf(Math.max(...pred));
                 const probValue = pred[idx] * 100; 
 
-                // 🚨 ตรวจสอบเงื่อนไขความแม่นยำต่ำกว่า 90%
-                if (probValue < 90) {
-                    console.log("⚠️ ความแม่นยำต่ำกว่าเกณฑ์: " + probValue.toFixed(1) + "%");
-                    
-                    document.getElementById('loading-section').classList.add('hidden');
-                    document.getElementById('result-section').classList.remove('hidden');
-                    document.getElementById('result-section').classList.add('flex');
+                // เอาเงื่อนไข < 90% ออกไปเลย ให้มันทายและแสดงผลทันที
+                console.log("AI มั่นใจ: " + probValue.toFixed(1) + "%");
+                const thaiName = fishList[idx];
+                const dbFishId = fishMapping[thaiName]; 
+                
+                document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
+                
+                // บันทึกประวัติสแกน
+                if(window.saveScanHistoryToDB) {
+                    window.saveScanHistoryToDB(thaiName, probValue.toFixed(1));
+                }
 
-                    document.getElementById('fishName').innerText = "ผลลัพธ์ไม่ชัดเจน";
-                    document.getElementById('fishNameEn').innerText = "Please try again";
-                    document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                    document.getElementById('descBasic').innerText = "ขออภัยครับ ระบบยังไม่สามารถระบุสายพันธุ์ได้อย่างแน่ชัด รบกวนคุณถ่ายภาพใหม่อีกครั้ง";
-                    
-                    document.getElementById('basic-content').classList.add('hidden');
-                    document.getElementById('full-content').classList.add('hidden');
-                    currentFishData = null;
-                } else {
-                    // ✅ กรณีความแม่นยำ 90% ขึ้นไป
-                    console.log("✅ ความแม่นยำผ่านเกณฑ์: " + probValue.toFixed(1) + "%");
-                    const thaiName = fishList[idx];
-                    const dbFishId = fishMapping[thaiName]; 
-                    
-                    document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                    
-                    if(window.saveScanHistoryToDB) {
-                        window.saveScanHistoryToDB(thaiName, probValue.toFixed(1));
-                    }
-
-                    if(window.fetchFishDataFromFirebase) {
-                        window.fetchFishDataFromFirebase(dbFishId, false);
-                    }
+                // ดึงข้อมูลมาแสดงจาก Database
+                if(window.fetchFishDataFromFirebase) {
+                    // false = ส่งไปบอกฟังก์ชันว่า "นี่มาจากการสแกนรูปนะ อย่าวางรูปจากฐานข้อมูลทับ!"
+                    window.fetchFishDataFromFirebase(dbFishId, false);
                 }
             };
             imgForAI.src = URL.createObjectURL(file);
@@ -463,7 +449,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ฟังก์ชันดึงข้อมูลจาก Firebase และเอาไปหยอดใส่ UI
+    // 🌟 แก้ไขบัคทับรูปตรงฟังก์ชันนี้ 🌟
     window.fetchFishDataFromFirebase = async function(dbFishId, isFromSearch) {
         try {
             console.log("🔍 กำลังดึงข้อมูลจากคอลเลกชัน fish_info ID: " + dbFishId);
@@ -474,7 +460,7 @@
                 const fishData = docSnap.data();
                 currentFishData = true; 
 
-                // 📌 อัปเดตข้อมูลส่วนหัว
+                // อัปเดตข้อมูลส่วนหัว
                 document.getElementById('fishName').innerText = fishData.thai_name || '-';
                 document.getElementById('fishNameEn').innerText = fishData.english_name || '-';
                 document.getElementById('descBasic').innerText = fishData.description || '-';
@@ -484,7 +470,7 @@
                 if(fishData.category === 'farmer') catText = 'ปลาเศรษฐกิจ';
                 if(fishData.category === 'ornamental') catText = 'ปลาสวยงาม';
 
-                // 📌 อัปเดตข้อมูลโหมด Basic และแท็บ General
+                // อัปเดตข้อมูลโหมด Basic และแท็บ General
                 document.getElementById('b-type').innerText = fishData.type || '-';
                 document.getElementById('g-type').innerText = fishData.type || '-';
                 document.getElementById('b-cat').innerText = catText;
@@ -496,7 +482,7 @@
                 document.getElementById('g-life').innerText = fishData.lifespan || '-';
                 document.getElementById('g-size').innerText = fishData.adult_size || '-';
 
-                // 📌 อัปเดตข้อมูลแท็บ Farmer
+                // อัปเดตข้อมูลแท็บ Farmer
                 document.getElementById('f-raise').innerText = fishData.f_raise || '-';
                 document.getElementById('f-pond').innerText = fishData.f_pond || '-';
                 document.getElementById('f-pop').innerText = fishData.f_pop || '-';
@@ -511,7 +497,7 @@
                 document.getElementById('f-time').innerText = fishData.f_adult_time || '-';
                 document.getElementById('f-size').innerText = fishData.adult_size || '-'; 
 
-                // 📌 อัปเดตข้อมูลแท็บ Ornamental
+                // อัปเดตข้อมูลแท็บ Ornamental
                 document.getElementById('o-raise').innerText = fishData.o_raise || '-';
                 document.getElementById('o-water').innerText = fishData.o_water || '-';
                 document.getElementById('o-ph').innerText = fishData.o_ph || '-';
@@ -531,11 +517,12 @@
                 document.getElementById('o-feed-amt').innerText = fishData.o_feed_amt || '-';
                 document.getElementById('o-feed-freq').innerText = fishData.o_feed_freq || '-';
                 
-                // รูปภาพ
-                if(fishData.image_url) {
-                    document.getElementById('previewImage').src = fishData.image_url;
-                }
+                // 🐛 ถ้ามาจากการค้นหาด้วยตัวอักษร ถึงจะเอารูปจากฐานข้อมูลมาโชว์ 
+                // แต่ถ้าสแกนรูปมา จะไม่เข้าไปทำคำสั่งนี้ รูปที่สแกนมาก็จะไม่หายไป
                 if(isFromSearch) {
+                    if(fishData.image_url) {
+                        document.getElementById('previewImage').src = fishData.image_url;
+                    }
                     document.getElementById('prob').innerText = "Search Result";
                 }
 
@@ -560,7 +547,6 @@
         }
     };
 
-    // ฟังก์ชันบันทึกประวัติการสแกนลง Firebase
     window.saveScanHistoryToDB = async function(fishName, probValue) {
         try {
             console.log("⏳ เริ่มส่งข้อมูลเข้าคอลเลกชัน scan_history: " + fishName + " (" + probValue + "%)");
