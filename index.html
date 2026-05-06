@@ -89,7 +89,13 @@
                 <h2 class="text-2xl font-black text-slate-800 text-center mb-1">ลืมรหัสผ่าน</h2>
                 <p class="text-slate-500 text-sm text-center mb-6">กรอกอีเมลของคุณเพื่อรับลิงก์ตั้งรหัสผ่านใหม่</p>
                 
-                <input type="email" id="forgot-email" placeholder="อีเมลของคุณ" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-red-500 mb-3">
+                <input type="email" id="forgot-email" placeholder="อีเมลของคุณ" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-red-500 mb-2">
+                
+                <!-- 🌟 เพิ่มข้อความแจ้งเตือนตรงนี้ -->
+                <p class="text-[11px] text-slate-400 text-center mb-3 px-2 leading-tight">
+                    * หากระบบตรวจสอบพบว่าไม่มีอีเมลนี้อยู่จริง จะไม่สามารถส่งลิงก์รีเซ็ตรหัสผ่านไปให้ได้ครับ
+                </p>
+
                 <p id="forgot-error" class="text-red-500 text-xs font-semibold text-center mb-3 h-4"></p>
 
                 <button onclick="window.resetPasswordFirebase()" class="w-full py-3.5 bg-red-500 text-white font-bold rounded-xl shadow-md shadow-red-200 hover:bg-red-600 transition-colors mb-4">ส่งลิงก์รีเซ็ตพาสเวิร์ด</button>
@@ -314,6 +320,10 @@
             if (tab === 'home') {
                 document.getElementById('home-view').classList.remove('hidden');
                 document.getElementById('nav-home').classList.replace('text-slate-400', 'text-blue-600');
+                
+                // เคลียร์ค่าหน้าจอการค้นหากลับเป็นค่าเริ่มต้น
+                resetUI();
+
             } else if (tab === 'history') {
                 document.getElementById('history-view').classList.remove('hidden');
                 document.getElementById('history-view').classList.add('flex');
@@ -615,7 +625,7 @@
         }
     };
 
-    // (ส่วนฟังก์ชัน fetchFishDataFromFirebase เดิม ยกมาใส่ให้ครบแบบไม่มีตัด)
+    // (ส่วนฟังก์ชัน fetchFishDataFromFirebase เดิม)
     window.fetchFishDataFromFirebase = async function(dbFishId, isFromSearch) {
         try {
             const docRef = doc(db, "fish_info", dbFishId);
