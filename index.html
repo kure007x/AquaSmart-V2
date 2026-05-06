@@ -646,24 +646,89 @@
         }
     };
 
-    // 🌟 บันทึกประวัติพร้อม ID คนสแกน (และเพิ่มคะแนน Top Searched)
+    // 🌟 บันทึกประวัติ (แยกลงโฟลเดอร์ scan_history และ search_history อัตโนมัติ)
     window.saveScanHistoryToDB = async function(fishName, probValue, type) {
         try {
             const user = auth.currentUser;
-            const historyRef = collection(db, "scan_history");
+            // 💡 เช็คประเภทการทำงาน: ถ้าเป็น Search ให้ลง search_history ถ้าไม่ใช่ลง scan_history
+            const folderName = type === 'Search' ? "search_history" : "scan_history";
+            
+            const historyRef = collection(db, folderName);
             await addDoc(historyRef, {
-                uid: user ? user.uid : "anonymous", // เก็บ uid เพื่อแยกของใครของมัน
+                uid: user ? user.uid : "anonymous",
                 fish_name: fishName,
                 confidence_percent: parseFloat(probValue),
-                type: type, // บอกว่าเป็น 'Scan' หรือ 'Search'
+                type: type,
                 scan_date: serverTimestamp() 
             });
             
-            // อัปเดต Ranking คะแนนความนิยม (ถ้าไม่มีมันจะสร้างเอกสารให้เองอัตโนมัติ)
+            // อัปเดต Ranking คะแนนความนิยม
             const rankRef = doc(db, "fish_rankings", fishName);
             await setDoc(rankRef, { count: increment(1) }, { merge: true });
 
         } catch (error) { console.error("Error saving history:", error); }
+    };
+
+    // 🌟 โหลดประวัติเฉพาะของ User (ดึงจาก 2 โฟลเดอร์มาเรียงรวมกันให้สวยงาม)
+    window.loadHistoryData = async function() {
+        const container = document.getElementById('history-container');
+        const user = auth.currentUser;
+        
+        if(!user) {
+            container.innerHTML = '<div class="info-card text-center py-10"><p class="text-slate-400 font-medium">กรุณาเข้าสู่ระบบเพื่อดูประวัติ</p></div>';
+            return;
+        }
+
+        container.innerHTML = '<div class="text-center text-slate-400 py-4">กำลังโหลดประวัติ...</div>';
+        
+        try {
+            // ดึงข้อมูลประวัติของ User คนนี้จากทั้ง 2 คอลเลกชันพร้อมกัน
+            const qScan = query(collection(db, "scan_history"), where("uid", "==", user.uid));
+            const qSearch = query(collection(db, "search_history"), where("uid", "==", user.uid));
+            
+            const [scanSnap, searchSnap] = await Promise.all([getDocs(qScan), getDocs(qSearch)]);
+            
+            let combinedHistory = [];
+            
+            scanSnap.forEach((docSnap) => combinedHistory.push(docSnap.data()));
+            searchSnap.forEach((docSnap) => combinedHistory.push(docSnap.data()));
+
+            if(combinedHistory.length === 0) {
+                container.innerHTML = '<div class="info-card text-center py-10"><p class="text-slate-400 font-medium">ยังไม่มีประวัติการสแกนหรือค้นหาครับ</p></div>';
+                return;
+            }
+
+            // นำข้อมูลทั้ง 2 กองมาจัดเรียงลำดับเวลา (จากใหม่สุดไปเก่าสุด)
+            combinedHistory.sort((a, b) => {
+                const timeA = a.scan_date ? a.scan_date.seconds : 0;
+                const timeB = b.scan_date ? b.scan_date.seconds : 0;
+                return timeB - timeA;
+            });
+
+            // วาด UI ประวัติ
+            container.innerHTML = "";
+            combinedHistory.forEach((item) => {
+                const date = item.scan_date ? new Date(item.scan_date.seconds * 1000).toLocaleString('th-TH') : "Just now";
+                const typeColor = item.type === 'Search' ? 'text-amber-500 bg-amber-50' : 'text-blue-500 bg-blue-50';
+                const typeText = item.type || 'Scan'; 
+                
+                container.innerHTML += `
+                    <div class="info-card !p-4 flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-slate-800">${item.fish_name}</h3>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${typeColor}">${typeText}</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">${date}</p>
+                        </div>
+                        <span class="font-bold text-blue-600">${item.confidence_percent}%</span>
+                    </div>
+                `;
+            });
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = '<div class="text-center text-red-400 py-4">โหลดข้อมูลผิดพลาด ลองใหม่อีกครั้งครับ</div>';
+        }
     };
 
     // 🌟 โหลดประวัติเฉพาะของ User นั้นๆ มาโชว์
