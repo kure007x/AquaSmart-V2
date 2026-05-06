@@ -731,60 +731,6 @@
         }
     };
 
-    // 🌟 โหลดประวัติเฉพาะของ User นั้นๆ มาโชว์
-    window.loadHistoryData = async function() {
-        const container = document.getElementById('history-container');
-        const user = auth.currentUser;
-        
-        if(!user) {
-            container.innerHTML = '<div class="info-card text-center py-10"><p class="text-slate-400 font-medium">กรุณาเข้าสู่ระบบเพื่อดูประวัติ</p></div>';
-            return;
-        }
-
-        container.innerHTML = '<div class="text-center text-slate-400 py-4">กำลังโหลดประวัติ...</div>';
-        
-        try {
-            // ดึงเฉพาะประวัติของ uid ตัวเอง และเรียงตามวันที่ล่าสุด
-            const q = query(collection(db, "scan_history"), where("uid", "==", user.uid), orderBy("scan_date", "desc"));
-            const querySnapshot = await getDocs(q);
-            
-            if(querySnapshot.empty) {
-                container.innerHTML = '<div class="info-card text-center py-10"><p class="text-slate-400 font-medium">ยังไม่มีประวัติการสแกนหรือค้นหาครับ</p></div>';
-                return;
-            }
-
-            // วาด UI ประวัติ
-            container.innerHTML = "";
-            querySnapshot.forEach((docSnap) => {
-                const item = docSnap.data();
-                const date = item.scan_date ? new Date(item.scan_date.seconds * 1000).toLocaleString('th-TH') : "Just now";
-                const typeColor = item.type === 'Scan' ? 'text-blue-500 bg-blue-50' : 'text-amber-500 bg-amber-50';
-                const typeText = item.type || 'Scan'; // รองรับข้อมูลเก่าที่ไม่มี type
-                
-                container.innerHTML += `
-                    <div class="info-card !p-4 flex justify-between items-center">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-slate-800">${item.fish_name}</h3>
-                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${typeColor}">${typeText}</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">${date}</p>
-                        </div>
-                        <span class="font-bold text-blue-600">${item.confidence_percent}%</span>
-                    </div>
-                `;
-            });
-        } catch (error) {
-            console.error(error);
-            // Firebase Index Error Alert (สำคัญ: แจ้งเตือนเรื่อง Index)
-            if(error.message.includes("index")) {
-                container.innerHTML = `<div class="info-card text-center p-4"><p class="text-xs text-red-500">โปรดสร้าง Index ใน Firebase (ดูลิงก์ใน Console ของเบราว์เซอร์)</p></div>`;
-            } else {
-                container.innerHTML = '<div class="text-center text-red-400 py-4">โหลดข้อมูลผิดพลาด</div>';
-            }
-        }
-    };
-
     // 🌟 ดึงข้อมูลปลาแบบเต็มรูปแบบจาก Firebase
     window.fetchFishDataFromFirebase = async function(dbFishId, isFromSearch) {
         try {
