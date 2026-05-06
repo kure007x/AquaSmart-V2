@@ -13,7 +13,7 @@
         ::-webkit-scrollbar { display: none; }
         @keyframes progress { 0% { left: -50%; } 100% { left: 100%; } }
         .animate-progress { position: relative; animation: progress 1.5s infinite linear; }
-        #splash-screen, #login-modal { transition: opacity 0.3s; }
+        #splash-screen, #auth-modal { transition: opacity 0.3s; }
         .tab-btn.active { background-color: white; color: #2563eb; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .tab-btn { color: #64748b; font-weight: 600; }
         .info-card { background: white; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; margin-bottom: 0.5rem; }
@@ -31,16 +31,46 @@
         </div>
     </div>
 
-    <!-- 🔐 Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-xl text-center">
-            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+    <!-- 🔐 Auth Modal (Login / Register) -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-2xl relative overflow-hidden">
+            <!-- ปุ่มปิด -->
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 hover:bg-slate-200 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+
+            <!-- 📝 โหมด Login -->
+            <div id="login-form">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 text-center mb-1">เข้าสู่ระบบ</h2>
+                <p class="text-slate-500 text-sm text-center mb-6">เพื่อดูข้อมูลการเลี้ยงเชิงลึกทั้งหมด</p>
+                
+                <input type="email" id="login-email" placeholder="อีเมลของคุณ" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:bg-white transition-all mb-3">
+                <input type="password" id="login-password" placeholder="รหัสผ่าน" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:bg-white transition-all mb-2">
+                <p id="login-error" class="text-red-500 text-xs font-semibold text-center mb-4 h-4"></p>
+
+                <button onclick="window.loginFirebase()" class="w-full py-3.5 bg-[#2563eb] text-white font-bold rounded-xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors mb-4">เข้าสู่ระบบ</button>
+                <p class="text-center text-sm text-slate-500 font-medium">ยังไม่มีบัญชี? <button onclick="toggleAuthMode('register')" class="text-blue-600 font-bold hover:underline">สมัครสมาชิก</button></p>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">เข้าสู่ระบบ</h2>
-            <p class="text-slate-500 text-sm mb-6">กรุณาเข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึกทั้งหมด (เกษตรกร / ปลาสวยงาม)</p>
-            <button onclick="performLogin()" class="w-full py-3 bg-[#2563eb] text-white font-bold rounded-xl hover:bg-blue-700 transition-colors mb-3">เข้าสู่ระบบ (Demo)</button>
-            <button onclick="closeLoginModal()" class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors">ยกเลิก</button>
+
+            <!-- 📝 โหมด Register -->
+            <div id="register-form" class="hidden">
+                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 text-center mb-1">สร้างบัญชีใหม่</h2>
+                <p class="text-slate-500 text-sm text-center mb-6">เข้าร่วม AquaSmart เพื่อปลดล็อคข้อมูล</p>
+                
+                <input type="email" id="reg-email" placeholder="อีเมลของคุณ" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-amber-500 focus:bg-white transition-all mb-3">
+                <input type="password" id="reg-password" placeholder="ตั้งรหัสผ่าน (ขั้นต่ำ 6 ตัวอักษร)" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-amber-500 focus:bg-white transition-all mb-3">
+                <input type="password" id="reg-confirm" placeholder="ยืนยันรหัสผ่านอีกครั้ง" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 outline-none focus:border-amber-500 focus:bg-white transition-all mb-2">
+                <p id="reg-error" class="text-red-500 text-xs font-semibold text-center mb-4 h-4"></p>
+
+                <button onclick="window.registerFirebase()" class="w-full py-3.5 bg-amber-500 text-white font-bold rounded-xl shadow-md shadow-amber-200 hover:bg-amber-600 transition-colors mb-4">สมัครสมาชิก</button>
+                <p class="text-center text-sm text-slate-500 font-medium">มีบัญชีอยู่แล้ว? <button onclick="toggleAuthMode('login')" class="text-amber-600 font-bold hover:underline">เข้าสู่ระบบ</button></p>
+            </div>
         </div>
     </div>
 
@@ -247,7 +277,7 @@
         </div>
     </div>
 
-    <!-- 🧠 SCRIPT AI -->
+    <!-- 🧠 SCRIPT UI & AI -->
     <script>
         let model;
         let currentFishData = null; 
@@ -280,29 +310,20 @@
             }
         }
 
-        function toggleUserStatus() {
-            if(localStorage.getItem('isLoggedIn') === 'true') {
-                if(confirm("ต้องการออกจากระบบหรือไม่?")) {
-                    localStorage.setItem('isLoggedIn', 'false');
-                    resetUI();
-                    checkAuth();
-                }
+        function toggleAuthMode(mode) {
+            document.getElementById('login-error').innerText = "";
+            document.getElementById('reg-error').innerText = "";
+            if (mode === 'register') {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
             } else {
-                document.getElementById('login-modal').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
             }
         }
 
-        function performLogin() {
-            localStorage.setItem('isLoggedIn', 'true');
-            document.getElementById('login-modal').classList.add('hidden');
-            checkAuth();
-            if(currentFishData) {
-                checkAuthAndUnlock();
-            }
-        }
-
-        function closeLoginModal() {
-            document.getElementById('login-modal').classList.add('hidden');
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
         }
 
         function checkAuthAndUnlock() {
@@ -311,7 +332,17 @@
                 document.getElementById('full-content').classList.remove('hidden');
                 document.getElementById('full-content').classList.add('flex');
             } else {
-                document.getElementById('login-modal').classList.remove('hidden');
+                document.getElementById('auth-modal').classList.remove('hidden');
+            }
+        }
+
+        function toggleUserStatus() {
+            if(localStorage.getItem('isLoggedIn') === 'true') {
+                if(confirm("ต้องการออกจากระบบหรือไม่?")) {
+                    if(window.logoutFirebase) window.logoutFirebase();
+                }
+            } else {
+                document.getElementById('auth-modal').classList.remove('hidden');
             }
         }
 
@@ -355,7 +386,6 @@
 
                             setTimeout(async () => {
                                 if(window.fetchFishDataFromFirebase) {
-                                    // true = ค้นหาผ่านตัวหนังสือ
                                     window.fetchFishDataFromFirebase(dbFishId, true);
                                 }
                             }, 500);
@@ -373,7 +403,6 @@
             document.getElementById('imageInput').click();
         };
 
-        // 🌟 แก้ไขบัคและปลดล็อคเกณฑ์ 90% ตรงนี้ 🌟
         document.getElementById('imageInput').onchange = async (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -399,21 +428,17 @@
                 const idx = pred.indexOf(Math.max(...pred));
                 const probValue = pred[idx] * 100; 
 
-                // เอาเงื่อนไข < 90% ออกไปเลย ให้มันทายและแสดงผลทันที
                 console.log("AI มั่นใจ: " + probValue.toFixed(1) + "%");
                 const thaiName = fishList[idx];
                 const dbFishId = fishMapping[thaiName]; 
                 
                 document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                 
-                // บันทึกประวัติสแกน
                 if(window.saveScanHistoryToDB) {
                     window.saveScanHistoryToDB(thaiName, probValue.toFixed(1));
                 }
 
-                // ดึงข้อมูลมาแสดงจาก Database
                 if(window.fetchFishDataFromFirebase) {
-                    // false = ส่งไปบอกฟังก์ชันว่า "นี่มาจากการสแกนรูปนะ อย่าวางรูปจากฐานข้อมูลทับ!"
                     window.fetchFishDataFromFirebase(dbFishId, false);
                 }
             };
@@ -431,10 +456,11 @@
         };
     </script>
 
-    <!-- 🌟 ระบบเชื่อมต่อ Firestore Database (Firebase v10) 🌟 -->
+    <!-- 🌟 ระบบเชื่อมต่อ Firestore & Firebase Auth (v10) 🌟 -->
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyCL0BE83SIm0xuC0f_Xy_Z1Yct5lJUgQgw",
@@ -448,8 +474,66 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app); 
 
-    // 🌟 แก้ไขบัคทับรูปตรงฟังก์ชันนี้ 🌟
+    // ตรวจสอบสถานะล็อคอิน
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            localStorage.setItem('isLoggedIn', 'true');
+        } else {
+            localStorage.setItem('isLoggedIn', 'false');
+        }
+        checkAuth(); 
+    });
+
+    // 🌟 ระบบเข้าสู่ระบบ
+    window.loginFirebase = () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        const err = document.getElementById('login-error');
+        if(!email || !pass) return err.innerText = "กรุณากรอกข้อมูลให้ครบถ้วน";
+
+        signInWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                closeAuthModal();
+                if(currentFishData) checkAuthAndUnlock();
+            })
+            .catch((error) => { err.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง"; });
+    };
+
+    // 🌟 ระบบสมัครสมาชิก
+    window.registerFirebase = () => {
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-password').value;
+        const passConfirm = document.getElementById('reg-confirm').value;
+        const err = document.getElementById('reg-error');
+
+        if(!email || !pass || !passConfirm) return err.innerText = "กรุณากรอกข้อมูลให้ครบถ้วน";
+        
+        if(pass !== passConfirm) {
+            return err.innerText = "รหัสผ่านไม่ตรงกัน กรุณาพิมพ์ใหม่ให้เหมือนกันครับ!";
+        }
+        if(pass.length < 6) {
+            return err.innerText = "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษรครับ!";
+        }
+
+        createUserWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                closeAuthModal();
+                alert("สร้างบัญชีสำเร็จ! ยินดีต้อนรับเข้าสู่ระบบครับ");
+                if(currentFishData) checkAuthAndUnlock();
+            })
+            .catch((error) => { err.innerText = "เกิดข้อผิดพลาด: อีเมลนี้อาจจะถูกใช้งานไปแล้ว"; });
+    };
+
+    // 🌟 ระบบออกจากระบบ
+    window.logoutFirebase = () => {
+        signOut(auth).then(() => {
+            resetUI();
+        });
+    };
+
+    // 🌟 ระบบดึงข้อมูลและจัดการแท็บ (ซ่อน Farmer/Ornamental แบบอัตโนมัติ)
     window.fetchFishDataFromFirebase = async function(dbFishId, isFromSearch) {
         try {
             console.log("🔍 กำลังดึงข้อมูลจากคอลเลกชัน fish_info ID: " + dbFishId);
@@ -465,7 +549,6 @@
                 document.getElementById('fishNameEn').innerText = fishData.english_name || '-';
                 document.getElementById('descBasic').innerText = fishData.description || '-';
                 
-                // แปลงคำศัพท์ให้สวยงาม
                 let catText = '-';
                 if(fishData.category === 'farmer') catText = 'ปลาเศรษฐกิจ';
                 if(fishData.category === 'ornamental') catText = 'ปลาสวยงาม';
@@ -517,8 +600,22 @@
                 document.getElementById('o-feed-amt').innerText = fishData.o_feed_amt || '-';
                 document.getElementById('o-feed-freq').innerText = fishData.o_feed_freq || '-';
                 
-                // 🐛 ถ้ามาจากการค้นหาด้วยตัวอักษร ถึงจะเอารูปจากฐานข้อมูลมาโชว์ 
-                // แต่ถ้าสแกนรูปมา จะไม่เข้าไปทำคำสั่งนี้ รูปที่สแกนมาก็จะไม่หายไป
+                // 💡 ซ่อนปุ่มแท็บที่ไม่เกี่ยวข้อง
+                const btnFarmer = document.getElementById('tab-btn-farmer');
+                const btnOrnamental = document.getElementById('tab-btn-ornamental');
+                
+                btnFarmer.style.display = 'none';
+                btnOrnamental.style.display = 'none';
+
+                if (fishData.category === 'farmer') {
+                    btnFarmer.style.display = 'block';
+                } else if (fishData.category === 'ornamental') {
+                    btnOrnamental.style.display = 'block';
+                }
+
+                // สลับมาที่แท็บ General เป็นค่าเริ่มต้นเสมอ
+                switchTab('general');
+
                 if(isFromSearch) {
                     if(fishData.image_url) {
                         document.getElementById('previewImage').src = fishData.image_url;
@@ -549,19 +646,14 @@
 
     window.saveScanHistoryToDB = async function(fishName, probValue) {
         try {
-            console.log("⏳ เริ่มส่งข้อมูลเข้าคอลเลกชัน scan_history: " + fishName + " (" + probValue + "%)");
-            
             const historyRef = collection(db, "scan_history");
             await addDoc(historyRef, {
                 fish_name: fishName,
                 confidence_percent: parseFloat(probValue),
                 scan_date: serverTimestamp() 
             });
-            
-            console.log("✅ บันทึกประวัติการสแกนลงฐานข้อมูลสำเร็จ!");
         } catch (error) {
             console.error("❌ เกิดข้อผิดพลาดในการบันทึกประวัติ:", error);
-            alert("บันทึกประวัติการสแกนไม่สำเร็จ! ลองเช็ค Console (F12) ดูครับ \nError: " + error.message);
         }
     };
     </script>
