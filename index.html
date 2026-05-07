@@ -26,7 +26,7 @@
     <div id="splash-screen" class="fixed inset-0 bg-[#f0f5fa] z-[100] flex items-center justify-center">
         <div class="text-center">
             <h1 class="text-3xl font-black text-[#111827] animate-pulse mb-2">AquaSmart ML</h1>
-            <p class="text-sm text-slate-500 font-medium">กำลังโหลดสมอง AI YOLOv8...</p>
+            <p class="text-sm text-slate-500 font-medium">กำลังโหลดสมอง AI Limit Breaker...</p>
         </div>
     </div>
 
@@ -122,11 +122,10 @@
 
             <div id="loading-section" class="hidden info-card text-center py-10">
                 <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
-                <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8...</p>
+                <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8l...</p>
             </div>
 
             <div id="result-section" class="hidden flex-col gap-2 mt-2">
-                
                 <div class="info-card !pb-5">
                     <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
                         <img id="previewImage" class="max-w-full max-h-full object-contain drop-shadow-md" src="" onerror="this.onerror=null; this.src='https://placehold.co/400x250?text=No+Image'">
@@ -155,7 +154,6 @@
                             <p id="b-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p>
                         </div>
                     </div>
-
                     <div class="info-card !bg-transparent !border-none !shadow-none !p-0 mt-2">
                         <button onclick="checkAuthAndUnlock()" class="w-full py-4 bg-[#2563eb] text-white font-bold rounded-2xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                             <span>view full details</span>
@@ -171,7 +169,6 @@
                         <button onclick="switchTab('farmer')" id="tab-btn-farmer" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Farmer</button>
                         <button onclick="switchTab('ornamental')" id="tab-btn-ornamental" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Ornamental</button>
                     </div>
-
                     <div id="tab-general" class="space-y-2">
                         <div class="info-card border-blue-50">
                             <h3 class="font-bold text-slate-800 mb-4 text-lg">General Information</h3>
@@ -188,7 +185,6 @@
                             <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">Adult Size (ขนาดโตเต็มวัย)</p><p id="g-size" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
                         </div>
                     </div>
-
                     <div id="tab-farmer" class="hidden space-y-2">
                         <div class="info-card border-blue-50">
                             <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับเกษตรกร</h3>
@@ -219,7 +215,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div id="tab-ornamental" class="hidden space-y-2">
                         <div class="info-card border-amber-50">
                             <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับคนเลี้ยงปลาสวยงาม</h3>
@@ -261,7 +256,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <button onclick="resetUI()" class="w-full mt-4 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 shadow-sm transition-colors">Scan Another Fish</button>
@@ -281,24 +275,16 @@
                 <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 text-4xl font-black shadow-inner" id="profile-avatar">?</div>
                 <h2 id="profile-name" class="text-xl font-bold text-slate-800">-</h2>
                 <p id="profile-email" class="text-slate-500 text-sm mt-1">-</p>
-                
                 <button onclick="window.logoutFirebase()" class="w-full mt-8 py-3.5 bg-slate-100 text-red-500 font-bold rounded-xl hover:bg-slate-200 transition-colors">ออกจากระบบ</button>
             </div>
         </div>
-
     </div>
 
     <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-50">
         <div class="bg-white rounded-full p-2 shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex justify-between items-center border border-slate-50">
-            <button onclick="switchMainTab('home')" id="nav-home" class="nav-btn w-24 h-12 flex items-center justify-center text-blue-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
-            </button>
-            <button onclick="switchMainTab('history')" id="nav-history" class="nav-btn w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            </button>
-            <button onclick="switchMainTab('profile')" id="nav-profile" class="nav-btn w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-            </button>
+            <button onclick="switchMainTab('home')" id="nav-home" class="nav-btn w-24 h-12 flex items-center justify-center text-blue-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg></button>
+            <button onclick="switchMainTab('history')" id="nav-history" class="nav-btn w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>
+            <button onclick="switchMainTab('profile')" id="nav-profile" class="nav-btn w-24 h-12 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></button>
         </div>
     </div>
 
@@ -312,21 +298,11 @@
             'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
         };
         
-        // 🌟 ล็อก Index ชื่อปลาให้ตรงกับตอนเทรนแบบ 100%
         const fishList = [
-            'ปลานวลจันทร์',       
-            'ปลาเสือข้างลาย',     
-            'ปลาดุก',           
-            'ปลากุเล้า',          
-            'ปลาทอง',           
-            'ปลากระดี่',          
-            'ปลาปั้กเป้าเขียวจุด',   
-            'ปลาหมอจากัวร์',     
-            'ปลากราย',          
-            'ปลาช่อน'           
+            'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 
+            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
         ];
 
-        // ระบบสลับหน้าต่างหลัก (Home / History / Profile)
         function switchMainTab(tab) {
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('history-view').classList.add('hidden');
@@ -341,25 +317,22 @@
             if (tab === 'home') {
                 document.getElementById('home-view').classList.remove('hidden');
                 document.getElementById('nav-home').classList.replace('text-slate-400', 'text-blue-600');
-                
-                // เคลียร์ค่าหน้าจอการค้นหากลับเป็นค่าเริ่มต้น
                 resetUI();
-
             } else if (tab === 'history') {
                 document.getElementById('history-view').classList.remove('hidden');
                 document.getElementById('history-view').classList.add('flex');
                 document.getElementById('nav-history').classList.replace('text-slate-400', 'text-blue-600');
-                if(window.loadHistoryData) window.loadHistoryData(); // โหลดประวัติ
+                if(window.loadHistoryData) window.loadHistoryData(); 
             } else if (tab === 'profile') {
                 if (localStorage.getItem('isLoggedIn') !== 'true') {
                     document.getElementById('auth-modal').classList.remove('hidden');
-                    switchMainTab('home'); // ถ้ายกเลิกล็อคอิน ให้เด้งกลับหน้าโฮม
+                    switchMainTab('home'); 
                     return;
                 }
                 document.getElementById('profile-view').classList.remove('hidden');
                 document.getElementById('profile-view').classList.add('flex');
                 document.getElementById('nav-profile').classList.replace('text-slate-400', 'text-blue-600');
-                if(window.updateProfileUI) window.updateProfileUI(); // อัปเดตชื่อในโปรไฟล์
+                if(window.updateProfileUI) window.updateProfileUI(); 
             }
         }
 
@@ -406,12 +379,13 @@
 
         window.onload = async () => {
             try {
-                model = await tf.loadGraphModel('./model.json?v=limitbreaker_final');
+                // 🌟 ท่าไม้ตายที่ 1: บังคับโหลดโมเดลใหม่เสมอด้วย new Date().getTime() เพื่อล้างแคช!
+                const cacheBuster = new Date().getTime();
+                model = await tf.loadGraphModel('./model.json?v=' + cacheBuster);
+                
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 300);
-                
-                // โหลดอันดับปลาตอนเปิดหน้าแรก
                 if(window.loadTopRankingFish) window.loadTopRankingFish();
             } catch (err) { console.error("Model load error:", err); }
         };
@@ -432,7 +406,6 @@
 
                             const thaiName = fishList[idx];
                             setTimeout(async () => {
-                                // 🌟 บันทึกประวัติเป็นแบบ Search
                                 if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, 100, 'Search');
                                 if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], true);
                             }, 500);
@@ -464,21 +437,35 @@
 
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
-                    // เปลี่ยนกลับเป็นร่างทอง 320
+                    // 🌟 ท่าไม้ตายที่ 2: ปรับตาเว็บเป็น 320x320 ให้ตรงกับโมเดล Limit Breaker
                     t = tf.image.resizeBilinear(t, [320, 320]);
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
-                const pred = await model.predict(tensor).data();
-                const idx = pred.indexOf(Math.max(...pred));
-                const probValue = pred[idx] * 100; 
+                // 🌟 ท่าไม้ตายที่ 3: ใช้ Softmax แปลงคะแนนให้แม่นยำและเสถียรที่สุด
+                const output = model.predict(tensor);
+                const probs = tf.softmax(output); 
+                const predArray = await probs.data();
+
+                let maxProb = 0;
+                let idx = 0;
+                for (let i = 0; i < predArray.length; i++) {
+                    if (predArray[i] > maxProb) {
+                        maxProb = predArray[i];
+                        idx = i;
+                    }
+                }
+
+                const probValue = maxProb * 100;
                 const thaiName = fishList[idx];
                 
                 document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                 
-                // 🌟 บันทึกประวัติเป็นแบบ Scan
                 if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
                 if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
+                
+                // คืนหน่วยความจำให้ระบบเพื่อป้องกันเว็บค้าง
+                tf.dispose([tensor, output, probs]);
             };
             imgForAI.src = URL.createObjectURL(file);
         };
@@ -491,8 +478,6 @@
             document.getElementById('loading-section').classList.add('hidden');
             document.getElementById('default-section').classList.remove('hidden');
             currentFishData = null;
-            
-            // อัปเดต Ranking ทุกครั้งที่กลับมาหน้าโฮม
             if(window.loadTopRankingFish) window.loadTopRankingFish();
         };
     </script>
@@ -516,16 +501,11 @@
     const auth = getAuth(app); 
     const googleProvider = new GoogleAuthProvider();
 
-    // 🌟 อัปเดตสถานะ Login
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            localStorage.setItem('isLoggedIn', 'true');
-        } else {
-            localStorage.setItem('isLoggedIn', 'false');
-        }
+        if (user) localStorage.setItem('isLoggedIn', 'true');
+        else localStorage.setItem('isLoggedIn', 'false');
     });
 
-    // 🌟 ระบบเข้าสู่ระบบ (อีเมล)
     window.loginFirebase = () => {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-password').value;
@@ -538,7 +518,6 @@
         }).catch(() => { err.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง"; });
     };
 
-    // 🌟 ระบบเข้าสู่ระบบ (Google)
     window.loginWithGoogle = () => {
         signInWithPopup(auth, googleProvider).then((result) => {
             closeAuthModal();
@@ -546,7 +525,6 @@
         }).catch((error) => { alert("เข้าสู่ระบบด้วย Google ไม่สำเร็จ: " + error.message); });
     };
 
-    // 🌟 ระบบสมัครสมาชิก (เพิ่ม Username)
     window.registerFirebase = () => {
         const user = document.getElementById('reg-username').value;
         const email = document.getElementById('reg-email').value;
@@ -559,7 +537,6 @@
         if(pass.length < 6) return err.innerText = "รหัสผ่านต้องมี 6 ตัวอักษรขึ้นไป!";
 
         createUserWithEmailAndPassword(auth, email, pass).then(async (userCredential) => {
-            // เซฟชื่อ Username ลงในโปรไฟล์
             await updateProfile(userCredential.user, { displayName: user });
             closeAuthModal();
             alert("สมัครสมาชิกและตั้งชื่อสำเร็จ!");
@@ -567,7 +544,6 @@
         }).catch((error) => { err.innerText = "อีเมลนี้อาจจะถูกใช้งานไปแล้ว"; });
     };
 
-    // 🌟 ระบบลืมรหัสผ่าน (ส่งเข้าเมล)
     window.resetPasswordFirebase = () => {
         const email = document.getElementById('forgot-email').value;
         const err = document.getElementById('forgot-error');
@@ -575,7 +551,7 @@
 
         sendPasswordResetEmail(auth, email).then(() => {
             alert("✅ ระบบได้ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลของคุณแล้วครับ!");
-            toggleAuthMode('login'); // เด้งกลับหน้า Login
+            toggleAuthMode('login'); 
         }).catch((error) => { err.innerText = "ไม่พบอีเมลนี้ในระบบครับ"; });
     };
 
@@ -587,11 +563,9 @@
         });
     };
 
-    // 🌟 อัปเดตหน้าต่าง Profile
     window.updateProfileUI = () => {
         const user = auth.currentUser;
         if(user) {
-            // ถ้าไม่มีชื่อ ให้ใช้คำว่า User แทน
             const displayName = user.displayName || "AquaSmart User";
             document.getElementById('profile-name').innerText = displayName;
             document.getElementById('profile-email').innerText = user.email;
@@ -599,7 +573,6 @@
         }
     };
 
-    // 🌟 ระบบดึงอันดับปลา Top Searched (ดึงมา 5 อันดับแรก)
     window.loadTopRankingFish = async function() {
         try {
             const q = query(collection(db, "fish_rankings"), orderBy("count", "desc"), limit(5));
@@ -620,23 +593,14 @@
                     </div>
                 `;
             });
-            
-            // กรณีฐานข้อมูลยังว่างเปล่า
-            if(count === 1) {
-                container.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">ยังไม่มีข้อมูลการค้นหา</p>';
-            }
-        } catch (error) {
-            console.error("Error loading ranking:", error);
-        }
+            if(count === 1) container.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">ยังไม่มีข้อมูลการค้นหา</p>';
+        } catch (error) { console.error("Error loading ranking:", error); }
     };
 
-    // 🌟 บันทึกประวัติ (แยกลงโฟลเดอร์ scan_history และ search_history อัตโนมัติ)
     window.saveScanHistoryToDB = async function(fishName, probValue, type) {
         try {
             const user = auth.currentUser;
-            // 💡 เช็คประเภทการทำงาน: ถ้าเป็น Search ให้ลง search_history ถ้าไม่ใช่ลง scan_history
             const folderName = type === 'Search' ? "search_history" : "scan_history";
-            
             const historyRef = collection(db, folderName);
             await addDoc(historyRef, {
                 uid: user ? user.uid : "anonymous",
@@ -645,15 +609,11 @@
                 type: type,
                 scan_date: serverTimestamp() 
             });
-            
-            // อัปเดต Ranking คะแนนความนิยม
             const rankRef = doc(db, "fish_rankings", fishName);
             await setDoc(rankRef, { count: increment(1) }, { merge: true });
-
         } catch (error) { console.error("Error saving history:", error); }
     };
 
-    // 🌟 โหลดประวัติเฉพาะของ User (ดึงจาก 2 โฟลเดอร์มาเรียงรวมกันให้สวยงาม)
     window.loadHistoryData = async function() {
         const container = document.getElementById('history-container');
         const user = auth.currentUser;
@@ -666,14 +626,11 @@
         container.innerHTML = '<div class="text-center text-slate-400 py-4">กำลังโหลดประวัติ...</div>';
         
         try {
-            // ดึงข้อมูลประวัติของ User คนนี้จากทั้ง 2 คอลเลกชันพร้อมกัน
             const qScan = query(collection(db, "scan_history"), where("uid", "==", user.uid));
             const qSearch = query(collection(db, "search_history"), where("uid", "==", user.uid));
-            
             const [scanSnap, searchSnap] = await Promise.all([getDocs(qScan), getDocs(qSearch)]);
             
             let combinedHistory = [];
-            
             scanSnap.forEach((docSnap) => combinedHistory.push(docSnap.data()));
             searchSnap.forEach((docSnap) => combinedHistory.push(docSnap.data()));
 
@@ -682,14 +639,12 @@
                 return;
             }
 
-            // นำข้อมูลทั้ง 2 กองมาจัดเรียงลำดับเวลา (จากใหม่สุดไปเก่าสุด)
             combinedHistory.sort((a, b) => {
                 const timeA = a.scan_date ? a.scan_date.seconds : 0;
                 const timeB = b.scan_date ? b.scan_date.seconds : 0;
                 return timeB - timeA;
             });
 
-            // วาด UI ประวัติ
             container.innerHTML = "";
             combinedHistory.forEach((item) => {
                 const date = item.scan_date ? new Date(item.scan_date.seconds * 1000).toLocaleString('th-TH') : "Just now";
@@ -710,15 +665,12 @@
                 `;
             });
         } catch (error) {
-            console.error(error);
             container.innerHTML = '<div class="text-center text-red-400 py-4">โหลดข้อมูลผิดพลาด ลองใหม่อีกครั้งครับ</div>';
         }
     };
 
-    // 🌟 ดึงข้อมูลปลาแบบเต็มรูปแบบจาก Firebase
     window.fetchFishDataFromFirebase = async function(dbFishId, isFromSearch) {
         try {
-            console.log("🔍 กำลังดึงข้อมูลจากคอลเลกชัน fish_info ID: " + dbFishId);
             const docRef = doc(db, "fish_info", dbFishId);
             const docSnap = await getDoc(docRef);
 
@@ -726,7 +678,6 @@
                 const fishData = docSnap.data();
                 currentFishData = true; 
 
-                // อัปเดตข้อมูลส่วนหัว
                 document.getElementById('fishName').innerText = fishData.thai_name || '-';
                 document.getElementById('fishNameEn').innerText = fishData.english_name || '-';
                 document.getElementById('descBasic').innerText = fishData.description || '-';
@@ -735,7 +686,6 @@
                 if(fishData.category === 'farmer') catText = 'ปลาเศรษฐกิจ';
                 if(fishData.category === 'ornamental') catText = 'ปลาสวยงาม';
 
-                // อัปเดตข้อมูลโหมด Basic และแท็บ General
                 document.getElementById('b-type').innerText = fishData.type || '-';
                 document.getElementById('g-type').innerText = fishData.type || '-';
                 document.getElementById('b-cat').innerText = catText;
@@ -747,7 +697,6 @@
                 document.getElementById('g-life').innerText = fishData.lifespan || '-';
                 document.getElementById('g-size').innerText = fishData.adult_size || '-';
 
-                // อัปเดตข้อมูลแท็บ Farmer
                 document.getElementById('f-raise').innerText = fishData.f_raise || '-';
                 document.getElementById('f-pond').innerText = fishData.f_pond || '-';
                 document.getElementById('f-pop').innerText = fishData.f_pop || '-';
@@ -762,7 +711,6 @@
                 document.getElementById('f-time').innerText = fishData.f_adult_time || '-';
                 document.getElementById('f-size').innerText = fishData.adult_size || '-'; 
 
-                // อัปเดตข้อมูลแท็บ Ornamental
                 document.getElementById('o-raise').innerText = fishData.o_raise || '-';
                 document.getElementById('o-water').innerText = fishData.o_water || '-';
                 document.getElementById('o-ph').innerText = fishData.o_ph || '-';
@@ -782,26 +730,19 @@
                 document.getElementById('o-feed-amt').innerText = fishData.o_feed_amt || '-';
                 document.getElementById('o-feed-freq').innerText = fishData.o_feed_freq || '-';
                 
-                // ซ่อนปุ่มแท็บที่ไม่เกี่ยวข้อง
                 const btnFarmer = document.getElementById('tab-btn-farmer');
                 const btnOrnamental = document.getElementById('tab-btn-ornamental');
                 
                 btnFarmer.style.display = 'none';
                 btnOrnamental.style.display = 'none';
 
-                if (fishData.category === 'farmer') {
-                    btnFarmer.style.display = 'block';
-                } else if (fishData.category === 'ornamental') {
-                    btnOrnamental.style.display = 'block';
-                }
+                if (fishData.category === 'farmer') btnFarmer.style.display = 'block';
+                else if (fishData.category === 'ornamental') btnOrnamental.style.display = 'block';
 
-                // สลับมาที่แท็บ General เป็นค่าเริ่มต้นเสมอ
                 switchTab('general');
 
                 if(isFromSearch) {
-                    if(fishData.image_url) {
-                        document.getElementById('previewImage').src = fishData.image_url;
-                    }
+                    if(fishData.image_url) document.getElementById('previewImage').src = fishData.image_url;
                     document.getElementById('prob').innerText = "Search Result";
                 }
 
@@ -813,7 +754,6 @@
                 document.getElementById('result-section').classList.remove('hidden');
                 document.getElementById('result-section').classList.add('flex');
             } else {
-                console.log("ไม่พบประวัติปลาชนิดนี้ในระบบ");
                 document.getElementById('fishName').innerText = "ยังไม่มีข้อมูล";
                 document.getElementById('descBasic').innerText = "กรุณาเพิ่มข้อมูลในหน้า Admin ก่อนครับ";
                 
@@ -821,9 +761,7 @@
                 document.getElementById('result-section').classList.remove('hidden');
                 document.getElementById('result-section').classList.add('flex');
             }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-        }
+        } catch (error) { console.error("Error:", error); }
     };
     </script>
 </body>
