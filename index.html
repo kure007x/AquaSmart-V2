@@ -406,7 +406,7 @@
 
         window.onload = async () => {
             try {
-                model = await tf.loadGraphModel('./model.json');
+                model = await tf.loadGraphModel('./model.json?v=3');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 300);
