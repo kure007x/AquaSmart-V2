@@ -406,7 +406,7 @@
 
         window.onload = async () => {
             try {
-                model = await tf.loadGraphModel('./model.json?v=3');
+                model = await tf.loadGraphModel('./model.json?v=limitbreaker_final');
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 300);
@@ -465,7 +465,7 @@
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
                     // 🌟 เปลี่ยนขนาดรูปเป็น 320x320 ให้ตรงกับโมเดลตอนเทรน
-                    t = tf.image.resizeBilinear(t, [224, 224]);
+                    t = tf.image.resizeBilinear(t, [320, 320]);
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
