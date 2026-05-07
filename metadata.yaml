@@ -1,0 +1,32 @@
+description: Ultralytics YOLOv8l-cls model trained on /root/.cache/kagglehub/datasets/kuretanit/fdataset01/versions/1/DATASETSFISH
+author: Ultralytics
+date: '2026-05-07T17:28:45.379376'
+version: 8.4.47
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 1
+task: classify
+batch: 1
+imgsz:
+- 320
+- 320
+names:
+  0: Bangus
+  1: Black Spotted Barb
+  2: Catfish
+  3: Fourfinger Threadfin
+  4: Gold Fish
+  5: Gourami
+  6: Green Spotted Puffer
+  7: Jaguar Gapote
+  8: Knifefish
+  9: Snakehead
+args:
+  data: null
+  batch: 1
+  fraction: 1.0
+  half: false
+  int8: false
+  nms: false
+channels: 3
+end2end: false
