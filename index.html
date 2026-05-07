@@ -464,8 +464,8 @@
 
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
-                    // 🌟 เปลี่ยนขนาดรูปเป็น 320x320 ให้ตรงกับโมเดลตอนเทรน
-                    t = tf.image.resizeBilinear(t, [320, 320]);
+                    // เปลี่ยนบรรทัดนี้ให้เป็น 224
+                    t = tf.image.resizeBilinear(t, [224, 224]);
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
