@@ -122,7 +122,7 @@
 
             <div id="loading-section" class="hidden info-card text-center py-10">
                 <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
-                <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8l...</p>
+                <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8l (Limit Breaker)...</p>
             </div>
 
             <div id="result-section" class="hidden flex-col gap-2 mt-2">
@@ -298,9 +298,18 @@
             'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
         };
         
+        // 🌟 ล็อก Index ชื่อปลา ตรงตาม metadata.yaml แบบ 100%
         const fishList = [
-            'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 
-            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
+            'ปลานวลจันทร์', // 0
+            'ปลาเสือข้างลาย', // 1
+            'ปลาดุก', // 2
+            'ปลากุเล้า', // 3
+            'ปลาทอง', // 4
+            'ปลากระดี่', // 5
+            'ปลาปั้กเป้าเขียวจุด', // 6
+            'ปลาหมอจากัวร์', // 7
+            'ปลากราย', // 8
+            'ปลาช่อน' // 9
         ];
 
         function switchMainTab(tab) {
@@ -379,7 +388,7 @@
 
         window.onload = async () => {
             try {
-                // 🌟 ท่าไม้ตายที่ 1: บังคับโหลดโมเดลใหม่เสมอด้วย new Date().getTime() เพื่อล้างแคช!
+                // 🌟 ทะลวง Cache โหลดโมเดลใหม่สุดเสมอ
                 const cacheBuster = new Date().getTime();
                 model = await tf.loadGraphModel('./model.json?v=' + cacheBuster);
                 
@@ -437,16 +446,16 @@
 
                 const tensor = tf.tidy(() => {
                     let t = tf.browser.fromPixels(imgForAI);
-                    // 🌟 ท่าไม้ตายที่ 2: ปรับตาเว็บเป็น 320x320 ให้ตรงกับโมเดล Limit Breaker
+                    // 🌟 ปรับขนาดภาพเป็น 320x320 ให้ตรงกับสมอง Limit Breaker
                     t = tf.image.resizeBilinear(t, [320, 320]);
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
-                // 🌟 ท่าไม้ตายที่ 3: ใช้ Softmax แปลงคะแนนให้แม่นยำและเสถียรที่สุด
+                // 🌟 ดึงข้อมูลดิบจากโมเดล (ปลดล็อก % ให้กลับมาพุ่งปรี๊ด)
                 const output = model.predict(tensor);
-                const probs = tf.softmax(output); 
-                const predArray = await probs.data();
+                const predArray = await output.data();
 
+                // ค้นหาคะแนนสูงสุด และดัชนีของปลา
                 let maxProb = 0;
                 let idx = 0;
                 for (let i = 0; i < predArray.length; i++) {
@@ -456,16 +465,18 @@
                     }
                 }
 
+                // โมเดลส่งค่ากลับมาเป็นเลข 0-1 อยู่แล้ว ให้คูณ 100 เป็นเปอร์เซ็นต์ได้เลย
                 const probValue = maxProb * 100;
                 const thaiName = fishList[idx];
                 
+                // โชว์เปอร์เซ็นต์ความมั่นใจ
                 document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
                 
                 if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
                 if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
                 
-                // คืนหน่วยความจำให้ระบบเพื่อป้องกันเว็บค้าง
-                tf.dispose([tensor, output, probs]);
+                // คืนหน่วยความจำให้เว็บไม่ค้าง
+                tf.dispose([tensor, output]);
             };
             imgForAI.src = URL.createObjectURL(file);
         };
