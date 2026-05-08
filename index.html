@@ -122,7 +122,7 @@
 
             <div id="loading-section" class="hidden info-card text-center py-10">
                 <div class="h-2 w-full bg-blue-100 rounded-full overflow-hidden relative mb-4"><div class="h-full bg-blue-600 w-1/2 animate-progress absolute rounded-full"></div></div>
-                <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8l (Limit Breaker)...</p>
+                <p class="text-blue-600 font-bold">กำลังประมวลผลด้วย YOLOv8l...</p>
             </div>
 
             <div id="result-section" class="hidden flex-col gap-2 mt-2">
@@ -298,7 +298,7 @@
             'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
         };
         
-        // 🌟 ล็อก Index ชื่อปลา ตรงตาม metadata.yaml แบบ 100%
+        // 🌟 ล็อก Index ชื่อปลาให้ตรงกับ metadata.yaml อย่างเคร่งครัด
         const fishList = [
             'ปลานวลจันทร์', // 0
             'ปลาเสือข้างลาย', // 1
@@ -388,7 +388,7 @@
 
         window.onload = async () => {
             try {
-                // 🌟 ทะลวง Cache โหลดโมเดลใหม่สุดเสมอ
+                // ทะลวง Cache ดึงโมเดลเวอร์ชันใหม่ล่าสุดเสมอ
                 const cacheBuster = new Date().getTime();
                 model = await tf.loadGraphModel('./model.json?v=' + cacheBuster);
                 
@@ -445,17 +445,37 @@
                 if(!model) return;
 
                 const tensor = tf.tidy(() => {
-                    let t = tf.browser.fromPixels(imgForAI);
-                    // 🌟 ปรับขนาดภาพเป็น 320x320 ให้ตรงกับสมอง Limit Breaker
-                    t = tf.image.resizeBilinear(t, [320, 320]);
+                    const TARGET = 320;
+                    let t = tf.browser.fromPixels(imgForAI); // shape: [H, W, 3]
+
+                    // 🌟 วิธีแก้ปัญหาหลัก: Pad to Square (รักษาสัดส่วนภาพ ไม่บีบปลา)
+                    const [h, w] = [t.shape[0], t.shape[1]];
+                    const maxSide = Math.max(h, w);
+
+                    // คำนวณขอบดำที่ต้องเติมบน-ล่าง-ซ้าย-ขวา
+                    const padTop    = Math.floor((maxSide - h) / 2);
+                    const padBottom = maxSide - h - padTop;
+                    const padLeft   = Math.floor((maxSide - w) / 2);
+                    const padRight  = maxSide - w - padLeft;
+
+                    // เติมขอบดำ (0) ให้ภาพกลายเป็นสี่เหลี่ยมจัตุรัส
+                    t = t.pad([[padTop, padBottom], [padLeft, padRight], [0, 0]]);
+
+                    // ย่อภาพที่เติมขอบแล้วให้เป็น 320x320
+                    t = tf.image.resizeBilinear(t, [TARGET, TARGET]);
+
+                    // Normalize [0, 255] เป็น [0.0, 1.0] ส่งเข้า AI
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
-                // 🌟 ดึงข้อมูลดิบจากโมเดล (ปลดล็อก % ให้กลับมาพุ่งปรี๊ด)
+                // ดึงผลลัพธ์ (ความน่าจะเป็น) จากโมเดล
                 const output = model.predict(tensor);
                 const predArray = await output.data();
+                
+                // ป้องกัน Memory Leak ด้วยการลบทิ้งทันที
+                tf.dispose([tensor, output]);
 
-                // ค้นหาคะแนนสูงสุด และดัชนีของปลา
+                // หาค่าเปอเซนต์ที่มากที่สุด
                 let maxProb = 0;
                 let idx = 0;
                 for (let i = 0; i < predArray.length; i++) {
@@ -465,18 +485,13 @@
                     }
                 }
 
-                // โมเดลส่งค่ากลับมาเป็นเลข 0-1 อยู่แล้ว ให้คูณ 100 เป็นเปอร์เซ็นต์ได้เลย
                 const probValue = maxProb * 100;
                 const thaiName = fishList[idx];
-                
-                // โชว์เปอร์เซ็นต์ความมั่นใจ
+
+                // อัปเดต UI 
                 document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                
                 if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
                 if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
-                
-                // คืนหน่วยความจำให้เว็บไม่ค้าง
-                tf.dispose([tensor, output]);
             };
             imgForAI.src = URL.createObjectURL(file);
         };
@@ -753,7 +768,9 @@
                 switchTab('general');
 
                 if(isFromSearch) {
-                    if(fishData.image_url) document.getElementById('previewImage').src = fishData.image_url;
+                    if(fishData.image_url) {
+                        document.getElementById('previewImage').src = fishData.image_url;
+                    }
                     document.getElementById('prob').innerText = "Search Result";
                 }
 
@@ -765,6 +782,7 @@
                 document.getElementById('result-section').classList.remove('hidden');
                 document.getElementById('result-section').classList.add('flex');
             } else {
+                console.log("ไม่พบประวัติปลาชนิดนี้ในระบบ");
                 document.getElementById('fishName').innerText = "ยังไม่มีข้อมูล";
                 document.getElementById('descBasic').innerText = "กรุณาเพิ่มข้อมูลในหน้า Admin ก่อนครับ";
                 
@@ -772,7 +790,9 @@
                 document.getElementById('result-section').classList.remove('hidden');
                 document.getElementById('result-section').classList.add('flex');
             }
-        } catch (error) { console.error("Error:", error); }
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
+        }
     };
     </script>
 </body>
