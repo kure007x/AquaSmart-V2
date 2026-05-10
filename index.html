@@ -484,11 +484,26 @@
                 const dot = badge.querySelector('span'); 
                 const probText = document.getElementById('prob');
 
-                // 🌟 ดักจับความมั่นใจต่ำกว่า 70% (ไม่ใช่ปลาทั้ง 10 ชนิดในระบบ หรือ รูปไม่ชัด)
-                if (probValue < 70) {
+                // 🌟 ระบบดักจับความมั่นใจต่ำกว่า 80% และแจ้งรายชื่อปลาที่มีในระบบ
+                if (probValue < 80) {
                     document.getElementById('fishName').innerText = "ไม่สามารถระบุได้ / ไม่อยู่ในระบบ";
                     document.getElementById('fishNameEn').innerText = "Unknown / Not related";
-                    document.getElementById('descBasic').innerText = "ระบบมีความมั่นใจต่ำกว่า 70% รูปนี้อาจเป็นสัตว์/สิ่งของอื่น หรืออาจเป็นปลาชนิดที่ยังไม่มีข้อมูลในระบบของเรา กรุณาอัปโหลดรูปปลาชนิดอื่นที่มีในระบบใหม่อีกครั้งครับ";
+                    
+                    document.getElementById('descBasic').innerHTML = `
+                        ระบบมีความมั่นใจต่ำกว่า 80% รูปนี้อาจเป็นสัตว์/สิ่งของอื่น หรืออาจเป็นปลาชนิดที่ยังไม่มีข้อมูลในระบบของเราครับ<br><br>
+                        <b>📌 ปัจจุบันระบบรู้จักปลาเพียง 10 ชนิด ดังนี้:</b><br>
+                        1. ปลานวลจันทร์<br>
+                        2. ปลาเสือข้างลาย<br>
+                        3. ปลาดุก<br>
+                        4. ปลากุเล้า<br>
+                        5. ปลาทอง<br>
+                        6. ปลากระดี่<br>
+                        7. ปลาปักเป้าเขียวจุด<br>
+                        8. ปลาหมอจากัวร์<br>
+                        9. ปลากราย<br>
+                        10. ปลาช่อน<br><br>
+                        <i class="text-xs text-red-500">* กรุณาอัปโหลดรูปภาพของปลาที่มีในระบบใหม่อีกครั้งครับ</i>
+                    `;
                     
                     badge.classList.remove('bg-blue-100', 'text-blue-600');
                     badge.classList.add('bg-red-100', 'text-red-600');
