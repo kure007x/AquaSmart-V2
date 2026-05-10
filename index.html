@@ -484,11 +484,11 @@
                 const dot = badge.querySelector('span'); 
                 const probText = document.getElementById('prob');
 
-                // 🌟 ระบบดักจับความมั่นใจต่ำกว่า 60% (ไม่ใช่ปลา หรือ รูปไม่ชัด)
-                if (probValue < 60) {
-                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้ / ไม่ใช่ปลา";
+                // 🌟 ดักจับความมั่นใจต่ำกว่า 70% (ไม่ใช่ปลาทั้ง 10 ชนิดในระบบ หรือ รูปไม่ชัด)
+                if (probValue < 70) {
+                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้ / ไม่อยู่ในระบบ";
                     document.getElementById('fishNameEn').innerText = "Unknown / Not related";
-                    document.getElementById('descBasic').innerText = "ระบบมีความมั่นใจต่ำกว่า 60% รูปนี้อาจไม่ใช่ปลา (เช่น สัตว์อื่น สิ่งของ) หรือภาพอาจจะไม่ชัดเจน กรุณาอัปโหลดรูปปลาใหม่อีกครั้งครับ";
+                    document.getElementById('descBasic').innerText = "ระบบมีความมั่นใจต่ำกว่า 70% รูปนี้อาจเป็นสัตว์/สิ่งของอื่น หรืออาจเป็นปลาชนิดที่ยังไม่มีข้อมูลในระบบของเรา กรุณาอัปโหลดรูปปลาชนิดอื่นที่มีในระบบใหม่อีกครั้งครับ";
                     
                     badge.classList.remove('bg-blue-100', 'text-blue-600');
                     badge.classList.add('bg-red-100', 'text-red-600');
@@ -786,7 +786,6 @@
 
                 switchTab('general');
 
-                // 🌟 รีเซ็ตสี Badge เวลามาจากการค้นหา 
                 const badge = document.getElementById('probBadge');
                 const dot = badge.querySelector('span');
                 if(badge) {
