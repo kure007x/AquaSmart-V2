@@ -154,6 +154,7 @@
                             <p id="b-ident" class="text-sm font-medium text-slate-600 mt-1 leading-relaxed">-</p>
                         </div>
                     </div>
+
                     <div class="info-card !bg-transparent !border-none !shadow-none !p-0 mt-2">
                         <button onclick="checkAuthAndUnlock()" class="w-full py-4 bg-[#2563eb] text-white font-bold rounded-2xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                             <span>view full details</span>
@@ -169,6 +170,7 @@
                         <button onclick="switchTab('farmer')" id="tab-btn-farmer" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Farmer</button>
                         <button onclick="switchTab('ornamental')" id="tab-btn-ornamental" class="tab-btn flex-1 py-2 rounded-full text-sm transition-all">Ornamental</button>
                     </div>
+
                     <div id="tab-general" class="space-y-2">
                         <div class="info-card border-blue-50">
                             <h3 class="font-bold text-slate-800 mb-4 text-lg">General Information</h3>
@@ -185,6 +187,7 @@
                             <div class="bg-slate-50 p-4 rounded-2xl"><p class="info-label">Adult Size (ขนาดโตเต็มวัย)</p><p id="g-size" class="text-sm font-medium text-slate-600 mt-1">-</p></div>
                         </div>
                     </div>
+
                     <div id="tab-farmer" class="hidden space-y-2">
                         <div class="info-card border-blue-50">
                             <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับเกษตรกร</h3>
@@ -215,6 +218,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div id="tab-ornamental" class="hidden space-y-2">
                         <div class="info-card border-amber-50">
                             <h3 class="font-bold text-slate-800 mb-4 text-lg">ข้อมูลสำหรับคนเลี้ยงปลาสวยงาม</h3>
@@ -298,7 +302,6 @@
             'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
         };
         
-        // 🌟 ล็อก Index ชื่อปลาให้ตรงกับ metadata.yaml อย่างเคร่งครัด
         const fishList = [
             'ปลานวลจันทร์', // 0
             'ปลาเสือข้างลาย', // 1
@@ -388,7 +391,6 @@
 
         window.onload = async () => {
             try {
-                // ทะลวง Cache ดึงโมเดลเวอร์ชันใหม่ล่าสุดเสมอ
                 const cacheBuster = new Date().getTime();
                 model = await tf.loadGraphModel('./model.json?v=' + cacheBuster);
                 
@@ -446,36 +448,26 @@
 
                 const tensor = tf.tidy(() => {
                     const TARGET = 320;
-                    let t = tf.browser.fromPixels(imgForAI); // shape: [H, W, 3]
+                    let t = tf.browser.fromPixels(imgForAI); 
 
-                    // 🌟 วิธีแก้ปัญหาหลัก: Pad to Square (รักษาสัดส่วนภาพ ไม่บีบปลา)
                     const [h, w] = [t.shape[0], t.shape[1]];
                     const maxSide = Math.max(h, w);
 
-                    // คำนวณขอบดำที่ต้องเติมบน-ล่าง-ซ้าย-ขวา
                     const padTop    = Math.floor((maxSide - h) / 2);
                     const padBottom = maxSide - h - padTop;
                     const padLeft   = Math.floor((maxSide - w) / 2);
                     const padRight  = maxSide - w - padLeft;
 
-                    // เติมขอบดำ (0) ให้ภาพกลายเป็นสี่เหลี่ยมจัตุรัส
                     t = t.pad([[padTop, padBottom], [padLeft, padRight], [0, 0]]);
-
-                    // ย่อภาพที่เติมขอบแล้วให้เป็น 320x320
                     t = tf.image.resizeBilinear(t, [TARGET, TARGET]);
-
-                    // Normalize [0, 255] เป็น [0.0, 1.0] ส่งเข้า AI
                     return t.toFloat().div(255.0).expandDims(0); 
                 });
 
-                // ดึงผลลัพธ์ (ความน่าจะเป็น) จากโมเดล
                 const output = model.predict(tensor);
                 const predArray = await output.data();
                 
-                // ป้องกัน Memory Leak ด้วยการลบทิ้งทันที
                 tf.dispose([tensor, output]);
 
-                // หาค่าเปอเซนต์ที่มากที่สุด
                 let maxProb = 0;
                 let idx = 0;
                 for (let i = 0; i < predArray.length; i++) {
@@ -488,45 +480,34 @@
                 const probValue = maxProb * 100;
                 const thaiName = fishList[idx];
 
-                // อ้างอิง UI ของ Badge
                 const badge = document.getElementById('probBadge');
-                const dot = badge.querySelector('span'); // จุดไข่ปลา
+                const dot = badge.querySelector('span'); 
                 const probText = document.getElementById('prob');
 
-                // 🌟 ระบบดักจับความมั่นใจต่ำกว่า 50% (ไม่ใช่ปลา หรือ รูปไม่ชัด)
-                if (probValue < 50) {
-                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้";
+                // 🌟 ระบบดักจับความมั่นใจต่ำกว่า 60% (ไม่ใช่ปลา หรือ รูปไม่ชัด)
+                if (probValue < 60) {
+                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้ / ไม่ใช่ปลา";
                     document.getElementById('fishNameEn').innerText = "Unknown / Not related";
-                    document.getElementById('descBasic').innerText = "ระบบมีความมั่นใจต่ำกว่า 50% ซึ่งอาจเกิดจากรูปภาพไม่ชัดเจน หรือรูปนี้อาจไม่ใช่ปลาที่มีอยู่ในระบบของเรา กรุณาอัปโหลดรูปภาพใหม่อีกครั้งครับ";
+                    document.getElementById('descBasic').innerText = "ระบบมีความมั่นใจต่ำกว่า 60% รูปนี้อาจไม่ใช่ปลา (เช่น สัตว์อื่น สิ่งของ) หรือภาพอาจจะไม่ชัดเจน กรุณาอัปโหลดรูปปลาใหม่อีกครั้งครับ";
                     
-                    // เปลี่ยนสี Badge เป็นสีแดงเตือน
                     badge.classList.remove('bg-blue-100', 'text-blue-600');
                     badge.classList.add('bg-red-100', 'text-red-600');
                     if(dot) { dot.classList.remove('text-blue-400'); dot.classList.add('text-red-400'); }
                     probText.innerText = probValue.toFixed(1) + "%";
 
-                    // ซ่อนหน้าข้อมูลเชิงลึกทั้งหมด
                     document.getElementById('basic-content').classList.add('hidden');
                     document.getElementById('full-content').classList.add('hidden');
                     document.getElementById('full-content').classList.remove('flex');
                     
-                    // ปิดหน้าโหลด เปิดหน้าผลลัพธ์
                     document.getElementById('loading-section').classList.add('hidden');
                     document.getElementById('result-section').classList.remove('hidden');
                     document.getElementById('result-section').classList.add('flex');
                 } else {
-                    // กรณีทายถูกเกิน 50% (เปลี่ยนสี Badge กลับเป็นสีน้ำเงินปกติ)
                     badge.classList.remove('bg-red-100', 'text-red-600');
                     badge.classList.add('bg-blue-100', 'text-blue-600');
                     if(dot) { dot.classList.remove('text-red-400'); dot.classList.add('text-blue-400'); }
                     probText.innerText = probValue.toFixed(1) + "%";
 
-                    // อัปเดต UI เปิดหน้าผลลัพธ์
-                    document.getElementById('loading-section').classList.add('hidden');
-                    document.getElementById('result-section').classList.remove('hidden');
-                    document.getElementById('result-section').classList.add('flex');
-
-                    // บันทึกประวัติและดึงข้อมูลจาก Firebase ตามปกติ
                     if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
                     if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
                 }
@@ -805,7 +786,7 @@
 
                 switchTab('general');
 
-                // 🌟 รีเซ็ต Badge กลับเป็นสีน้ำเงินเสมอเผื่อค้างสีแดงไว้จากการสแกนรูปมั่ว
+                // 🌟 รีเซ็ตสี Badge เวลามาจากการค้นหา 
                 const badge = document.getElementById('probBadge');
                 const dot = badge.querySelector('span');
                 if(badge) {
