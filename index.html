@@ -488,10 +488,48 @@
                 const probValue = maxProb * 100;
                 const thaiName = fishList[idx];
 
-                // อัปเดต UI 
-                document.getElementById('prob').innerText = probValue.toFixed(1) + "%";
-                if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
-                if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
+                // อ้างอิง UI ของ Badge
+                const badge = document.getElementById('probBadge');
+                const dot = badge.querySelector('span'); // จุดไข่ปลา
+                const probText = document.getElementById('prob');
+
+                // 🌟 ระบบดักจับความมั่นใจต่ำกว่า 50% (ไม่ใช่ปลา หรือ รูปไม่ชัด)
+                if (probValue < 50) {
+                    document.getElementById('fishName').innerText = "ไม่สามารถระบุได้";
+                    document.getElementById('fishNameEn').innerText = "Unknown / Not related";
+                    document.getElementById('descBasic').innerText = "ระบบมีความมั่นใจต่ำกว่า 50% ซึ่งอาจเกิดจากรูปภาพไม่ชัดเจน หรือรูปนี้อาจไม่ใช่ปลาที่มีอยู่ในระบบของเรา กรุณาอัปโหลดรูปภาพใหม่อีกครั้งครับ";
+                    
+                    // เปลี่ยนสี Badge เป็นสีแดงเตือน
+                    badge.classList.remove('bg-blue-100', 'text-blue-600');
+                    badge.classList.add('bg-red-100', 'text-red-600');
+                    if(dot) { dot.classList.remove('text-blue-400'); dot.classList.add('text-red-400'); }
+                    probText.innerText = probValue.toFixed(1) + "%";
+
+                    // ซ่อนหน้าข้อมูลเชิงลึกทั้งหมด
+                    document.getElementById('basic-content').classList.add('hidden');
+                    document.getElementById('full-content').classList.add('hidden');
+                    document.getElementById('full-content').classList.remove('flex');
+                    
+                    // ปิดหน้าโหลด เปิดหน้าผลลัพธ์
+                    document.getElementById('loading-section').classList.add('hidden');
+                    document.getElementById('result-section').classList.remove('hidden');
+                    document.getElementById('result-section').classList.add('flex');
+                } else {
+                    // กรณีทายถูกเกิน 50% (เปลี่ยนสี Badge กลับเป็นสีน้ำเงินปกติ)
+                    badge.classList.remove('bg-red-100', 'text-red-600');
+                    badge.classList.add('bg-blue-100', 'text-blue-600');
+                    if(dot) { dot.classList.remove('text-red-400'); dot.classList.add('text-blue-400'); }
+                    probText.innerText = probValue.toFixed(1) + "%";
+
+                    // อัปเดต UI เปิดหน้าผลลัพธ์
+                    document.getElementById('loading-section').classList.add('hidden');
+                    document.getElementById('result-section').classList.remove('hidden');
+                    document.getElementById('result-section').classList.add('flex');
+
+                    // บันทึกประวัติและดึงข้อมูลจาก Firebase ตามปกติ
+                    if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
+                    if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
+                }
             };
             imgForAI.src = URL.createObjectURL(file);
         };
@@ -766,6 +804,18 @@
                 else if (fishData.category === 'ornamental') btnOrnamental.style.display = 'block';
 
                 switchTab('general');
+
+                // 🌟 รีเซ็ต Badge กลับเป็นสีน้ำเงินเสมอเผื่อค้างสีแดงไว้จากการสแกนรูปมั่ว
+                const badge = document.getElementById('probBadge');
+                const dot = badge.querySelector('span');
+                if(badge) {
+                    badge.classList.remove('bg-red-100', 'text-red-600');
+                    badge.classList.add('bg-blue-100', 'text-blue-600');
+                }
+                if(dot) { 
+                    dot.classList.remove('text-red-400'); 
+                    dot.classList.add('text-blue-400'); 
+                }
 
                 if(isFromSearch) {
                     if(fishData.image_url) {
