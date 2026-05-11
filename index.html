@@ -310,7 +310,7 @@
                 reqLoginView: "เข้าสู่ระบบเพื่อดูข้อมูลการเลี้ยงเชิงลึก",
                 tabGeneral: "General", tabFarmer: "Farmer", tabOrnamental: "Ornamental",
                 generalBio: "General Biology", lblLife: "Average Lifespan (อายุเฉลี่ย)", lblAdultSize: "Adult Size (ขนาดโตเต็มวัย)",
-                farmerData: "ข้อมูลสำหรับเกษตรกร", lblRaise: "วิธีเลี้ยง", lblPond: "ชนิดบ่อ และ ขนาดบ่อ", lblPop: "จำนวนประชากร",
+                farmerData: "ข้อมูลสำหรับเกษตรกร", lblRaise: "วิธีเลี้ยง", lblPond: "ชนิดบ่อ และ ขนาดบ่อ", lblPop: "จำนวนประชากรต่อบ่อ",
                 ecoHealth: "ระบบนิเวศ & สุขภาพ", lblAvoid: "ห้ามเลี้ยงร่วมกับ", lblSurvive: "อัตราการรอดชีวิต", lblDisease: "โรคที่พบบ่อย", lblPrevent: "วิธีป้องกันโรค",
                 feedGrowth: "อาหาร & การเจริญเติบโต", lblFeedRec: "ประเภทอาหารที่แนะนำ", lblFeedNot: "ไม่แนะนำ", lblFeedAmt: "ปริมาณอาหาร", lblFeedFreq: "รอบต่อวัน",
                 lblAdultTime: "ระยะเวลาโตเต็มวัย",
@@ -323,7 +323,7 @@
                 forgotTitle: "ลืมรหัสผ่าน", forgotSubtitle: "กรอกอีเมลของคุณเพื่อรับลิงก์ตั้งรหัสผ่านใหม่", btnResetPass: "ส่งลิงก์รีเซ็ตพาสเวิร์ด", backToLogin: "กลับไปหน้าเข้าสู่ระบบ",
                 errNoData: "❌ ระบบยังไม่มีข้อมูลของ",
                 errNotFishTitle: "ไม่สามารถระบุได้ / ไม่อยู่ในระบบ",
-                errNotFishEn: "Unknown / Not in database",
+                errNotFishEn: "Unknown / Not related",
                 errNotFishDesc: `ระบบมีความมั่นใจต่ำกว่า 80% รูปนี้อาจเป็นสัตว์/สิ่งของอื่น หรืออาจเป็นปลาชนิดที่ยังไม่มีข้อมูลในระบบของเราครับ<br><br><b>📌 ปัจจุบันระบบรู้จักปลาเพียง 10 ชนิด ดังนี้:</b><br>1. ปลานวลจันทร์<br>2. ปลาเสือข้างลาย<br>3. ปลาดุก<br>4. ปลากุเล้า<br>5. ปลาทอง<br>6. ปลากระดี่<br>7. ปลาปักเป้าเขียวจุด<br>8. ปลาหมอจากัวร์<br>9. ปลากราย<br>10. ปลาช่อน<br><br><i class="text-xs text-red-500">* กรุณาอัปโหลดรูปภาพของปลาที่มีในระบบใหม่อีกครั้งครับ</i>`
             },
             en: {
@@ -359,10 +359,8 @@
 
         let currentLang = 'th';
 
-        // 🌟 ฟังก์ชันจัดการเรนเดอร์ข้อมูลปลาจาก Firebase แบบ 2 ภาษา (มี Fallback กันเว็บพัง)
         window.renderFishDetails = function(d) {
             const isEn = currentLang === 'en';
-            // ฟังก์ชันตัวช่วย: ถ้าเป็น EN ให้หาฟิลด์ _en ถ้าหาไม่เจอ ให้เอาภาษาไทยโชว์แทน
             const t = (key) => isEn ? (d[key + '_en'] || d[key] || '-') : (d[key] || '-');
 
             document.getElementById('fishName').innerText = isEn ? (d.english_name || '-') : (d.thai_name || '-');
@@ -375,7 +373,6 @@
             document.getElementById('b-cat').innerText = catText;
             document.getElementById('g-cat').innerText = catText;
 
-            // General
             document.getElementById('b-type').innerText = t('type');
             document.getElementById('g-type').innerText = t('type');
             document.getElementById('b-hab').innerText = t('habitat');
@@ -385,7 +382,6 @@
             document.getElementById('g-life').innerText = t('lifespan');
             document.getElementById('g-size').innerText = t('adult_size');
 
-            // Farmer
             document.getElementById('f-raise').innerText = t('f_raise');
             document.getElementById('f-pond').innerText = t('f_pond');
             document.getElementById('f-pop').innerText = t('f_pop');
@@ -400,7 +396,6 @@
             document.getElementById('f-time').innerText = t('f_adult_time');
             document.getElementById('f-size').innerText = t('adult_size');
 
-            // Ornamental
             document.getElementById('o-raise').innerText = t('o_raise');
             document.getElementById('o-water').innerText = t('o_water');
             document.getElementById('o-ph').innerText = t('o_ph');
@@ -432,7 +427,6 @@
             currentLang = currentLang === 'th' ? 'en' : 'th';
             document.getElementById('lang-btn').innerText = currentLang === 'th' ? 'EN' : 'TH';
             
-            // เปลี่ยนข้อความใน HTML ทั้งหมดที่มี data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang][key]) {
@@ -440,7 +434,6 @@
                 }
             });
 
-            // เปลี่ยน Placeholder
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (translations[currentLang][key]) {
@@ -448,23 +441,25 @@
                 }
             });
 
-            // 💡 อัปเดตข้อมูลปลาที่เปิดอยู่ให้เป็นภาษาตามที่กด
             if (currentFishDataObj) {
                 window.renderFishDetails(currentFishDataObj);
             }
 
-            // ถ้ารูป Error แสดงอยู่ ให้เปลี่ยนภาษาของ Error
             const badge = document.getElementById('probBadge');
             if(badge && badge.classList.contains('bg-red-100')) {
                 document.getElementById('fishName').innerText = translations[currentLang].errNotFishTitle;
                 document.getElementById('fishNameEn').innerText = translations[currentLang].errNotFishEn;
                 document.getElementById('descBasic').innerHTML = translations[currentLang].errNotFishDesc;
             }
-        };
 
-        // ==========================================
-        //  AI & App Logic
-        // ==========================================
+            // 💡 สั่งให้โหลดข้อมูลหน้า Top Ranking และ History ใหม่เพื่ออัปเดตภาษา
+            if(window.loadTopRankingFish && !document.getElementById('default-section').classList.contains('hidden')) {
+                window.loadTopRankingFish();
+            }
+            if(window.loadHistoryData && !document.getElementById('history-view').classList.contains('hidden')) {
+                window.loadHistoryData();
+            }
+        };
 
         let model;
         let currentFishDataObj = null; 
@@ -581,12 +576,9 @@
                     return;
                 }
 
-                // สามารถค้นหาได้ทั้งภาษาไทยและอังกฤษ
                 let matches = fishList.filter(fish => fish.toLowerCase().includes(query));
-                // หากพิมพ์ชื่อภาษาอังกฤษ
                 Object.values(fishMapping).forEach(enName => {
                      if(enName.toLowerCase().includes(query)) {
-                         // หาชื่อไทยที่คู่กัน
                          const thName = Object.keys(fishMapping).find(key => fishMapping[key] === enName);
                          if(thName && !matches.includes(thName)) matches.push(thName);
                      }
@@ -596,12 +588,11 @@
                     matches.forEach(match => {
                         const div = document.createElement('div');
                         div.className = 'px-5 py-3 hover:bg-slate-50 cursor-pointer text-sm font-medium text-slate-700 border-b border-slate-50 last:border-0 transition-colors';
-                        // แสดงชื่อตามภาษาปัจจุบัน
                         div.innerText = currentLang === 'en' ? fishMapping[match] : match;
                         div.onclick = () => {
                             searchInput.value = div.innerText;
                             searchDropdown.classList.add('hidden');
-                            triggerSearch(match); // ส่งชื่อไทยไปค้นหาในฐานข้อมูลเสมอ
+                            triggerSearch(match);
                         };
                         searchDropdown.appendChild(div);
                     });
@@ -622,7 +613,6 @@
                     let query = this.value.trim();
                     searchDropdown.classList.add('hidden');
                     if (query !== "") {
-                        // เช็คว่าพิมชื่ออังกฤษมาหรือเปล่า
                         let targetFish = query;
                         Object.keys(fishMapping).forEach(thKey => {
                             if(fishMapping[thKey].toLowerCase() === query.toLowerCase()) targetFish = thKey;
@@ -706,7 +696,7 @@
                 const probText = document.getElementById('prob');
 
                 if (probValue < 80) {
-                    currentFishDataObj = null; // รูปหลอก ไม่มีข้อมูลปลา
+                    currentFishDataObj = null;
                     document.getElementById('fishName').innerText = translations[currentLang].errNotFishTitle;
                     document.getElementById('fishNameEn').innerText = translations[currentLang].errNotFishEn;
                     document.getElementById('descBasic').innerHTML = translations[currentLang].errNotFishDesc;
@@ -849,21 +839,24 @@
             let count = 1;
             snap.forEach(docSnap => {
                 const data = docSnap.data();
-                // แปลงชื่อใน Ranking ให้สอดคล้องกับภาษา
-                let displayName = docSnap.id;
-                if(currentLang === 'en' && fishMapping[docSnap.id]) displayName = fishMapping[docSnap.id];
+                let dbId = docSnap.id;
+                
+                // 💡 ระบบแปลงภาษาอัจฉริยะ (ดักทั้งตอนเซฟชื่อไทยและอังกฤษ)
+                let enName = fishMapping[dbId] || dbId; 
+                let thName = Object.keys(fishMapping).find(key => fishMapping[key] === dbId) || dbId;
+                let displayName = currentLang === 'en' ? enName : thName;
                 
                 container.innerHTML += `
                     <div class="flex items-center p-2 pl-3 bg-[#f8fafc] rounded-[1.5rem]">
                         <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-4">${count++}</div>
                         <div class="flex-1">
                             <h3 class="font-bold text-slate-800 text-[15px]">${displayName}</h3>
-                            <p class="text-xs text-slate-400">${data.count} Searches</p>
+                            <p class="text-xs text-slate-400">${data.count} ${currentLang === 'en' ? 'Searches' : 'การค้นหา'}</p>
                         </div>
                     </div>
                 `;
             });
-            if(count === 1) container.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">No data yet</p>';
+            if(count === 1) container.innerHTML = `<p class="text-center text-slate-400 text-sm py-4">${currentLang === 'en' ? 'No data yet' : 'ยังไม่มีข้อมูลการค้นหา'}</p>`;
         } catch (error) { console.error("Error loading ranking:", error); }
     };
 
@@ -893,7 +886,7 @@
             return;
         }
 
-        container.innerHTML = '<div class="text-center text-slate-400 py-4">Loading...</div>';
+        container.innerHTML = `<div class="text-center text-slate-400 py-4">${currentLang === 'en' ? 'Loading...' : 'กำลังโหลดประวัติ...'}</div>`;
         
         try {
             const qScan = query(collection(db, "scan_history"), where("uid", "==", user.uid));
@@ -905,7 +898,7 @@
             searchSnap.forEach((docSnap) => combinedHistory.push(docSnap.data()));
 
             if(combinedHistory.length === 0) {
-                container.innerHTML = '<div class="info-card text-center py-10"><p class="text-slate-400 font-medium">No history found</p></div>';
+                container.innerHTML = `<div class="info-card text-center py-10"><p class="text-slate-400 font-medium">${currentLang === 'en' ? 'No history found' : 'ยังไม่มีประวัติการสแกนหรือค้นหาครับ'}</p></div>`;
                 return;
             }
 
@@ -918,10 +911,18 @@
             container.innerHTML = "";
             combinedHistory.forEach((item) => {
                 const date = item.scan_date ? new Date(item.scan_date.seconds * 1000).toLocaleString('th-TH') : "Just now";
+                
+                // 💡 ระบบแปลงภาษาอัจฉริยะใน History
+                let dbName = item.fish_name;
+                let enName = fishMapping[dbName] || dbName;
+                let thName = Object.keys(fishMapping).find(k => fishMapping[k] === dbName) || dbName;
+                let displayName = currentLang === 'en' ? enName : thName;
+                
                 const typeColor = item.type === 'Search' ? 'text-amber-500 bg-amber-50' : 'text-blue-500 bg-blue-50';
-                const typeText = item.type || 'Scan'; 
-                let displayName = item.fish_name;
-                if(currentLang === 'en' && fishMapping[item.fish_name]) displayName = fishMapping[item.fish_name];
+                let typeText = item.type || 'Scan'; 
+                if (currentLang === 'th') {
+                    typeText = typeText === 'Search' ? 'ค้นหา' : 'สแกน';
+                }
                 
                 container.innerHTML += `
                     <div class="info-card !p-4 flex justify-between items-center">
@@ -937,7 +938,7 @@
                 `;
             });
         } catch (error) {
-            container.innerHTML = '<div class="text-center text-red-400 py-4">Error loading data.</div>';
+            container.innerHTML = `<div class="text-center text-red-400 py-4">${currentLang === 'en' ? 'Error loading data.' : 'โหลดข้อมูลผิดพลาด ลองใหม่อีกครั้งครับ'}</div>`;
         }
     };
 
@@ -950,7 +951,6 @@
                 const fishData = docSnap.data();
                 currentFishDataObj = fishData; 
 
-                // 💡 โยนเข้าฟังก์ชันเรนเดอร์ที่เราเขียนใหม่
                 window.renderFishDetails(fishData);
                 switchTab('general');
 
