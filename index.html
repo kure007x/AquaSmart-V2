@@ -102,6 +102,30 @@
                 <button onclick="window.toggleLanguage()" id="lang-btn" class="bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold w-12 h-12 rounded-full shadow-inner flex items-center justify-center transition-colors">EN</button>
             </div>
 
+            
+            <!-- กล่องแจ้งเตือนการพัฒนา (Disclaimer Card) -->
+            <div class="bg-amber-50 border border-amber-200 rounded-[1.5rem] p-5 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-20 h-20 bg-amber-100 rounded-full opacity-40"></div>
+                <div class="flex gap-4 relative z-10">
+                    <div class="text-amber-500 mt-1 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-amber-800 text-base mb-1">ระบบอยู่ในช่วงการพัฒนา (Beta Version)</h3>
+                        <p class="text-[13px] text-amber-700 leading-relaxed">
+                            ปัจจุบัน AI ของเรารู้จักปลาเพียง <b>10 ชนิด</b> เท่านั้น และผลการทำนายอาจไม่ถูกต้อง 100% แม้จะเป็นปลาในระบบก็ตาม
+                        </p>
+                        <p class="text-[12px] text-amber-600 mt-2 font-medium">
+                            💡 <b>คำแนะนำ:</b> โปรดใช้รูปที่ <b>"เห็นปลาเต็มตัว ชัดเจน และสว่าง"</b> หากผลลัพธ์ไม่ตรง กรุณาเปลี่ยนมุมถ่ายหรือลองอัปโหลดรูปอื่นดูครับ
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mt-4">
+                            <span class="text-[10px] bg-white/70 border border-amber-100 text-amber-800 px-2 py-1 rounded-lg font-bold">10 สายพันธุ์ในระบบ:</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-900 px-2 py-1 rounded-lg">นวลจันทร์, เสือข้างลาย, ดุก, กุเล้า, ทอง, กระดี่, ปักเป้าเขียวจุด, หมอจากัวร์, กราย, ช่อน</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="relative z-50">
                 <div class="bg-white rounded-full p-2 pl-5 shadow-sm flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-slate-800"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
@@ -465,13 +489,13 @@
         const fishMapping = {
             'ปลานวลจันทร์': 'Bangus', 'ปลาเสือข้างลาย': 'Black Spotted Barb', 'ปลาดุก': 'Catfish',
             'ปลากุเล้า': 'Fourfinger Threadfin', 'ปลาทอง': 'Gold Fish', 'ปลากระดี่': 'Gourami',
-            'ปลาปั้กเป้าเขียวจุด': 'Green Spotted Puffer', 'ปลาหมอจากัวร์': 'Jaguar Gapote',
+            'ปลาปักเป้าเขียวจุด': 'Green Spotted Puffer', 'ปลาหมอจากัวร์': 'Jaguar Gapote',
             'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
         };
         
         const fishList = [
             'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 
-            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
+            'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
         ];
 
         function switchMainTab(tab) {
