@@ -30,6 +30,43 @@
         </div>
     </div>
 
+    
+    <div id="disclaimer-modal" class="fixed inset-0 bg-black/60 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-amber-100 rounded-full opacity-50"></div>
+            <button onclick="document.getElementById('disclaimer-modal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 hover:bg-slate-200 transition-colors z-20">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" /></svg>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-2">ระบบกำลังพัฒนา (Beta)</h3>
+                <p class="text-[13px] text-slate-500 leading-relaxed mb-4">
+                    ปัจจุบัน AI รู้จักปลาเพียง <b>10 ชนิด</b> เท่านั้น หากสแกนปลาชนิดอื่นระบบอาจทำนายผิดพลาดได้ และผลลัพธ์อาจไม่ถูกต้อง 100%
+                </p>
+                <div class="bg-amber-50 rounded-xl p-3 w-full mb-5 text-left border border-amber-100">
+                    <p class="text-xs text-amber-800 font-medium mb-2">💡 <b>คำแนะนำ:</b> ถ่ายรูปให้เห็นปลา <b>เต็มตัวและสว่างชัดเจน</b></p>
+                    <div class="flex flex-wrap gap-1">
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลานวลจันทร์</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลาเสือข้างลาย</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลาดุก</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลากุเล้า</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลาทอง</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลากระดี่</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลาปักเป้าเขียวจุด</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลาหมอจากัวร์</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลากราย</span>
+                        <span class="text-[10px] bg-white border border-amber-200 text-amber-700 px-1.5 py-0.5 rounded font-bold">ปลาช่อน</span>
+                    </div>
+                </div>
+                <button onclick="acceptDisclaimerAndScan()" class="w-full py-3.5 bg-[#2563eb] text-white font-bold rounded-xl shadow-md shadow-blue-200 hover:bg-blue-700 transition-colors">
+                    รับทราบและเริ่มสแกน
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="auth-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-2xl relative overflow-hidden">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 hover:bg-slate-200 transition-colors">
@@ -100,30 +137,6 @@
                     <p class="text-[14px] text-slate-400 font-medium mt-1" data-i18n="appSubtitle">ระบบวิเคราะห์และค้นหาข้อมูลปลาด้วย AI</p>
                 </div>
                 <button onclick="window.toggleLanguage()" id="lang-btn" class="bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold w-12 h-12 rounded-full shadow-inner flex items-center justify-center transition-colors">EN</button>
-            </div>
-
-            
-            <!-- กล่องแจ้งเตือนการพัฒนา (Disclaimer Card) -->
-            <div class="bg-amber-50 border border-amber-200 rounded-[1.5rem] p-5 shadow-sm relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-20 h-20 bg-amber-100 rounded-full opacity-40"></div>
-                <div class="flex gap-4 relative z-10">
-                    <div class="text-amber-500 mt-1 flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" /></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-amber-800 text-base mb-1">ระบบอยู่ในช่วงการพัฒนา (Beta Version)</h3>
-                        <p class="text-[13px] text-amber-700 leading-relaxed">
-                            ปัจจุบัน AI ของเรารู้จักปลาเพียง <b>10 ชนิด</b> เท่านั้น และผลการทำนายอาจไม่ถูกต้อง 100% แม้จะเป็นปลาในระบบก็ตาม
-                        </p>
-                        <p class="text-[12px] text-amber-600 mt-2 font-medium">
-                            💡 <b>คำแนะนำ:</b> โปรดใช้รูปที่ <b>"เห็นปลาเต็มตัว ชัดเจน และสว่าง"</b> หากผลลัพธ์ไม่ตรง กรุณาเปลี่ยนมุมถ่ายหรือลองอัปโหลดรูปอื่นดูครับ
-                        </p>
-                        <div class="flex flex-wrap gap-1.5 mt-4">
-                            <span class="text-[10px] bg-white/70 border border-amber-100 text-amber-800 px-2 py-1 rounded-lg font-bold">10 สายพันธุ์ในระบบ:</span>
-                            <span class="text-[10px] bg-amber-100 text-amber-900 px-2 py-1 rounded-lg">นวลจันทร์, เสือข้างลาย, ดุก, กุเล้า, ทอง, กระดี่, ปักเป้าเขียวจุด, หมอจากัวร์, กราย, ช่อน</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="relative z-50">
@@ -690,6 +703,11 @@
                 alert(currentLang === 'en' ? "AI Model is offline. Please use manual search." : "ระบบ AI ขัดข้อง กรุณาใช้งานระบบค้นหาแทนครับ");
                 return;
             }
+            document.getElementById('disclaimer-modal').classList.remove('hidden');
+        };
+
+        window.acceptDisclaimerAndScan = () => {
+            document.getElementById('disclaimer-modal').classList.add('hidden');
             document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
         };
