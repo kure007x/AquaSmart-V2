@@ -97,7 +97,7 @@
             <div class="bg-white rounded-[2rem] p-6 shadow-sm flex justify-between items-center mt-2">
                 <div>
                     <h1 class="text-[26px] font-extrabold text-[#111827] leading-tight tracking-tight">AquaSmart ML</h1>
-                    <p class="text-[14px] text-slate-400 font-medium mt-1" data-i18n="appSubtitle">ระบบวิเคราะห์และค้นหาข้อมูลปลาด้วย AI</p>
+                    <p class="text-[14px] text-slate-400 font-medium mt-1" data-i18n="appSubtitle">Fish search engine</p>
                 </div>
                 <button onclick="window.toggleLanguage()" id="lang-btn" class="bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold w-12 h-12 rounded-full shadow-inner flex items-center justify-center transition-colors">EN</button>
             </div>
@@ -114,7 +114,7 @@
             </div>
 
             <div id="default-section" class="info-card">
-                <h2 class="text-xl font-bold text-[#111827] mb-5" data-i18n="topSearched">อันดับปลาที่มีการค้นหาสูงสุด</h2>
+                <h2 class="text-xl font-bold text-[#111827] mb-5" data-i18n="topSearched">Top Searched Fish</h2>
                 <div id="top-ranking-container" class="space-y-3">
                     <p class="text-center text-slate-400 text-sm py-4" data-i18n="loadingRank">กำลังโหลดอันดับปลา...</p>
                 </div>
@@ -298,9 +298,9 @@
         // ==========================================
         const translations = {
             th: {
-                appSubtitle: "ระบบวิเคราะห์และค้นหาข้อมูลปลาด้วย AI",
+                appSubtitle: "Fish search engine",
                 searchPlaceholder: "ค้นหาชื่อปลา... (เช่น ปลาทอง)",
-                topSearched: "อันดับปลาที่มีการค้นหาสูงสุด",
+                topSearched: "Top Searched Fish",
                 loadingRank: "กำลังโหลดอันดับปลา...",
                 processingAI: "กำลังประมวลผลด้วย YOLOv8l...",
                 detailsLabel: "รายละเอียด",
@@ -452,6 +452,7 @@
                 document.getElementById('descBasic').innerHTML = translations[currentLang].errNotFishDesc;
             }
 
+            // 💡 สั่งให้โหลดข้อมูลหน้า Top Ranking และ History ใหม่เพื่ออัปเดตภาษา
             if(window.loadTopRankingFish && !document.getElementById('default-section').classList.contains('hidden')) {
                 window.loadTopRankingFish();
             }
@@ -465,13 +466,13 @@
         const fishMapping = {
             'ปลานวลจันทร์': 'Bangus', 'ปลาเสือข้างลาย': 'Black Spotted Barb', 'ปลาดุก': 'Catfish',
             'ปลากุเล้า': 'Fourfinger Threadfin', 'ปลาทอง': 'Gold Fish', 'ปลากระดี่': 'Gourami',
-            'ปลาปั้กเป้าเขียวจุด': 'Green Spotted Puffer', 'ปลาหมอจากัวร์': 'Jaguar Gapote',
+            'ปลาปักเป้าเขียวจุด': 'Green Spotted Puffer', 'ปลาหมอจากัวร์': 'Jaguar Gapote',
             'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
         };
         
         const fishList = [
             'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 
-            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
+            'ปลากระดี่', 'ปลาปักเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
         ];
 
         function switchMainTab(tab) {
@@ -548,33 +549,16 @@
             document.getElementById(`tab-btn-${tab}`).classList.add('active');
         }
 
-        // 🌟 โหลด AI พร้อมระบบกันค้าง (Fallback) + โหลดผ่าน jsDelivr CDN
         window.onload = async () => {
-            const splash = document.getElementById('splash-screen');
             try {
-                // โหลดผ่าน CDN jsDelivr ป้องกัน GitHub บล็อก (ERR_HTTP2_PROTOCOL_ERROR)
-                model = await tf.loadGraphModel('https://cdn.jsdelivr.net/gh/kure007x/AquaSmart-V2/model.json');
+                const cacheBuster = new Date().getTime();
+                model = await tf.loadGraphModel('./model.json?v=' + cacheBuster);
                 
+                const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 300);
                 if(window.loadTopRankingFish) window.loadTopRankingFish();
-            } catch (err) { 
-                console.error("Model load error:", err); 
-                splash.style.opacity = '1';
-                splash.innerHTML = `
-                    <div class="text-center px-6">
-                        <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                        </div>
-                        <h1 class="text-2xl font-black text-slate-800 mb-2">AI Offline ❌</h1>
-                        <p class="text-sm text-slate-500 mb-6 font-medium">ไม่สามารถโหลดสมอง AI ได้ (เน็ตเวิร์คมีปัญหา หรือถูกบล็อก) แต่คุณยังสามารถค้นหาปลาจากฐานข้อมูลได้ปกติครับ</p>
-                        <button onclick="document.getElementById('splash-screen').style.display='none'" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-blue-200 transition-colors">
-                            เข้าสู่หน้าเว็บ
-                        </button>
-                    </div>
-                `;
-                if(window.loadTopRankingFish) window.loadTopRankingFish();
-            }
+            } catch (err) { console.error("Model load error:", err); }
         };
 
         const searchInput = document.getElementById('mainSearchInput');
@@ -662,10 +646,6 @@
         }
 
         document.getElementById('btnCamera').onclick = () => {
-            if(!model) {
-                alert(currentLang === 'en' ? "AI Model is offline. Please use manual search." : "ระบบ AI ขัดข้อง กรุณาใช้งานระบบค้นหาแทนครับ");
-                return;
-            }
             document.getElementById('imageInput').value = ""; 
             document.getElementById('imageInput').click();
         };
@@ -696,7 +676,19 @@
                     const padRight  = maxSide - w - padLeft;
                     t = t.pad([[padTop, padBottom], [padLeft, padRight], [0, 0]]);
                     t = tf.image.resizeBilinear(t, [TARGET, TARGET]);
-                    return t.toFloat().div(255.0).expandDims(0); 
+                    return t.toFloat()
+            .div(255.0);
+            
+            // ImageNet Normalization (mean/std) for YOLOv8-cls
+            const mean = tf.tensor1d([0.485, 0.456, 0.406]);
+            const std  = tf.tensor1d([0.229, 0.224, 0.225]);
+            
+            const normalized = t_float.sub(mean).div(std).expandDims(0);
+            
+            // Clean up temporary tensors
+            tf.dispose([mean, std]);
+            return normalized;
+; 
                 });
 
                 const output = model.predict(tensor);
@@ -861,6 +853,7 @@
                 const data = docSnap.data();
                 let dbId = docSnap.id;
                 
+                // 💡 ระบบแปลงภาษาอัจฉริยะ (ดักทั้งตอนเซฟชื่อไทยและอังกฤษ)
                 let enName = fishMapping[dbId] || dbId; 
                 let thName = Object.keys(fishMapping).find(key => fishMapping[key] === dbId) || dbId;
                 let displayName = currentLang === 'en' ? enName : thName;
@@ -931,6 +924,7 @@
             combinedHistory.forEach((item) => {
                 const date = item.scan_date ? new Date(item.scan_date.seconds * 1000).toLocaleString('th-TH') : "Just now";
                 
+                // 💡 ระบบแปลงภาษาอัจฉริยะใน History
                 let dbName = item.fish_name;
                 let enName = fishMapping[dbName] || dbName;
                 let thName = Object.keys(fishMapping).find(k => fishMapping[k] === dbName) || dbName;
