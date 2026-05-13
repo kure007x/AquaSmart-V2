@@ -463,15 +463,22 @@
         let model;
         let currentFishDataObj = null; 
         const fishMapping = {
-            'ปลานวลจันทร์': 'Bangus', 'ปลาเสือข้างลาย': 'Black Spotted Barb', 'ปลาดุก': 'Catfish',
-            'ปลากุเล้า': 'Fourfinger Threadfin', 'ปลาทอง': 'Gold Fish', 'ปลากระดี่': 'Gourami',
-            'ปลาปั้กเป้าเขียวจุด': 'Green Spotted Puffer', 'ปลาหมอจากัวร์': 'Jaguar Gapote',
-            'ปลากราย': 'Knifefish', 'ปลาช่อน': 'Snakehead'
+            'Bangus':               'ปลานวลจันทร์',
+            'Black Spotted Barb':   'ปลาเสือข้างลาย',
+            'Catfish':              'ปลาดุก',
+            'Fourfinger Threadfin': 'ปลากุเล้า',
+            'Gold Fish':            'ปลาทอง',
+            'Gourami':              'ปลากระดี่',
+            'Green Spotted Puffer': 'ปลาปักเป้าเขียวจุด',
+            'Jaguar Gapote':        'ปลาหมอจากัวร์',
+            'Knifefish':            'ปลากราย',
+            'Snakehead':            'ปลาช่อน'
         };
         
         const fishList = [
-            'ปลานวลจันทร์', 'ปลาเสือข้างลาย', 'ปลาดุก', 'ปลากุเล้า', 'ปลาทอง', 
-            'ปลากระดี่', 'ปลาปั้กเป้าเขียวจุด', 'ปลาหมอจากัวร์', 'ปลากราย', 'ปลาช่อน'
+            'Bangus', 'Black Spotted Barb', 'Catfish', 'Fourfinger Threadfin', 
+            'Gold Fish', 'Gourami', 'Green Spotted Puffer', 'Jaguar Gapote', 
+            'Knifefish', 'Snakehead'
         ];
 
         function switchMainTab(tab) {
@@ -495,7 +502,7 @@
                 document.getElementById('nav-history').classList.replace('text-slate-400', 'text-blue-600');
                 if(window.loadHistoryData) window.loadHistoryData(); 
             } else if (tab === 'profile') {
-                if (localStorage.getItem('isLoggedIn') !== 'true') {
+                if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
                     document.getElementById('auth-modal').classList.remove('hidden');
                     switchMainTab('home'); 
                     return;
@@ -529,8 +536,8 @@
             document.getElementById('auth-modal').classList.add('hidden');
         }
 
-        function checkAuthAndUnlock() {
-            if(localStorage.getItem('isLoggedIn') === 'true') {
+        window.checkAuthAndUnlock = function() {
+            if(window.firebaseAuth && window.firebaseAuth.currentUser) {
                 document.getElementById('basic-content').classList.add('hidden');
                 document.getElementById('full-content').classList.remove('hidden');
                 document.getElementById('full-content').classList.add('flex');
@@ -548,11 +555,9 @@
             document.getElementById(`tab-btn-${tab}`).classList.add('active');
         }
 
-        // 🌟 โหลด AI พร้อมระบบกันค้าง (Fallback) + โหลดผ่าน jsDelivr CDN
         window.onload = async () => {
             const splash = document.getElementById('splash-screen');
             try {
-                // โหลดผ่าน CDN jsDelivr ป้องกัน GitHub บล็อก (ERR_HTTP2_PROTOCOL_ERROR)
                 model = await tf.loadGraphModel('https://cdn.jsdelivr.net/gh/kure007x/AquaSmart-V2/model.json');
                 
                 splash.style.opacity = '0';
@@ -592,23 +597,23 @@
                     return;
                 }
 
-                let matches = fishList.filter(fish => fish.toLowerCase().includes(query));
-                Object.values(fishMapping).forEach(enName => {
-                     if(enName.toLowerCase().includes(query)) {
-                         const thName = Object.keys(fishMapping).find(key => fishMapping[key] === enName);
-                         if(thName && !matches.includes(thName)) matches.push(thName);
-                     }
+                let matches = [];
+                Object.keys(fishMapping).forEach(enName => {
+                    const thName = fishMapping[enName];
+                    if (enName.toLowerCase().includes(query) || thName.toLowerCase().includes(query)) {
+                        matches.push(enName);
+                    }
                 });
                 
                 if (matches.length > 0) {
-                    matches.forEach(match => {
+                    matches.forEach(enName => {
                         const div = document.createElement('div');
                         div.className = 'px-5 py-3 hover:bg-slate-50 cursor-pointer text-sm font-medium text-slate-700 border-b border-slate-50 last:border-0 transition-colors';
-                        div.innerText = currentLang === 'en' ? fishMapping[match] : match;
+                        div.innerText = currentLang === 'en' ? enName : fishMapping[enName];
                         div.onclick = () => {
                             searchInput.value = div.innerText;
                             searchDropdown.classList.add('hidden');
-                            triggerSearch(match);
+                            triggerSearch(enName);
                         };
                         searchDropdown.appendChild(div);
                     });
@@ -626,21 +631,25 @@
 
             searchInput.addEventListener('keypress', async function (e) {
                 if (e.key === 'Enter') {
-                    let query = this.value.trim();
+                    let query = this.value.trim().toLowerCase();
                     searchDropdown.classList.add('hidden');
                     if (query !== "") {
-                        let targetFish = query;
-                        Object.keys(fishMapping).forEach(thKey => {
-                            if(fishMapping[thKey].toLowerCase() === query.toLowerCase()) targetFish = thKey;
+                        let targetEnName = query;
+                        Object.keys(fishMapping).forEach(enName => {
+                            if(enName.toLowerCase() === query || fishMapping[enName].toLowerCase() === query) {
+                                targetEnName = enName;
+                            }
                         });
-                        triggerSearch(targetFish);
+                        triggerSearch(targetEnName);
                     }
                 }
             });
 
             function triggerSearch(query) {
-                const idx = fishList.findIndex(fish => fish.includes(query));
+                const idx = fishList.findIndex(fish => fish.toLowerCase() === query.toLowerCase());
                 if (idx !== -1) {
+                    const enName = fishList[idx];
+                    const thaiName = fishMapping[enName];
                     searchInput.blur();
                     searchError.classList.add('hidden');
                     document.getElementById('default-section').classList.add('hidden');
@@ -648,10 +657,9 @@
                     document.getElementById('result-section').classList.remove('flex');
                     document.getElementById('loading-section').classList.remove('hidden');
 
-                    const thaiName = fishList[idx];
                     setTimeout(async () => {
-                        if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, 100, 'Search');
-                        if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], true);
+                        if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, enName, 100, 'Search');
+                        if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(enName, true);
                     }, 500);
                 } else {
                     searchError.innerText = `${translations[currentLang].errNoData} "${query}"`;
@@ -709,7 +717,8 @@
                 }
 
                 const probValue = maxProb * 100;
-                const thaiName = fishList[idx];
+                const enName = fishList[idx];
+                const thaiName = fishMapping[enName];
 
                 const badge = document.getElementById('probBadge');
                 const dot = badge.querySelector('span'); 
@@ -738,8 +747,8 @@
                     if(dot) { dot.classList.remove('text-red-400'); dot.classList.add('text-blue-400'); }
                     probText.innerText = probValue.toFixed(1) + "%";
 
-                    if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, probValue.toFixed(1), 'Scan');
-                    if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(fishMapping[thaiName], false);
+                    if(window.saveScanHistoryToDB) window.saveScanHistoryToDB(thaiName, enName, probValue.toFixed(1), 'Scan');
+                    if(window.fetchFishDataFromFirebase) window.fetchFishDataFromFirebase(enName, false);
                 }
             };
             imgForAI.src = URL.createObjectURL(file);
@@ -775,6 +784,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app); 
+    window.firebaseAuth = auth; // Expose globally for UI checks
     const googleProvider = new GoogleAuthProvider();
 
     onAuthStateChanged(auth, (user) => {
@@ -859,10 +869,8 @@
             let count = 1;
             snap.forEach(docSnap => {
                 const data = docSnap.data();
-                let dbId = docSnap.id;
-                
-                let enName = fishMapping[dbId] || dbId; 
-                let thName = Object.keys(fishMapping).find(key => fishMapping[key] === dbId) || dbId;
+                let enName = docSnap.id; 
+                let thName = fishMapping[enName] || enName;
                 let displayName = currentLang === 'en' ? enName : thName;
                 
                 container.innerHTML += `
@@ -879,19 +887,20 @@
         } catch (error) { console.error("Error loading ranking:", error); }
     };
 
-    window.saveScanHistoryToDB = async function(fishName, probValue, type) {
+    window.saveScanHistoryToDB = async function(thaiName, enName, probValue, type) {
         try {
             const user = auth.currentUser;
             const folderName = type === 'Search' ? "search_history" : "scan_history";
             const historyRef = collection(db, folderName);
             await addDoc(historyRef, {
                 uid: user ? user.uid : "anonymous",
-                fish_name: fishName,
+                fish_name: enName,
+                thai_name: thaiName,
                 confidence_percent: parseFloat(probValue),
                 type: type,
                 scan_date: serverTimestamp() 
             });
-            const rankRef = doc(db, "fish_rankings", fishName);
+            const rankRef = doc(db, "fish_rankings", enName);
             await setDoc(rankRef, { count: increment(1) }, { merge: true });
         } catch (error) { console.error("Error saving history:", error); }
     };
@@ -931,9 +940,8 @@
             combinedHistory.forEach((item) => {
                 const date = item.scan_date ? new Date(item.scan_date.seconds * 1000).toLocaleString('th-TH') : "Just now";
                 
-                let dbName = item.fish_name;
-                let enName = fishMapping[dbName] || dbName;
-                let thName = Object.keys(fishMapping).find(k => fishMapping[k] === dbName) || dbName;
+                let enName = item.fish_name;
+                let thName = fishMapping[enName] || item.thai_name || enName;
                 let displayName = currentLang === 'en' ? enName : thName;
                 
                 const typeColor = item.type === 'Search' ? 'text-amber-500 bg-amber-50' : 'text-blue-500 bg-blue-50';
